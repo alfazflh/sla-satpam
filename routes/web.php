@@ -9,7 +9,7 @@ use App\Http\Middleware\AdminMiddleware;
 // Halaman awal (welcome page)
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 // Dashboard User (semua user yang login bisa masuk, termasuk admin)
 Route::get('/user', function () {
