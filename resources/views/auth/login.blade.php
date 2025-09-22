@@ -12,7 +12,7 @@
             </div>
 
             <!-- Title -->
-            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-8">Masuk ke Akun Admin</h2>
+            <h2 class="text-1xl sm:text-2xl font-bold text-gray-800 text-center mb-8">Masuk ke Akun Admin</h2>
 
             <!-- Form -->
             <form method="POST" action="{{ route('login') }}" class="space-y-6">
