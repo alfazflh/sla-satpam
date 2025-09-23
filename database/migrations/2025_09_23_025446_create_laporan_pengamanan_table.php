@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('laporan_keamanan', function (Blueprint $table) {
+        Schema::create('laporan_pengamanan', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('waktu');
-            $table->string('area', 100);
-            $table->string('nama', 100);
+            $table->timestamp('waktu')->nullable();
+            $table->string('area')->nullable();
+            $table->string('nama')->nullable();
             $table->text('ketentuan_seragam')->nullable();
             $table->string('foto_serahterima')->nullable();
             $table->text('pengamanan')->nullable();
@@ -39,13 +39,14 @@ return new class extends Migration
             $table->text('telepon')->nullable();
             $table->string('foto_telepon')->nullable();
             $table->text('rutin')->nullable();
-            $table->text('titik')->nullable();
+            $table->string('titik')->nullable();
             $table->string('foto_rutin')->nullable();
             $table->text('pengecekan')->nullable();
             $table->string('foto_pengecekan')->nullable();
             $table->text('cctv')->nullable();
             $table->string('foto_cctv')->nullable();
             $table->text('kronologi_cctv')->nullable();
+
             $table->timestamps();
         });
     }
@@ -55,6 +56,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('laporan_keamanan');
+        Schema::dropIfExists('laporan_pengamanan');
     }
 };
