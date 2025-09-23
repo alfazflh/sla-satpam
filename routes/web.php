@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FormController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Middleware\AdminMiddleware;
@@ -10,6 +11,8 @@ use App\Http\Middleware\AdminMiddleware;
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
+
+Route::post('/form/store', [FormController::class, 'store'])->name('form.store');
 
 // Dashboard User (semua user yang login bisa masuk, termasuk admin)
 Route::get('/user', function () {
