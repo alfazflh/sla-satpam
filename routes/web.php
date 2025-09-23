@@ -12,7 +12,8 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::post('/form/store', [FormController::class, 'store'])->name('form.store');
+Route::get('/', [FormController::class, 'create'])->name('form.create');
+Route::post('/store', [FormController::class, 'store'])->name('form.store');
 
 // Dashboard User (semua user yang login bisa masuk, termasuk admin)
 Route::get('/user', function () {
