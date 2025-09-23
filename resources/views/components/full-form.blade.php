@@ -8,19 +8,62 @@
     <form action="{{ route('form.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        {{-- Waktu, Area, Nama --}}
-        <div class="mb-4">
-            <label class="block text-md font-medium text-gray-700">1. Waktu Jaga Shift</label>
-            <input type="datetime-local" name="waktu" class="mt-1 w-full rounded-md border-gray-300 shadow-sm">
+        {{-- 1. Waktu Jaga Shift --}}
+        <div class="mb-6">
+            <label class="block text-md font-medium text-gray-700 mb-2">1. Waktu Jaga Shift <span class="text-red-500">*</span></label>
+            <div class="space-y-2">
+                <label class="flex items-center">
+                    <input type="radio" name="waktu_shift" value="Shift 1 : 07.00 - 15.00" class="mr-2">
+                    Shift 1 : 07.00 SD 15.00
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="waktu_shift" value="Shift 2 : 15.00 - 23.00" class="mr-2">
+                    Shift 2 : 15.00 SD 23.00
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="waktu_shift" value="Shift 3 : 23.00 - 07.00" class="mr-2">
+                    Shift 3 : 23.00 SD 07.00
+                </label>
+            </div>
         </div>
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700">2. Area kerja</label>
-            <input type="text" name="area" class="mt-1 w-full rounded-md border-gray-300 shadow-sm">
+
+        {{-- 2. Area Kerja --}}
+        <div class="mb-6">
+            <label class="block text-md font-medium text-gray-700 mb-2">2. Area Kerja <span class="text-red-500">*</span></label>
+            <div class="space-y-2">
+                <label class="flex items-center">
+                    <input type="radio" name="area" value="Pos Jaga Bersama UP3 SBS" class="mr-2">
+                    Pos Jaga Bersama UP3 SBS
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="area" value="UP2W VI" class="mr-2">
+                    UP2W VI
+                </label>
+            </div>
         </div>
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700">3. Nama Petugas Jaga</label>
-            <input type="text" name="nama" class="mt-1 w-full rounded-md border-gray-300 shadow-sm">
+
+        {{-- 3. Nama Petugas Jaga --}}
+        <div class="mb-6">
+            <label class="block text-md font-medium text-gray-700 mb-2">3. Nama Petugas Jaga <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-2 gap-2">
+                @php
+                    $petugas = [
+                        "MARJOKO", "KARNO", "SOBACHUS SURUR", "IPUNG ASWIANTO",
+                        "EKO ARIS IKHWANUDIN", "BOBY PURWANTO", "HARYONO",
+                        "KINDLY CHOIRUL HAQIQI", "AMBAR SONIG", "REZA TRI PUTRA",
+                        "EGI AGUS KARYANTO", "ABDU ISMAIL"
+                    ];
+                @endphp
+
+                @foreach($petugas as $p)
+                    <label class="flex items-center">
+                        <input type="checkbox" name="nama_petugas[]" value="{{ $p }}" class="mr-2">
+                        {{ $p }}
+                    </label>
+                @endforeach
+            </div>
         </div>
+
 
         {{-- Field dinamis --}}
         @php
