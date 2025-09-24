@@ -8,7 +8,7 @@
     <form action="{{ route('form.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        {{-- 1. Waktu Jaga Shift --}}
+        {{-- BAGIAN 1 --}}
         <div class="mb-6">
             <label class="block text-md font-medium text-gray-700 mb-2">1. Waktu Jaga Shift <span class="text-red-500">*</span></label>
             <div class="space-y-2">
@@ -27,7 +27,6 @@
             </div>
         </div>
 
-        {{-- 2. Area Kerja --}}
         <div class="mb-6">
             <label class="block text-md font-medium text-gray-700 mb-2">2. Area Kerja <span class="text-red-500">*</span></label>
             <div class="space-y-2">
@@ -42,7 +41,6 @@
             </div>
         </div>
 
-        {{-- 3. Nama Petugas Jaga --}}
         <div class="mb-6">
             <label class="block text-md font-medium text-gray-700 mb-2">3. Nama Petugas Jaga <span class="text-red-500">*</span></label>
             <div class="grid grid-cols-2 gap-2">
