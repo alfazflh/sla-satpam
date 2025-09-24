@@ -7,25 +7,21 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Middleware\AdminMiddleware;
 
-// Halaman awal (welcome page)
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
-
-Route::get('/', [FormController::class, 'create'])->name('form.create');
+// Halaman awal (welcome + form create)
+Route::get('/', [FormController::class, 'create'])->name('welcome');
 Route::post('/store', [FormController::class, 'store'])->name('form.store');
 
-// Dashboard User (semua user yang login bisa masuk, termasuk admin)
+// Dashboard User
 Route::get('/user', function () {
     return view('user.dashboard');
 })->middleware(['auth', 'verified'])->name('user.dashboard');
 
-// Dashboard Admin (hanya untuk admin role)
+// Dashboard Admin
 Route::get('/admin', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'verified', AdminMiddleware::class])->name('admin.dashboard');
 
-// Profile (bisa diakses semua user yg login)
+// Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -38,7 +34,7 @@ Route::get('/dashboard', function () {
     $user = Auth::user();
 
     if (!$user) {
-        return redirect()->route('login'); // fallback kalau belum login
+        return redirect()->route('login');
     }
 
     return $user->role === 'admin'
@@ -46,5 +42,5 @@ Route::get('/dashboard', function () {
         : redirect()->route('user.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route auth bawaan Breeze (login, register, dll)
+// Route auth bawaan Breeze
 require __DIR__.'/auth.php';
