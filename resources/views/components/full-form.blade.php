@@ -351,7 +351,7 @@
             if (kronologiSection) kronologiSection.classList.add('hidden');
 
             // Show section berdasarkan pilihan
-            if (sectionName === 'seragam' && selectedValue !== 'Sesuai 100%') {
+            if (sectionName === 'seragam' && selectedValue !== 'Tidak Sesuai') {
                 if (docSection) docSection.classList.remove('hidden');
             }
             else if (sectionName === 'pengamanan') {
