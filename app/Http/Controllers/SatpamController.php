@@ -107,7 +107,7 @@ class SatpamController extends Controller
         // Simpan ke database
         LaporanSatpam::create($data);
 
-        return redirect()->route('satpam.index')->with('success', 'Laporan berhasil disimpan!');
+        return redirect()->route('welcome')->with('success', 'Laporan berhasil disimpan!');
     }
 
     public function list()
