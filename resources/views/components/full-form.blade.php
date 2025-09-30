@@ -10,7 +10,7 @@
     <div class="max-w-3xl mx-auto">
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Header -->
-            <div class="bg-indigo-600 text-white p-6">
+            <div class=" text-white p-6" style="background-color: #196275;">
                 <h1 class="text-2xl font-bold">LAPORAN KEGIATAN ANGGOTA SATUAN PENGAMANAN</h1>
                 <p class="text-indigo-100 mt-2">Silakan isi form dengan lengkap</p>
             </div>
