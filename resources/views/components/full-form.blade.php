@@ -1200,5 +1200,28 @@
             showSection(1);
         });
     </script>
+    <script>
+        document.getElementById('mainForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Validasi field di section yang visible saja
+    const currentSectionElement = document.querySelector(`[data-section="${currentSection}"]`);
+    const requiredFields = currentSectionElement.querySelectorAll('[required]');
+    
+    let isValid = true;
+    requiredFields.forEach(field => {
+        if (!field.value && field.type !== 'radio' && field.type !== 'checkbox') {
+            isValid = false;
+            field.focus();
+            alert('Harap lengkapi semua field yang wajib diisi');
+            return;
+        }
+    });
+    
+    if (isValid) {
+        this.submit(); // Submit form jika valid
+    }
+});
+    </script>
 </body>
 </html>
