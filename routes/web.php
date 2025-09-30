@@ -6,6 +6,10 @@ use App\Http\Controllers\FormController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\SatpamController;
+
+Route::get('/laporan-satpam', [SatpamController::class, 'create'])->name('laporan.create');
+Route::post('/laporan-satpam', [SatpamController::class, 'store'])->name('laporan.store');
 
 // Halaman awal (welcome + form create)
 Route::get('/', [FormController::class, 'create'])->name('welcome');

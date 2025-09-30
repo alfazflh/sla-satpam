@@ -837,61 +837,81 @@
     <script>
         let currentSection = 1;
         const totalSections = 30;
-
-        // Track user choices
         let choices = {};
-
+    
+        // FUNGSI UTAMA: Update required fields berdasarkan visibility
+        function updateRequiredFields() {
+            document.querySelectorAll('.form-section').forEach(section => {
+                const isVisible = !section.classList.contains('hidden');
+                const fields = section.querySelectorAll('input, textarea, select');
+                
+                fields.forEach(field => {
+                    if (isVisible) {
+                        // Restore required jika section visible
+                        if (field.hasAttribute('data-required')) {
+                            field.setAttribute('required', 'required');
+                        }
+                    } else {
+                        // Simpan status required dan hapus attribute
+                        if (field.hasAttribute('required')) {
+                            field.setAttribute('data-required', 'true');
+                            field.removeAttribute('required');
+                        }
+                    }
+                });
+            });
+        }
+    
         function updateProgress() {
             const progress = (currentSection / totalSections) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
         }
-
+    
         function showSection(sectionNumber) {
-            // Hide all sections
             document.querySelectorAll('.form-section').forEach(section => {
                 section.classList.add('hidden');
             });
-
-            // Show target section
+    
             const targetSection = document.querySelector(`[data-section="${sectionNumber}"]`);
             if (targetSection) {
                 targetSection.classList.remove('hidden');
                 currentSection = sectionNumber;
                 updateProgress();
+                updateRequiredFields(); // PENTING: Panggil setiap pindah section
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
-
+    
         function nextSection(sectionNumber) {
             showSection(sectionNumber);
         }
-
+    
         function prevSection(sectionNumber) {
             showSection(sectionNumber);
         }
-
+    
         // BAGIAN 2: Seragam handlers
         function handleSeragam(radio) {
             choices.seragam = radio.value;
         }
-
+    
         function handleSeragamNext() {
             if (!choices.seragam) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.seragam === 'Sesuai 100%') {
-                nextSection(3); // Upload foto
+                nextSection(3);
             } else {
-                nextSection(4); // Langsung ke pengamanan
+                nextSection(4);
             }
         }
-
+    
         // BAGIAN 4: Pengamanan handlers
         function handlePengamanan(radio) {
             choices.pengamanan = radio.value;
         }
-
+    
         function backFromPengamanan() {
             if (choices.seragam === 'Sesuai 100%') {
                 prevSection(3);
@@ -899,26 +919,26 @@
                 prevSection(2);
             }
         }
-
+    
         function handlePengamananNext() {
             if (!choices.pengamanan) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.pengamanan === 'Nol (0) tindak kriminal') {
-                nextSection(5); // Upload foto patroli
+                nextSection(5);
             } else if (choices.pengamanan === 'Terjadi Tindak Kriminal, Ancaman dan Gangguan Keamanan') {
-                nextSection(6); // Kronologi
+                nextSection(6);
             } else {
-                nextSection(7); // Fungsi khusus
+                nextSection(7);
             }
         }
-
+    
         // BAGIAN 7: Fungsi Khusus handlers
         function handleFungsiKhusus(radio) {
             choices.fungsiKhusus = radio.value;
         }
-
+    
         function backFromFungsiKhusus() {
             if (choices.pengamanan === 'Nol (0) tindak kriminal') {
                 prevSection(5);
@@ -928,26 +948,26 @@
                 prevSection(4);
             }
         }
-
+    
         function handleFungsiKhususNext() {
             if (!choices.fungsiKhusus) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.fungsiKhusus === 'Nol (0) tindak kriminal') {
-                nextSection(8); // Upload foto lembur
+                nextSection(8);
             } else if (choices.fungsiKhusus === 'Terjadi tindak kriminal') {
-                nextSection(9); // Kronologi gangguan
+                nextSection(9);
             } else {
-                nextSection(10); // Memantau
+                nextSection(10);
             }
         }
-
+    
         // BAGIAN 10: Memantau handlers
         function handleMemantau(radio) {
             choices.memantau = radio.value;
         }
-
+    
         function backFromMemantau() {
             if (choices.fungsiKhusus === 'Nol (0) tindak kriminal') {
                 prevSection(8);
@@ -957,24 +977,24 @@
                 prevSection(7);
             }
         }
-
+    
         function handleMemantauNext() {
             if (!choices.memantau) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.memantau === 'Tercatat, Tertib dan Aman') {
-                nextSection(11); // Upload foto tamu
+                nextSection(11);
             } else {
-                nextSection(12); // Pelayanan
+                nextSection(12);
             }
         }
-
+    
         // BAGIAN 12: Pelayanan handlers
         function handlePelayanan(radio) {
             choices.pelayanan = radio.value;
         }
-
+    
         function backFromPelayanan() {
             if (choices.memantau === 'Tercatat, Tertib dan Aman') {
                 prevSection(11);
@@ -982,24 +1002,24 @@
                 prevSection(10);
             }
         }
-
+    
         function handlePelayananNext() {
             if (!choices.pelayanan) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.pelayanan === '100% Terpenuhi') {
-                nextSection(13); // Upload foto panduan
+                nextSection(13);
             } else {
-                nextSection(14); // Force majeure
+                nextSection(14);
             }
         }
-
+    
         // BAGIAN 14: Force Majeure handlers
         function handleForceMajeure(radio) {
             choices.forceMajeure = radio.value;
         }
-
+    
         function backFromForceMajeure() {
             if (choices.pelayanan === '100% Terpenuhi') {
                 prevSection(13);
@@ -1007,24 +1027,24 @@
                 prevSection(12);
             }
         }
-
+    
         function handleForceMajeureNext() {
             if (!choices.forceMajeure) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.forceMajeure === 'Dilaksanakan') {
-                nextSection(15); // Upload foto force
+                nextSection(15);
             } else {
-                nextSection(16); // Penertiban
+                nextSection(16);
             }
         }
-
+    
         // BAGIAN 16: Penertiban handlers
         function handlePenertiban(radio) {
             choices.penertiban = radio.value;
         }
-
+    
         function backFromPenertiban() {
             if (choices.forceMajeure === 'Dilaksanakan') {
                 prevSection(15);
@@ -1032,24 +1052,24 @@
                 prevSection(14);
             }
         }
-
+    
         function handlePenertibanNext() {
             if (!choices.penertiban) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.penertiban === 'Tertib') {
-                nextSection(17); // Upload foto penertiban
+                nextSection(17);
             } else {
-                nextSection(18); // Simulasi
+                nextSection(18);
             }
         }
-
+    
         // BAGIAN 18: Simulasi handlers
         function handleSimulasi(radio) {
             choices.simulasi = radio.value;
         }
-
+    
         function backFromSimulasi() {
             if (choices.penertiban === 'Tertib') {
                 prevSection(17);
@@ -1057,24 +1077,24 @@
                 prevSection(16);
             }
         }
-
+    
         function handleSimulasiNext() {
             if (!choices.simulasi) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.simulasi === '100% Berpartisipasi') {
-                nextSection(19); // Upload foto simulasi
+                nextSection(19);
             } else {
-                nextSection(20); // Penyegaran
+                nextSection(20);
             }
         }
-
+    
         // BAGIAN 20: Penyegaran handlers
         function handlePenyegaran(radio) {
             choices.penyegaran = radio.value;
         }
-
+    
         function backFromPenyegaran() {
             if (choices.simulasi === '100% Berpartisipasi') {
                 prevSection(19);
@@ -1082,24 +1102,24 @@
                 prevSection(18);
             }
         }
-
+    
         function handlePenyegaranNext() {
             if (!choices.penyegaran) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.penyegaran === 'Dilaksanakan') {
-                nextSection(21); // Upload foto penyegaran
+                nextSection(21);
             } else {
-                nextSection(22); // Telepon
+                nextSection(22);
             }
         }
-
+    
         // BAGIAN 22: Telepon handlers
         function handleTelepon(radio) {
             choices.telepon = radio.value;
         }
-
+    
         function backFromTelepon() {
             if (choices.penyegaran === 'Dilaksanakan') {
                 prevSection(21);
@@ -1107,24 +1127,24 @@
                 prevSection(20);
             }
         }
-
+    
         function handleTeleponNext() {
             if (!choices.telepon) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.telepon === 'Ada pendataan') {
-                nextSection(23); // Upload foto telepon
+                nextSection(23);
             } else {
-                nextSection(24); // Rutin
+                nextSection(24);
             }
         }
-
+    
         // BAGIAN 24: Rutin handlers
         function handleRutin(radio) {
             choices.rutin = radio.value;
         }
-
+    
         function backFromRutin() {
             if (choices.telepon === 'Ada pendataan') {
                 prevSection(23);
@@ -1132,24 +1152,24 @@
                 prevSection(22);
             }
         }
-
+    
         function handleRutinNext() {
             if (!choices.rutin) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.rutin === '100% Dilaksanakan Sesuai Jadwal dan Titik Patrol Termonitor') {
-                nextSection(25); // Upload foto rutin & titik
+                nextSection(25);
             } else {
-                nextSection(26); // Pengecekan
+                nextSection(26);
             }
         }
-
+    
         // BAGIAN 26: Pengecekan handlers
         function handlePengecekan(radio) {
             choices.pengecekan = radio.value;
         }
-
+    
         function backFromPengecekan() {
             if (choices.rutin === '100% Dilaksanakan Sesuai Jadwal dan Titik Patrol Termonitor') {
                 prevSection(25);
@@ -1157,24 +1177,24 @@
                 prevSection(24);
             }
         }
-
+    
         function handlePengecekanNext() {
             if (!choices.pengecekan) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.pengecekan === 'Dilaksanakan') {
-                nextSection(27); // Upload foto pengecekan
+                nextSection(27);
             } else {
-                nextSection(28); // CCTV
+                nextSection(28);
             }
         }
-
+    
         // BAGIAN 28: CCTV handlers
         function handleCCTV(radio) {
             choices.cctv = radio.value;
         }
-
+    
         function backFromCCTV() {
             if (choices.pengecekan === 'Dilaksanakan') {
                 prevSection(27);
@@ -1182,46 +1202,72 @@
                 prevSection(26);
             }
         }
-
+    
         function handleCCTVNext() {
             if (!choices.cctv) {
                 alert('Silakan pilih salah satu opsi');
                 return;
             }
             if (choices.cctv === '100% CCTV aman dan Tidak Ada Kejadian') {
-                nextSection(29); // Upload foto CCTV
+                nextSection(29);
             } else {
-                nextSection(30); // Kronologi CCTV
+                nextSection(30);
             }
         }
-
+    
         // Initialize form
         document.addEventListener('DOMContentLoaded', function() {
             showSection(1);
+            updateRequiredFields(); // Panggil saat pertama load
         });
-    </script>
-    <script>
+    
+        // Form submission dengan validasi custom
         document.getElementById('mainForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Validasi field di section yang visible saja
-    const currentSectionElement = document.querySelector(`[data-section="${currentSection}"]`);
-    const requiredFields = currentSectionElement.querySelectorAll('[required]');
-    
-    let isValid = true;
-    requiredFields.forEach(field => {
-        if (!field.value && field.type !== 'radio' && field.type !== 'checkbox') {
-            isValid = false;
-            field.focus();
-            alert('Harap lengkapi semua field yang wajib diisi');
-            return;
-        }
-    });
-    
-    if (isValid) {
-        this.submit(); // Submit form jika valid
-    }
-});
+            e.preventDefault();
+            
+            const currentSectionElement = document.querySelector(`[data-section="${currentSection}"]`);
+            const requiredFields = currentSectionElement.querySelectorAll('[required]');
+            
+            let isValid = true;
+            let firstInvalidField = null;
+            
+            requiredFields.forEach(field => {
+                // Cek radio button
+                if (field.type === 'radio') {
+                    const radioGroup = currentSectionElement.querySelectorAll(`[name="${field.name}"]`);
+                    const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+                    if (!isChecked && !firstInvalidField) {
+                        isValid = false;
+                        firstInvalidField = field;
+                    }
+                }
+                // Cek checkbox
+                else if (field.type === 'checkbox') {
+                    const checkboxGroup = currentSectionElement.querySelectorAll(`[name="${field.name}"]`);
+                    const isChecked = Array.from(checkboxGroup).some(cb => cb.checked);
+                    if (!isChecked && !firstInvalidField) {
+                        isValid = false;
+                        firstInvalidField = field;
+                    }
+                }
+                // Cek field lainnya
+                else if (!field.value.trim() && !firstInvalidField) {
+                    isValid = false;
+                    firstInvalidField = field;
+                }
+            });
+            
+            if (!isValid) {
+                alert('Harap lengkapi semua field yang wajib diisi');
+                if (firstInvalidField) {
+                    firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            }
+            
+            // Submit form jika valid
+            this.submit();
+        });
     </script>
 </body>
 </html>
