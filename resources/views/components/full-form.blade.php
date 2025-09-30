@@ -849,12 +849,10 @@
                 
                 fields.forEach(field => {
                     if (isVisible) {
-                        // Restore required jika section visible
                         if (field.hasAttribute('data-required')) {
                             field.setAttribute('required', 'required');
                         }
                     } else {
-                        // Simpan status required dan hapus attribute
                         if (field.hasAttribute('required')) {
                             field.setAttribute('data-required', 'true');
                             field.removeAttribute('required');
@@ -862,6 +860,65 @@
                     }
                 });
             });
+        }
+    
+        // Validasi section sebelum next
+        function validateCurrentSection() {
+            const currentSectionElement = document.querySelector(`[data-section="${currentSection}"]`);
+            const requiredFields = currentSectionElement.querySelectorAll('[required]');
+            
+            let isValid = true;
+            let firstInvalidField = null;
+            let errorMessage = '';
+            
+            requiredFields.forEach(field => {
+                if (field.type === 'radio') {
+                    const radioGroup = currentSectionElement.querySelectorAll(`[name="${field.name}"]`);
+                    const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+                    if (!isChecked && !firstInvalidField) {
+                        isValid = false;
+                        firstInvalidField = field;
+                        errorMessage = 'Silakan pilih salah satu jawaban';
+                    }
+                }
+                else if (field.type === 'checkbox') {
+                    const checkboxGroup = currentSectionElement.querySelectorAll(`[name="${field.name}"]`);
+                    const isChecked = Array.from(checkboxGroup).some(cb => cb.checked);
+                    if (!isChecked && !firstInvalidField) {
+                        isValid = false;
+                        firstInvalidField = field;
+                        errorMessage = 'Silakan pilih minimal satu jawaban';
+                    }
+                }
+                else if (field.type === 'file') {
+                    if (!field.files.length && !firstInvalidField) {
+                        isValid = false;
+                        firstInvalidField = field;
+                        errorMessage = 'Silakan upload file yang diperlukan';
+                    }
+                }
+                else if (!field.value.trim() && !firstInvalidField) {
+                    isValid = false;
+                    firstInvalidField = field;
+                    errorMessage = 'Harap lengkapi field yang wajib diisi';
+                }
+            });
+            
+            if (!isValid) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: errorMessage,
+                    confirmButtonColor: '#1f7389',
+                    confirmButtonText: 'OK'
+                });
+                if (firstInvalidField) {
+                    firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => firstInvalidField.focus(), 300);
+                }
+            }
+            
+            return isValid;
         }
     
         function updateProgress() {
@@ -879,13 +936,15 @@
                 targetSection.classList.remove('hidden');
                 currentSection = sectionNumber;
                 updateProgress();
-                updateRequiredFields(); // PENTING: Panggil setiap pindah section
+                updateRequiredFields();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
     
         function nextSection(sectionNumber) {
-            showSection(sectionNumber);
+            if (validateCurrentSection()) {
+                showSection(sectionNumber);
+            }
         }
     
         function prevSection(sectionNumber) {
@@ -899,13 +958,20 @@
     
         function handleSeragamNext() {
             if (!choices.seragam) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.seragam === 'Sesuai 100%') {
-                nextSection(3);
-            } else {
-                nextSection(4);
+            if (validateCurrentSection()) {
+                if (choices.seragam === 'Sesuai 100%') {
+                    nextSection(3);
+                } else {
+                    nextSection(4);
+                }
             }
         }
     
@@ -924,15 +990,22 @@
     
         function handlePengamananNext() {
             if (!choices.pengamanan) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.pengamanan === 'Nol (0) tindak kriminal') {
-                nextSection(5);
-            } else if (choices.pengamanan === 'Terjadi Tindak Kriminal, Ancaman dan Gangguan Keamanan') {
-                nextSection(6);
-            } else {
-                nextSection(7);
+            if (validateCurrentSection()) {
+                if (choices.pengamanan === 'Nol (0) tindak kriminal') {
+                    nextSection(5);
+                } else if (choices.pengamanan === 'Terjadi Tindak Kriminal, Ancaman dan Gangguan Keamanan') {
+                    nextSection(6);
+                } else {
+                    nextSection(7);
+                }
             }
         }
     
@@ -953,15 +1026,22 @@
     
         function handleFungsiKhususNext() {
             if (!choices.fungsiKhusus) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.fungsiKhusus === 'Nol (0) tindak kriminal') {
-                nextSection(8);
-            } else if (choices.fungsiKhusus === 'Terjadi tindak kriminal') {
-                nextSection(9);
-            } else {
-                nextSection(10);
+            if (validateCurrentSection()) {
+                if (choices.fungsiKhusus === 'Nol (0) tindak kriminal') {
+                    nextSection(8);
+                } else if (choices.fungsiKhusus === 'Terjadi tindak kriminal') {
+                    nextSection(9);
+                } else {
+                    nextSection(10);
+                }
             }
         }
     
@@ -982,13 +1062,20 @@
     
         function handleMemantauNext() {
             if (!choices.memantau) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.memantau === 'Tercatat, Tertib dan Aman') {
-                nextSection(11);
-            } else {
-                nextSection(12);
+            if (validateCurrentSection()) {
+                if (choices.memantau === 'Tercatat, Tertib dan Aman') {
+                    nextSection(11);
+                } else {
+                    nextSection(12);
+                }
             }
         }
     
@@ -1007,13 +1094,20 @@
     
         function handlePelayananNext() {
             if (!choices.pelayanan) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.pelayanan === '100% Terpenuhi') {
-                nextSection(13);
-            } else {
-                nextSection(14);
+            if (validateCurrentSection()) {
+                if (choices.pelayanan === '100% Terpenuhi') {
+                    nextSection(13);
+                } else {
+                    nextSection(14);
+                }
             }
         }
     
@@ -1032,13 +1126,20 @@
     
         function handleForceMajeureNext() {
             if (!choices.forceMajeure) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.forceMajeure === 'Dilaksanakan') {
-                nextSection(15);
-            } else {
-                nextSection(16);
+            if (validateCurrentSection()) {
+                if (choices.forceMajeure === 'Dilaksanakan') {
+                    nextSection(15);
+                } else {
+                    nextSection(16);
+                }
             }
         }
     
@@ -1057,13 +1158,20 @@
     
         function handlePenertibanNext() {
             if (!choices.penertiban) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.penertiban === 'Tertib') {
-                nextSection(17);
-            } else {
-                nextSection(18);
+            if (validateCurrentSection()) {
+                if (choices.penertiban === 'Tertib') {
+                    nextSection(17);
+                } else {
+                    nextSection(18);
+                }
             }
         }
     
@@ -1082,13 +1190,20 @@
     
         function handleSimulasiNext() {
             if (!choices.simulasi) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.simulasi === '100% Berpartisipasi') {
-                nextSection(19);
-            } else {
-                nextSection(20);
+            if (validateCurrentSection()) {
+                if (choices.simulasi === '100% Berpartisipasi') {
+                    nextSection(19);
+                } else {
+                    nextSection(20);
+                }
             }
         }
     
@@ -1107,13 +1222,20 @@
     
         function handlePenyegaranNext() {
             if (!choices.penyegaran) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.penyegaran === 'Dilaksanakan') {
-                nextSection(21);
-            } else {
-                nextSection(22);
+            if (validateCurrentSection()) {
+                if (choices.penyegaran === 'Dilaksanakan') {
+                    nextSection(21);
+                } else {
+                    nextSection(22);
+                }
             }
         }
     
@@ -1132,13 +1254,20 @@
     
         function handleTeleponNext() {
             if (!choices.telepon) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.telepon === 'Ada pendataan') {
-                nextSection(23);
-            } else {
-                nextSection(24);
+            if (validateCurrentSection()) {
+                if (choices.telepon === 'Ada pendataan') {
+                    nextSection(23);
+                } else {
+                    nextSection(24);
+                }
             }
         }
     
@@ -1157,13 +1286,20 @@
     
         function handleRutinNext() {
             if (!choices.rutin) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.rutin === '100% Dilaksanakan Sesuai Jadwal dan Titik Patrol Termonitor') {
-                nextSection(25);
-            } else {
-                nextSection(26);
+            if (validateCurrentSection()) {
+                if (choices.rutin === '100% Dilaksanakan Sesuai Jadwal dan Titik Patrol Termonitor') {
+                    nextSection(25);
+                } else {
+                    nextSection(26);
+                }
             }
         }
     
@@ -1182,13 +1318,20 @@
     
         function handlePengecekanNext() {
             if (!choices.pengecekan) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.pengecekan === 'Dilaksanakan') {
-                nextSection(27);
-            } else {
-                nextSection(28);
+            if (validateCurrentSection()) {
+                if (choices.pengecekan === 'Dilaksanakan') {
+                    nextSection(27);
+                } else {
+                    nextSection(28);
+                }
             }
         }
     
@@ -1207,69 +1350,64 @@
     
         function handleCCTVNext() {
             if (!choices.cctv) {
-                alert('Silakan pilih salah satu opsi');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: 'Silakan pilih salah satu opsi',
+                    confirmButtonColor: '#1f7389'
+                });
                 return;
             }
-            if (choices.cctv === '100% CCTV aman dan Tidak Ada Kejadian') {
-                nextSection(29);
-            } else {
-                nextSection(30);
+            if (validateCurrentSection()) {
+                if (choices.cctv === '100% CCTV aman dan Tidak Ada Kejadian') {
+                    nextSection(29);
+                } else {
+                    nextSection(30);
+                }
             }
         }
     
         // Initialize form
         document.addEventListener('DOMContentLoaded', function() {
             showSection(1);
-            updateRequiredFields(); // Panggil saat pertama load
+            updateRequiredFields();
         });
     
-        // Form submission dengan validasi custom
+        // Form submission dengan SweetAlert loading
         document.getElementById('mainForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const currentSectionElement = document.querySelector(`[data-section="${currentSection}"]`);
-            const requiredFields = currentSectionElement.querySelectorAll('[required]');
-            
-            let isValid = true;
-            let firstInvalidField = null;
-            
-            requiredFields.forEach(field => {
-                // Cek radio button
-                if (field.type === 'radio') {
-                    const radioGroup = currentSectionElement.querySelectorAll(`[name="${field.name}"]`);
-                    const isChecked = Array.from(radioGroup).some(radio => radio.checked);
-                    if (!isChecked && !firstInvalidField) {
-                        isValid = false;
-                        firstInvalidField = field;
-                    }
-                }
-                // Cek checkbox
-                else if (field.type === 'checkbox') {
-                    const checkboxGroup = currentSectionElement.querySelectorAll(`[name="${field.name}"]`);
-                    const isChecked = Array.from(checkboxGroup).some(cb => cb.checked);
-                    if (!isChecked && !firstInvalidField) {
-                        isValid = false;
-                        firstInvalidField = field;
-                    }
-                }
-                // Cek field lainnya
-                else if (!field.value.trim() && !firstInvalidField) {
-                    isValid = false;
-                    firstInvalidField = field;
-                }
-            });
-            
-            if (!isValid) {
-                alert('Harap lengkapi semua field yang wajib diisi');
-                if (firstInvalidField) {
-                    firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
+            if (!validateCurrentSection()) {
                 return;
             }
-            
-            // Submit form jika valid
+    
+            // Tampilkan loading
+            Swal.fire({
+                title: 'Mengirim Laporan...',
+                html: 'Mohon tunggu, data sedang diproses',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+    
+            // Submit form
             this.submit();
         });
+    
+        // Auto-refresh CSRF token (mencegah 419 error)
+        setInterval(function() {
+            fetch('/refresh-csrf')
+                .then(response => response.json())
+                .then(data => {
+                    const csrfInput = document.querySelector('input[name="_token"]');
+                    if (csrfInput) {
+                        csrfInput.value = data.token;
+                    }
+                })
+                .catch(err => console.log('CSRF refresh failed'));
+        }, 600000); // Refresh setiap 10 menit
     </script>
 </body>
 </html>
