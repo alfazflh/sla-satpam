@@ -9,7 +9,7 @@ class LaporanSatpam extends Model
 {
     use HasFactory;
 
-    protected $table = 'laporan_satpam';
+    protected $table = 'laporan_pengamanan';
 
     protected $fillable = [
         'waktu',
