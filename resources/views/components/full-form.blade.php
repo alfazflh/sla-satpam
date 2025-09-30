@@ -119,7 +119,7 @@
                         </div>
                     </div>
 
-                    <button type="button" onclick="nextSection(2)" class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
+                    <button type="button" onclick="nextSection(2)" class="w-full bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
                         Berikutnya
                     </button>
                 </div>
