@@ -12,12 +12,12 @@
             <!-- Header -->
             <div class="bg-[#1f7389] text-white p-6">
                 <h1 class="text-2xl font-bold">LAPORAN KEGIATAN ANGGOTA SATUAN PENGAMANAN</h1>
-                <p class="text-indigo-100 mt-2">Silakan isi form dengan lengkap</p>
+                <p class="text-white mt-2">Silakan isi form dengan lengkap</p>
             </div>
 
             <!-- Progress Bar -->
             <div class="bg-gray-200 h-2">
-                <div id="progressBar" class="bg-indigo-600 h-2 transition-all duration-300" style="width: 0%"></div>
+                <div id="progressBar" class="bg-[#1f7389] h-2 transition-all duration-300" style="width: 0%"></div>
             </div>
 
             <form id="mainForm" action="submit_form.php" method="POST" enctype="multipart/form-data" class="p-6">
