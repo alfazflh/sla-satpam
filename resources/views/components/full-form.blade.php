@@ -20,7 +20,7 @@
                 <div id="progressBar" class="bg-[#1f7389] h-2 transition-all duration-300" style="width: 0%"></div>
             </div>
 
-            <form id="mainForm" action="submit_form.php" method="POST" enctype="multipart/form-data" class="p-6">
+            <form id="mainForm" action="{{ route('laporan.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
                 
                 <!-- BAGIAN 1: Data Dasar -->
                 <div class="form-section" data-section="1">
