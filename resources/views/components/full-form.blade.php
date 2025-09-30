@@ -21,6 +21,7 @@
             </div>
 
             <form id="mainForm" action="{{ route('laporan.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
+                @csrf
                 
                 <!-- BAGIAN 1: Data Dasar -->
                 <div class="form-section" data-section="1">
