@@ -456,7 +456,7 @@
                         <button type="button" onclick="prevSection(14)" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 font-medium">
                             Kembali
                         </button>
-                        <button type="button" onclick="nextSection(16)" class="flex-1 bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
+                        <button type="button" onclick="nextSection(16)" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
                             Berikutnya
                         </button>
                     </div>
