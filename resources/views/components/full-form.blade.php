@@ -158,10 +158,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Saat Apel Serah Terima Antar Shift <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_serahterima" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_serahterima" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_serahterima" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -210,10 +215,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Patroli Kegiatan <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_patroli" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_patroli" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_patroli" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -283,10 +293,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Giat Lembur Kegiatan <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_lembur" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_lembur" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_lembur" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -352,10 +367,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Jurnal Satpam dan pencatatan tamu/kendaraan <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_tamu" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_tamu" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_tamu" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -400,10 +420,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Dokumentasi panduan keselamatan kerja ke mitra atau tamu <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_panduan" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_panduan" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_panduan" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -448,10 +473,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Pelaksanaan fungsi pengamanan dalam kejadian force majeure <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_force" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_force" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_force" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -496,10 +526,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto penertiban area perparkiran <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_penertiban" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_penertiban" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_penertiban" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -544,10 +579,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan foto <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_simulasi" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_simulasi" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_simulasi" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -592,10 +632,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto penyegaran dan kebugaran fisik <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_penyegaran" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_penyegaran" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_penyegaran" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -640,10 +685,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Jurnal <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_telepon" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_telepon" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_telepon" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -699,10 +749,15 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Lampirkan Foto patroli rutin <span class="text-red-500">*</span>
                         </label>
-                        <input type="file" name="foto_rutin" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                            <!-- Tombol custom -->
+                            <button type="button" onclick="chooseSource()"
+                                class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                    hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                        focus:ring-offset-1 cursor-pointer transition">
+                                📷 Upload Foto
+                            </button>
+                            <input type="file" id="camera" name="foto_rutin" accept="image/*" capture="environment" style="display:none">
+                            <input type="file" id="gallery" name="foto_rutin" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -747,10 +802,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto pengecekan <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_pengecekan" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_pengecekan" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_pengecekan" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -795,10 +855,15 @@
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto pengawasan area melalui CCTV (Foto Layar Monitor CCTV) <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
-                        <input type="file" name="foto_cctv" accept="image/*" required
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
-                            file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                            file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                        <!-- Tombol custom -->
+                        <button type="button" onclick="chooseSource()"
+                            class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
+                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                    focus:ring-offset-1 cursor-pointer transition">
+                            📷 Upload Foto
+                        </button>
+                        <input type="file" id="camera" name="foto_cctv" accept="image/*" capture="environment" style="display:none">
+                        <input type="file" id="gallery" name="foto_cctv" accept="image/*" style="display:none">
                     </div>
 
                     <div class="flex gap-3">
@@ -1408,6 +1473,25 @@
                 })
                 .catch(err => console.log('CSRF refresh failed'));
         }, 600000); // Refresh setiap 10 menit
+    </script>
+    <script>
+        function chooseSource() {
+  Swal.fire({
+    title: 'Pilih Sumber Foto',
+    text: 'Ambil foto langsung atau pilih dari galeri?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: '📷 Kamera',
+    cancelButtonText: '🖼️ Galeri',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById("camera").click();
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      document.getElementById("gallery").click();
+    }
+  });
+}
     </script>
 </body>
 </html>
