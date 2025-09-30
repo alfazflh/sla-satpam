@@ -161,12 +161,13 @@
                         <!-- Tombol custom -->
                         <button type="button" onclick="chooseSource()"
                             class="w-full px-4 py-3 rounded-lg font-semibold text-indigo-700 bg-indigo-50 
-                                hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
-                                    focus:ring-offset-1 cursor-pointer transition">
+                            hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                                focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
                         <input type="file" id="camera" name="foto_serahterima" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_serahterima" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -224,6 +225,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_patroli" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_patroli" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -302,6 +304,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_lembur" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_lembur" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -376,6 +379,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_tamu" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_tamu" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -429,6 +433,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_panduan" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_panduan" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -482,6 +487,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_force" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_force" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -535,6 +541,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_penertiban" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_penertiban" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -588,6 +595,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_simulasi" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_simulasi" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -641,6 +649,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_penyegaran" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_penyegaran" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -694,6 +703,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_telepon" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_telepon" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -758,6 +768,7 @@
                             </button>
                             <input type="file" id="camera" name="foto_rutin" accept="image/*" capture="environment" style="display:none">
                             <input type="file" id="gallery" name="foto_rutin" accept="image/*" style="display:none">
+                            <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -811,6 +822,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_pengecekan" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_pengecekan" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -864,6 +876,7 @@
                         </button>
                         <input type="file" id="camera" name="foto_cctv" accept="image/*" capture="environment" style="display:none">
                         <input type="file" id="gallery" name="foto_cctv" accept="image/*" style="display:none">
+                        <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
                     <div class="flex gap-3">
@@ -1476,22 +1489,38 @@
     </script>
     <script>
         function chooseSource() {
-  Swal.fire({
-    title: 'Pilih Sumber Foto',
-    text: 'Ambil foto langsung atau pilih dari galeri?',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: '📷 Kamera',
-    cancelButtonText: '🖼️ Galeri',
-    reverseButtons: true
-  }).then((result) => {
-    if (result.isConfirmed) {
-      document.getElementById("camera").click();
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      document.getElementById("gallery").click();
-    }
-  });
-}
-    </script>
+        Swal.fire({
+            title: 'Pilih Sumber Foto',
+            text: 'Ambil foto langsung atau pilih dari galeri?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '📷 Kamera',
+            cancelButtonText: '🖼️ Galeri',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+            document.getElementById("camera").click();
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+            document.getElementById("gallery").click();
+            }
+        });
+        }
+    
+        // Update nama file setelah dipilih
+        document.getElementById("camera").addEventListener("change", updateFileName);
+        document.getElementById("gallery").addEventListener("change", updateFileName);
+    
+        function updateFileName(event) {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById("fileName").textContent = "📄 " + file.name;
+    
+            // opsional: ubah warna tombol kalau sudah ada file
+            const btn = document.querySelector("button[onclick='chooseSource()']");
+            btn.classList.remove("bg-indigo-50", "text-indigo-700");
+            btn.classList.add("bg-green-100", "text-green-700");
+        }
+        }
+    </script>  
 </body>
 </html>
