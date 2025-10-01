@@ -1303,7 +1303,7 @@
                 Swal.fire({
                     icon: 'warning',
                     title: 'Perhatian!',
-                    text: 'Silakan pilih salah satu opsi',
+                    text: 'Silakan pilih salah satu jawaban',
                     confirmButtonColor: '#1f7389'
                 });
                 return;
