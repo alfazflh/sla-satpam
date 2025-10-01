@@ -656,7 +656,7 @@
                         <button type="button" onclick="prevSection(20)" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 font-medium">
                             Kembali
                         </button>
-                        <button type="button" onclick="nextSection(22)" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
+                        <button type="button" onclick="nextSection(22)" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-[#196275] font-medium">
                             Berikutnya
                         </button>
                     </div>
@@ -682,7 +682,7 @@
                         <button type="button" onclick="backFromTelepon()" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 font-medium">
                             Kembali
                         </button>
-                        <button type="button" onclick="handleTeleponNext()" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
+                        <button type="button" onclick="handleTeleponNext()" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-[#196275] font-medium">
                             Berikutnya
                         </button>
                     </div>
@@ -710,7 +710,7 @@
                         <button type="button" onclick="prevSection(22)" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 font-medium">
                             Kembali
                         </button>
-                        <button type="button" onclick="nextSection(24)" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
+                        <button type="button" onclick="nextSection(24)" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-[#196275] font-medium">
                             Berikutnya
                         </button>
                     </div>
@@ -736,7 +736,7 @@
                         <button type="button" onclick="backFromRutin()" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 font-medium">
                             Kembali
                         </button>
-                        <button type="button" onclick="handleRutinNext()" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
+                        <button type="button" onclick="handleRutinNext()" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-[#196275] font-medium">
                             Berikutnya
                         </button>
                     </div>
@@ -775,7 +775,7 @@
                         <button type="button" onclick="prevSection(24)" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 font-medium">
                             Kembali
                         </button>
-                        <button type="button" onclick="nextSection(26)" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
+                        <button type="button" onclick="nextSection(26)" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-[#196275] font-medium">
                             Berikutnya
                         </button>
                     </div>
@@ -801,7 +801,7 @@
                         <button type="button" onclick="backFromPengecekan()" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 font-medium">
                             Kembali
                         </button>
-                        <button type="button" onclick="handlePengecekanNext()" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
+                        <button type="button" onclick="handlePengecekanNext()" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-[#196275] font-medium">
                             Berikutnya
                         </button>
                     </div>
@@ -829,7 +829,7 @@
                         <button type="button" onclick="prevSection(26)" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 font-medium">
                             Kembali
                         </button>
-                        <button type="button" onclick="nextSection(28)" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
+                        <button type="button" onclick="nextSection(28)" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-[#196275] font-medium">
                             Berikutnya
                         </button>
                     </div>
@@ -855,7 +855,7 @@
                         <button type="button" onclick="backFromCCTV()" class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 font-medium">
                             Kembali
                         </button>
-                        <button type="button" onclick="handleCCTVNext()" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-indigo-700 font-medium">
+                        <button type="button" onclick="handleCCTVNext()" class="flex-1 bg-[#1f7389] text-white py-3 px-4 rounded-lg hover:bg-[#196275] font-medium">
                             Berikutnya
                         </button>
                     </div>
