@@ -165,8 +165,8 @@
                                 focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" id="camera" name="foto_serahterima" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" id="gallery" name="foto_serahterima" accept="image/*" style="display:none">
+                        <input type="file" id="camera" name="foto_serahterima" accept="image/*" capture="environment" style="display:none" required>
+                        <input type="file" id="gallery" name="foto_serahterima" accept="image/*" style="display:none" required>
                         <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -223,8 +223,8 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" id="camera" name="foto_patroli" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" id="gallery" name="foto_patroli" accept="image/*" style="display:none">
+                        <input type="file" id="camera" name="foto_patroli" accept="image/*" capture="environment" style="display:none" required>
+                        <input type="file" id="gallery" name="foto_patroli" accept="image/*" style="display:none" required>
                         <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
