@@ -647,8 +647,8 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" id="camera" name="foto_penyegaran" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" id="gallery" name="foto_penyegaran" accept="image/*" style="display:none">
+                        <input type="file" id="camera" name="foto_penyegaran" accept="image/*" capture="environment" style="display:none" required>
+                        <input type="file" id="gallery" name="foto_penyegaran" accept="image/*" style="display:none" required>
                         <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -701,8 +701,8 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" id="camera" name="foto_telepon" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" id="gallery" name="foto_telepon" accept="image/*" style="display:none">
+                        <input type="file" id="camera" name="foto_telepon" accept="image/*" capture="environment" style="display:none" required>
+                        <input type="file" id="gallery" name="foto_telepon" accept="image/*" style="display:none" required>
                         <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -766,8 +766,8 @@
                                         focus:ring-offset-1 cursor-pointer transition">
                                 📷 Upload Foto
                             </button>
-                            <input type="file" id="camera" name="foto_rutin" accept="image/*" capture="environment" style="display:none">
-                            <input type="file" id="gallery" name="foto_rutin" accept="image/*" style="display:none">
+                            <input type="file" id="camera" name="foto_rutin" accept="image/*" capture="environment" style="display:none" required>
+                            <input type="file" id="gallery" name="foto_rutin" accept="image/*" style="display:none" required>
                             <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -820,8 +820,8 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" id="camera" name="foto_pengecekan" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" id="gallery" name="foto_pengecekan" accept="image/*" style="display:none">
+                        <input type="file" id="camera" name="foto_pengecekan" accept="image/*" capture="environment" style="display:none" required>
+                        <input type="file" id="gallery" name="foto_pengecekan" accept="image/*" style="display:none" required>
                         <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -874,8 +874,8 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" id="camera" name="foto_cctv" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" id="gallery" name="foto_cctv" accept="image/*" style="display:none">
+                        <input type="file" id="camera" name="foto_cctv" accept="image/*" capture="environment" style="display:none" required>
+                        <input type="file" id="gallery" name="foto_cctv" accept="image/*" style="display:none" required>
                         <span id="fileName" class="block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
