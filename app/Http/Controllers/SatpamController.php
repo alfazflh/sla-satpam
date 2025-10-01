@@ -96,13 +96,17 @@ class SatpamController extends Controller
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
-                $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
+        
+                // Nama unik: timestamp + field + uniqid + ekstensi
+                $filename = time() . '_' . $field . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        
                 $path = $file->storeAs('satpam', $filename, 'public');
                 $data[$field] = $path;
             } else {
                 $data[$field] = null;
             }
         }
+        
 
         // Simpan ke database
         LaporanSatpam::create($data);
