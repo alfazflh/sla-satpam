@@ -750,7 +750,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Jumlah Titik Patroli <span class="text-red-500">*</span>
                         </label>
-                        <input type="number" name="titik" min="1" required
+                        <input type="text" name="titik" min="1" required
                             class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             placeholder="Masukkan jumlah titik patroli">
                     </div>
