@@ -9,10 +9,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\SatpamController;
 use App\Http\Controllers\AdminController;
 
-Route::middleware(['auth', 'verified', 'admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-});
-
+// Laporan Satpam
 Route::get('/laporan-satpam', [SatpamController::class, 'create'])->name('laporan.create');
 Route::post('/laporan-satpam', [SatpamController::class, 'store'])->name('laporan.store');
 
@@ -25,10 +22,10 @@ Route::get('/user', function () {
     return view('user.dashboard');
 })->middleware(['auth', 'verified'])->name('user.dashboard');
 
-// Dashboard Admin
-Route::get('/admin', function () {
-    return view('admin.dashboard');
-})->middleware(['auth', 'verified', AdminMiddleware::class])->name('admin.dashboard');
+// Dashboard Admin - PAKAI INI SAJA (lewat Controller)
+Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function () {
+    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+});
 
 // Profile
 Route::middleware('auth')->group(function () {
