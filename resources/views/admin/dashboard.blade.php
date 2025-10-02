@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="pt-10">
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
                 @if(auth()->user()->role === 'admin')
                     
                     <!-- Card Welcome -->
@@ -22,10 +22,10 @@
                                 </div>
                             </div>
                             <div class="flex flex-col md:flex-row items-center gap-6">
-                                <div class="w-full md:w-1/3">
+                                <div class="w-full md:w-1/4">
                                     <canvas id="shiftChart" width="300" height="300"></canvas>
                                 </div>
-                                <div class="w-full md:w-2/3 md:pl-8">
+                                <div class="w-full md:w-2/4 md:pl-8">
                                     <div class="space-y-3">
                                         @foreach($shiftData as $shift)
                                         <div class="flex items-center">
