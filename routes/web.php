@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\SatpamController;
+use App\Http\Controllers\AdminController;
+
+Route::middleware(['auth', 'verified', 'admin'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+});
 
 Route::get('/laporan-satpam', [SatpamController::class, 'create'])->name('laporan.create');
 Route::post('/laporan-satpam', [SatpamController::class, 'store'])->name('laporan.store');
