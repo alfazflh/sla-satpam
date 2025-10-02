@@ -340,8 +340,10 @@
 
                 <!-- BAGIAN 10: Memantau -->
                 <div class="form-section hidden" data-section="10">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">4. Memantau dan Mencatat Lalu Lintas Orang dan Kendaraan</h2>
-                    <p class="text-sm text-gray-600 mb-4">100% kelengkapan dan akurasi pencatatan (Foto jurnal, kendaraan dinas) <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">4. Memantau dan mencatat secara detail lalu lintas orang dan kendaraan yang masuk dan keluar di sekitar objek pengamanan</h2>
+                    <p class="text-sm text-gray-600 mb-4">100% kelengkapan dan akurasi pencatatan tamu dan kendaraan yang masuk dan keluar di sekitar objek pengamanan (misal: sekitar lingkungan kantor, rumah jabatan dan instalasinya) sesuai standar Sistem Manajemen Pengamanan <span class="text-red-500">*</span></p>
+                    <p class="text-sm text-gray-600 mb-4">Memantau dan mencatat lalu lintas orang dan kendaraan yang keluar dan masuk di obyek pengamanan.
+                        ( Foto jurnal, kendaraan dinas ) <span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
