@@ -451,8 +451,8 @@
 
                 <!-- BAGIAN 14: Fungsi Force Majeure -->
                 <div class="form-section hidden" data-section="14">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">6. Melaksanakan Fungsi Pengamanan dalam Kejadian Force Majeure</h2>
-                    <p class="text-sm text-gray-600 mb-4">100% pelaksanaan penanganan force majeure (foto pengamanan jika ada bencana alam, kerusuhan) <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">6. Melaksanakan fungsi pengamanan dalam kejadian force majure sesuai standar SMP </h2>
+                    <p class="text-sm text-gray-600 mb-4">100% pelaksanaan penanganan force majeure (misal: peringatan dini, komunikasi, evakuasi) berjalan secara tertib dan kondusif <span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
