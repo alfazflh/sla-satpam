@@ -668,8 +668,8 @@
 
                 <!-- BAGIAN 22: Telepon -->
                 <div class="form-section hidden" data-section="22">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">10. Menerima dan Mendata Telepon</h2>
-                    <p class="text-sm text-gray-600 mb-4">100% penyelesaian dan pendataan telepon yang masuk di luar jam kerja/hari libur <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">10. Menerima dan mendata telepon yang masuk di luar jam kerja /hari libur untuk dilaporkan ke kordinator</h2>
+                    <p class="text-sm text-gray-600 mb-4">100% penyelesaian dan pendataan telepon yang masuk di luar jam kerja / hari libur untuk dilaporkan kepada koordinator, Menerima dan mendata telepon yang masuk di luar jam kerja / hari libur untuk dilaporkan ke kordinator <span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
