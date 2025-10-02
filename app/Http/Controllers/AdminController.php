@@ -23,6 +23,7 @@ class AdminController extends Controller
             ->select('waktu', DB::raw('count(*) as total'))
             ->whereNotNull('waktu')
             ->groupBy('waktu')
+            ->orderBy('waktu')
             ->get();
 
         $shiftData = [];
@@ -34,7 +35,7 @@ class AdminController extends Controller
         ];
 
         foreach ($shiftCounts as $index => $shift) {
-            $percentage = ($shift->total / $totalJawaban) * 100;
+            $percentage = $totalJawaban > 0 ? ($shift->total / $totalJawaban) * 100 : 0;
             $shiftData[] = [
                 'label' => $shiftLabels[$index] ?? "Shift " . ($index + 1),
                 'count' => $shift->total,
@@ -48,6 +49,7 @@ class AdminController extends Controller
             ->select('area', DB::raw('count(*) as total'))
             ->whereNotNull('area')
             ->groupBy('area')
+            ->orderBy('total', 'desc')
             ->get();
 
         $areaData = [];
@@ -58,9 +60,9 @@ class AdminController extends Controller
         ];
 
         foreach ($areaCounts as $index => $area) {
-            $percentage = ($area->total / $totalJawaban) * 100;
+            $percentage = $totalJawaban > 0 ? ($area->total / $totalJawaban) * 100 : 0;
             $areaData[] = [
-                'label' => $areaLabels[$index] ?? $area->area_kerja,
+                'label' => $areaLabels[$index] ?? $area->area,
                 'count' => $area->total,
                 'percentage' => round($percentage, 0),
                 'color' => $areaColors[$index] ?? '#cccccc'
@@ -71,17 +73,21 @@ class AdminController extends Controller
         // Ambil semua data nama
         $allNames = DB::table('laporan_pengamanan')
             ->whereNotNull('nama')
+            ->where('nama', '!=', '')
             ->pluck('nama');
 
         // Pisahkan nama yang dipisah koma dan hitung
         $nameCount = [];
+        
         foreach ($allNames as $nameString) {
-            // Split berdasarkan koma
+            // Split berdasarkan koma dan bersihkan spasi
             $names = array_map('trim', explode(',', $nameString));
             
             foreach ($names as $name) {
                 if (!empty($name)) {
-                    $nameUpper = strtoupper($name);
+                    // Normalisasi nama (uppercase dan hapus extra spaces)
+                    $nameUpper = strtoupper(preg_replace('/\s+/', ' ', $name));
+                    
                     if (isset($nameCount[$nameUpper])) {
                         $nameCount[$nameUpper]++;
                     } else {
@@ -94,18 +100,18 @@ class AdminController extends Controller
         // Sort by count descending
         arsort($nameCount);
 
+        // Total nama individual (bukan total row)
+        $totalNamaIndividual = array_sum($nameCount);
+
         $petugasData = [];
         foreach ($nameCount as $nama => $count) {
-            $percentage = ($count / $totalJawaban) * 100;
+            $percentage = $totalNamaIndividual > 0 ? ($count / $totalNamaIndividual) * 100 : 0;
             $petugasData[] = [
                 'nama' => $nama,
                 'count' => $count,
                 'percentage' => round($percentage, 1)
             ];
         }
-
-        // Debug - hapus setelah berhasil
-        // dd($totalJawaban, $shiftData, $areaData, $petugasData);
 
         return view('admin.dashboard', compact(
             'totalJawaban',
