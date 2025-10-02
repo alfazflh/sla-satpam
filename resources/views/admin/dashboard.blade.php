@@ -21,11 +21,11 @@
                                     <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
                                 </div>
                             </div>
-                            <div class="flex flex-col md:flex-row items-center">
-                                <div class="w-full md:w-1/2">
-                                    <canvas id="shiftChart" width="400" height="400"></canvas>
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <div class="w-full md:w-1/3">
+                                    <canvas id="shiftChart" width="300" height="300"></canvas>
                                 </div>
-                                <div class="w-full md:w-1/2 md:pl-8 mt-4 md:mt-0">
+                                <div class="w-full md:w-2/3 md:pl-8">
                                     <div class="space-y-3">
                                         @foreach($shiftData as $shift)
                                         <div class="flex items-center">
