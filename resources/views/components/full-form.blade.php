@@ -532,8 +532,8 @@
 
                 <!-- BAGIAN 17: Upload Foto Penertiban -->
                 <div class="form-section hidden" data-section="17">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Penertiban Area Perparkiran</h2>
-                    <p class="text-sm text-gray-600 mb-4">Lampirkan Foto penertiban area perparkiran <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi penertiban area perpakiran sesuai standar SMP</h2>
+                    <p class="text-sm text-gray-600 mb-4">Lampirkan Foto penertiban area perpakiran sesuai standar SMP <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6 upload-block">
                         <!-- Tombol custom -->
@@ -560,8 +560,8 @@
 
                 <!-- BAGIAN 18: Simulasi -->
                 <div class="form-section hidden" data-section="18">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">8. Mengikuti dan Memahami Kegiatan Simulasi Tanggap Darurat</h2>
-                    <p class="text-sm text-gray-600 mb-4">100% partisipasi simulasi tanggap darurat <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">8. Mengikuti dan memahami kegiatan simulasi tanggap darurat yang di koordinasikan dengan bidang lain.</h2>
+                    <p class="text-sm text-gray-600 mb-4">100% partisipasi simulasi tanggap darurat berjalan secara tertib dan kondusif sesuai penugasan, Mengikuti dan memahami kegiatan simulasi tanggap darurat yang di koordinasikan dengan bidang lain. <span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
