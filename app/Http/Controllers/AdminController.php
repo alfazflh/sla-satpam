@@ -15,13 +15,14 @@ class AdminController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        // Total jawaban
-        $totalJawaban = DB::table('waktu')->count(); // Sesuaikan nama tabel
+        // Total jawaban dari tabel laporan_pengamanan
+        $totalJawaban = DB::table('laporan_pengamanan')->count();
 
         // 1. Data Waktu Jaga Shift
-        $shiftCounts = DB::table('waktu')
-            ->select('waktu_shift', DB::raw('count(*) as total'))
-            ->groupBy('waktu_shift')
+        $shiftCounts = DB::table('laporan_pengamanan')
+            ->select('waktu', DB::raw('count(*) as total'))
+            ->whereNotNull('waktu')
+            ->groupBy('waktu')
             ->get();
 
         $shiftData = [];
@@ -43,9 +44,10 @@ class AdminController extends Controller
         }
 
         // 2. Data Area Kerja
-        $areaCounts = DB::table('area')
-            ->select('area_kerja', DB::raw('count(*) as total'))
-            ->groupBy('area_kerja')
+        $areaCounts = DB::table('laporan_pengamanan')
+            ->select('area', DB::raw('count(*) as total'))
+            ->whereNotNull('area')
+            ->groupBy('area')
             ->get();
 
         $areaData = [];
@@ -66,9 +68,10 @@ class AdminController extends Controller
         }
 
         // 3. Data Nama Petugas Jaga
-        $petugasCounts = DB::table('nama')
-            ->select('nama_petugas', DB::raw('count(*) as total'))
-            ->groupBy('nama_petugas')
+        $petugasCounts = DB::table('laporan_pengamanan')
+            ->select('nama', DB::raw('count(*) as total'))
+            ->whereNotNull('nama')
+            ->groupBy('nama')
             ->orderBy('total', 'desc')
             ->get();
 
@@ -76,11 +79,14 @@ class AdminController extends Controller
         foreach ($petugasCounts as $petugas) {
             $percentage = ($petugas->total / $totalJawaban) * 100;
             $petugasData[] = [
-                'nama' => strtoupper($petugas->nama_petugas),
+                'nama' => strtoupper($petugas->nama),
                 'count' => $petugas->total,
                 'percentage' => round($percentage, 1)
             ];
         }
+
+        // Debug - hapus setelah berhasil
+        // dd($totalJawaban, $shiftData, $areaData, $petugasData);
 
         return view('admin.dashboard', compact(
             'totalJawaban',
