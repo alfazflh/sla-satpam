@@ -182,8 +182,8 @@
 
                 <!-- BAGIAN 4: Pengamanan -->
                 <div class="form-section hidden" data-section="4">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">2. Melaksanakan Kegiatan Pengamanan di Sekitar Objek</h2>
-                    <p class="text-sm text-gray-600 mb-4">Nol (0) tindak kriminal di sekitar objek pengamanan (foto patroli luar area kantor dan rumdin) <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">2. Melaksanakan Kegiatan Pengamanan di Sekitar Objek Pengamanan</h2>
+                    <p class="text-sm text-gray-600 mb-4">Nol (0) tindak kriminal di sekitar objek pengamanan (misal: sekitar lingkungan kantor, rumah jabatan dan instalasinya) antara lain memastikan orang dan peralatan yang ada dalam objek pengamanan bebas dari tindakan kriminal sesuai standar Sistem Manajemen Pengamanan (foto patroli luar area kantor dan rumdin)<span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -261,8 +261,8 @@
 
                 <!-- BAGIAN 7: Fungsi Khusus -->
                 <div class="form-section hidden" data-section="7">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">3. Melaksanakan Fungsi Pengamanan dalam Kegiatan/Peristiwa Khusus</h2>
-                    <p class="text-sm text-gray-600 mb-4">Nol (0) tindak kriminal dan 100% pelaksanaan kegiatan secara tertib dan kondusif <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">3. Melaksanakan fungsi pengamanan dalam kegiatan / peristiwa khusus (pameran, family day, dll) yang diselenggarakan PLN sesuai standar Sistem Manajemen Pengamanan</h2>
+                    <p class="text-sm text-gray-600 mb-4">Nol (0) tindak kriminal dan 100% pelaksanaan kegiatan secara tertib dan kondusif, Melaksanakan fungsi pengamanan khusus <span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -368,7 +368,7 @@
 
                 <!-- BAGIAN 11: Upload Foto Tamu -->
                 <div class="form-section hidden" data-section="11">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Lalu Lintas Orang dan Kendaraan</h2>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi lalu lintas orang dan kendaraan yang masuk dan keluar di sekitar objek pengamanan</h2>
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Jurnal Satpam dan pencatatan tamu/kendaraan <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6 upload-block">
