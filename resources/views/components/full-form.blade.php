@@ -477,8 +477,8 @@
 
                 <!-- BAGIAN 15: Upload Foto Force -->
                 <div class="form-section hidden" data-section="15">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Pelaksanaan Fungsi Pengamanan Force Majeure</h2>
-                    <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Pelaksanaan fungsi pengamanan dalam kejadian force majeure <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Pelaksanaan fungsi pengamanan dalam kejadian force majure sesui standar SMP </h2>
+                    <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Pelaksanaan fungsi pengamanan dalam kejadian force majure sesui standar SMP  <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6 upload-block">
                         <!-- Tombol custom -->
@@ -505,8 +505,9 @@
 
                 <!-- BAGIAN 16: Penertiban Parkir -->
                 <div class="form-section hidden" data-section="16">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">7. Melakukan Penertiban Area Perparkiran</h2>
-                    <p class="text-sm text-gray-600 mb-4">100% kendaraan terparkir secara tertib (Foto parkir kendaraan roda 2 dan roda 4) <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">7. Melakukan penertiban area perpakiran sesuai standar SMP.*( Foto parkir kendaraan roda 2 dan roda 4 )</h2>
+                    <p class="text-sm text-gray-600 mb-4">100% kendaraan terparkir secara tertib dan tidak mengganggu jalur lalu lintas kendaraan, Melakukan penertiban area perpakiran sesuai standar SMP.*
+                        ( Foto parkir kendaraan roda 2 dan roda 4 )<span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
