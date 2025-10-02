@@ -815,7 +815,7 @@
                 <!-- BAGIAN 27: Upload Foto Pengecekan -->
                 <div class="form-section hidden" data-section="27">
                     <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi pengecekan sekitar obyek pengamanan setelah jam pulang kantor dan mematikan listrik dan benda elektronik</h2>
-                    <p class="text-sm text-gray-600 mb-4">Lampirkan Foto pengecekan <span class="text-red-500">*</span></p>
+                    <p class="text-sm text-gray-600 mb-4">Lampirkan Foto pengecekan sekitar obyek pengamanan setelah jam pulang kantor dan mematikan listrik dan benda elektronik <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6 upload-block">
                         <!-- Tombol custom -->
