@@ -694,7 +694,7 @@
 
                 <!-- BAGIAN 23: Upload Foto Telepon -->
                 <div class="form-section hidden" data-section="23">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Menerima dan Mendata Telepon</h2>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Menerima dan mendata telepon yang masuk di luar jam kerja /hari libur untuk dilaporkan ke kordinator</h2>
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Jurnal <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6 upload-block">
