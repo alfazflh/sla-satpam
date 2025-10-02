@@ -68,19 +68,38 @@ class AdminController extends Controller
         }
 
         // 3. Data Nama Petugas Jaga
-        $petugasCounts = DB::table('laporan_pengamanan')
-            ->select('nama', DB::raw('count(*) as total'))
+        // Ambil semua data nama
+        $allNames = DB::table('laporan_pengamanan')
             ->whereNotNull('nama')
-            ->groupBy('nama')
-            ->orderBy('total', 'desc')
-            ->get();
+            ->pluck('nama');
+
+        // Pisahkan nama yang dipisah koma dan hitung
+        $nameCount = [];
+        foreach ($allNames as $nameString) {
+            // Split berdasarkan koma
+            $names = array_map('trim', explode(',', $nameString));
+            
+            foreach ($names as $name) {
+                if (!empty($name)) {
+                    $nameUpper = strtoupper($name);
+                    if (isset($nameCount[$nameUpper])) {
+                        $nameCount[$nameUpper]++;
+                    } else {
+                        $nameCount[$nameUpper] = 1;
+                    }
+                }
+            }
+        }
+
+        // Sort by count descending
+        arsort($nameCount);
 
         $petugasData = [];
-        foreach ($petugasCounts as $petugas) {
-            $percentage = ($petugas->total / $totalJawaban) * 100;
+        foreach ($nameCount as $nama => $count) {
+            $percentage = ($count / $totalJawaban) * 100;
             $petugasData[] = [
-                'nama' => strtoupper($petugas->nama),
-                'count' => $petugas->total,
+                'nama' => $nama,
+                'count' => $count,
                 'percentage' => round($percentage, 1)
             ];
         }
