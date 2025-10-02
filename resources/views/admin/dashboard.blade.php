@@ -75,8 +75,10 @@
                                     <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
                                 </div>
                             </div>
-                            <div class="w-full">
-                                <canvas id="petugasChart" height="100"></canvas>
+                            <div class="w-full overflow-auto">
+                                <div style="height: {{ max(300, count($petugasData) * 40) }}px; min-height: 300px;">
+                                    <canvas id="petugasChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -93,157 +95,175 @@
     </div>
     
     @if(auth()->user()->role === 'admin')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-<script>
-    const shiftData = @json($shiftData);
-    const areaData = @json($areaData);
-    const petugasData = @json($petugasData);
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script>
+        // Deklarasi data SEKALI di awal
+        const shiftData = @json($shiftData);
+        const areaData = @json($areaData);
+        const petugasData = @json($petugasData);
 
-    // Chart 1: Waktu Jaga Shift (Pie Chart) - TETAP SAMA
-    const shiftCtx = document.getElementById('shiftChart').getContext('2d');
-    new Chart(shiftCtx, {
-        type: 'pie',
-        data: {
-            labels: shiftData.map(item => item.label),
-            datasets: [{
-                data: shiftData.map(item => item.percentage),
-                backgroundColor: shiftData.map(item => item.color),
-                borderWidth: 2,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: false
+        console.log('Shift Data:', shiftData);
+        console.log('Area Data:', areaData);
+        console.log('Petugas Data:', petugasData);
+
+        // Chart 1: Waktu Jaga Shift (Pie Chart)
+        const shiftCtx = document.getElementById('shiftChart').getContext('2d');
+        new Chart(shiftCtx, {
+            type: 'pie',
+            data: {
+                labels: shiftData.map(item => item.label),
+                datasets: [{
+                    data: shiftData.map(item => item.percentage),
+                    backgroundColor: shiftData.map(item => item.color),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 16
+                        },
+                        formatter: (value) => {
+                            return value.toFixed(1) + '%';
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        // Chart 2: Area Kerja (Pie Chart)
+        const areaCtx = document.getElementById('areaChart').getContext('2d');
+        new Chart(areaCtx, {
+            type: 'pie',
+            data: {
+                labels: areaData.map(item => item.label),
+                datasets: [{
+                    data: areaData.map(item => item.percentage),
+                    backgroundColor: areaData.map(item => item.color),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(0) + '%';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 16
+                        },
+                        formatter: (value) => {
+                            return value.toFixed(0) + '%';
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        // Chart 3: Nama Petugas Jaga (Horizontal Bar Chart)
+        const petugasCtx = document.getElementById('petugasChart').getContext('2d');
+        new Chart(petugasCtx, {
+            type: 'bar',
+            data: {
+                labels: petugasData.map(item => item.nama),
+                datasets: [{
+                    data: petugasData.map(item => item.count),
+                    backgroundColor: '#D4AF77',
+                    borderWidth: 0,
+                    barThickness: 25
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        right: 80
+                    }
                 },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                plugins: {
+                    legend: { 
+                        display: false 
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.x + ' (' + petugasData[context.dataIndex].percentage + '%)';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        color: '#374151',
+                        font: { 
+                            size: 11,
+                            weight: 'normal'
+                        },
+                        formatter: (value, context) => {
+                            const percentage = petugasData[context.dataIndex].percentage;
+                            return value + ' (' + percentage + '%)';
                         }
                     }
                 },
-                datalabels: {
-                    color: '#fff',
-                    font: {
-                        weight: 'bold',
-                        size: 16
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { 
+                            display: false 
+                        },
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        }
                     },
-                    formatter: (value) => {
-                        return value.toFixed(1) + '%';
-                    }
-                }
-            }
-        },
-        plugins: [ChartDataLabels]
-    });
-
-    // Chart 2: Area Kerja (Pie Chart) - TETAP SAMA
-    const areaCtx = document.getElementById('areaChart').getContext('2d');
-    new Chart(areaCtx, {
-        type: 'pie',
-        data: {
-            labels: areaData.map(item => item.label),
-            datasets: [{
-                data: areaData.map(item => item.percentage),
-                backgroundColor: areaData.map(item => item.color),
-                borderWidth: 2,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ': ' + context.parsed.toFixed(0) + '%';
+                    y: {
+                        grid: { 
+                            display: false 
+                        },
+                        ticks: {
+                            autoSkip: false,
+                            font: {
+                                size: 12
+                            }
                         }
                     }
-                },
-                datalabels: {
-                    color: '#fff',
-                    font: {
-                        weight: 'bold',
-                        size: 16
-                    },
-                    formatter: (value) => {
-                        return value.toFixed(0) + '%';
-                    }
-                }
-            }
-        },
-        plugins: [ChartDataLabels]
-    });
-
-// Chart 3: Nama Petugas Jaga (Horizontal Bar Chart)
-const petugasCtx = document.getElementById('petugasChart').getContext('2d');
-new Chart(petugasCtx, {
-    type: 'bar',
-    data: {
-        labels: petugasData.map(item => item.nama),
-        datasets: [{
-            data: petugasData.map(item => item.count),
-            backgroundColor: '#D4AF77',
-            borderWidth: 0
-        }]
-    },
-    options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        return context.parsed.x + ' (' + petugasData[context.dataIndex].percentage + '%)';
-                    }
                 }
             },
-            datalabels: {
-                anchor: 'end',
-                align: 'end',
-                color: '#374151',
-                font: {
-                    size: 12
-                },
-                formatter: (value, context) => {
-                    const percentage = petugasData[context.dataIndex].percentage;
-                    return value + ' (' + percentage + '%)';
-                }
-            }
-        },
-        scales: {
-            x: {
-                beginAtZero: true,
-                grid: {
-                    display: false
-                },
-                ticks: {
-                    stepSize: 50,  // Tambah ini - interval 50
-                    precision: 0    // Tambah ini - tanpa desimal
-                }
-            },
-            y: {
-                grid: {
-                    display: false
-                }
-            }
-        }
-    },
-    plugins: [ChartDataLabels]
-});
-</script>
-@endif
+            plugins: [ChartDataLabels]
+        });
+    </script>
+    @endif
 </x-app-layout>

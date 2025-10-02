@@ -53,19 +53,30 @@ class AdminController extends Controller
             ->get();
 
         $areaData = [];
-        $areaColors = ['#4A90E2', '#E94B3C']; // Biru, Merah
-        $areaLabels = [
-            'Pos Jaga Bersama UP3 SBS',
-            'UP2W VI'
+        
+        // Mapping warna dan label berdasarkan nilai area aktual
+        $areaColorMap = [
+            'Pos Jaga Bersama UP3 SBS' => '#4A90E2',  // Biru
+            'UP2W VI' => '#E94B3C'                     // Merah
         ];
 
-        foreach ($areaCounts as $index => $area) {
+        $areaLabelMap = [
+            'Pos Jaga Bersama UP3 SBS' => 'Pos Jaga Bersama UP3 SBS',
+            'UP2W VI' => 'UP2W VI'
+        ];
+
+        foreach ($areaCounts as $area) {
             $percentage = $totalJawaban > 0 ? ($area->total / $totalJawaban) * 100 : 0;
+            
+            // Ambil label dan warna berdasarkan nilai area dari database
+            $label = $areaLabelMap[$area->area] ?? $area->area;
+            $color = $areaColorMap[$area->area] ?? '#cccccc';
+            
             $areaData[] = [
-                'label' => $areaLabels[$index] ?? $area->area,
+                'label' => $label,
                 'count' => $area->total,
                 'percentage' => round($percentage, 0),
-                'color' => $areaColors[$index] ?? '#cccccc'
+                'color' => $color
             ];
         }
 
