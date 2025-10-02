@@ -722,8 +722,9 @@
 
                 <!-- BAGIAN 24: Patroli Rutin -->
                 <div class="form-section hidden" data-section="24">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">11. Melakukan Patroli Rutin di Sekitar Objek Pengamanan</h2>
-                    <p class="text-sm text-gray-600 mb-4">100% ketepatan waktu pelaksanaan checkpoint patroli (foto patroli di dalam dan luar ruangan) <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">11. Melakukan patroli rutin di sekitar obyek pengamanan sesuai titik patroli.</h2>
+                    <p class="text-sm text-gray-600 mb-4">100% ketepatan waktu pelaksanaan checkpoint patroli sesuai jadwal yang telah ditentukan dan 100% titik patrol termonitor, Melakukan patroli rutin di sekitar obyek pengamanan sesui titik patroli.*
+                        (foto patroli di dalam dan luar ruangan) <span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -748,7 +749,7 @@
 
                 <!-- BAGIAN 25: Upload Foto Rutin & Titik -->
                 <div class="form-section hidden" data-section="25">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Patroli Rutin</h2>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi patroli rutin di sekitar obyek pengamanan sesuai titik patroli</h2>
                     
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -761,7 +762,7 @@
 
                     <div class="mb-6 upload-block">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Lampirkan Foto patroli rutin <span class="text-red-500">*</span>
+                            Lampirkan Foto patroli rutin di sekitar obyek pengamanan sesuai titik patroli <span class="text-red-500">*</span>
                         </label>
                             <!-- Tombol custom -->
                             <button type="button" onclick="chooseSource(this)"
@@ -787,8 +788,8 @@
 
                 <!-- BAGIAN 26: Pengecekan -->
                 <div class="form-section hidden" data-section="26">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">12. Melakukan Pengecekan Setelah Jam Pulang Kantor</h2>
-                    <p class="text-sm text-gray-600 mb-4">100% pintu ruangan terkunci dan barang elektronik mati <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">12. Melakukan pengecekan sekitar obyek pengamanan setelah jam pulang kantor dan mematikan listrik dan benda elektronik.</h2>
+                    <p class="text-sm text-gray-600 mb-4">100% pintu ruangan dalam keadaan terkunci dan semua barang elektronik dalam keadaan mati setelah jam pulang kantor, Melakukan pengecekan sekitar obyek pengamanan setelah jam pulang kantor dan mematikan listrik dan benda elektronik <span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -813,7 +814,7 @@
 
                 <!-- BAGIAN 27: Upload Foto Pengecekan -->
                 <div class="form-section hidden" data-section="27">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Pengecekan Setelah Jam Pulang</h2>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi pengecekan sekitar obyek pengamanan setelah jam pulang kantor dan mematikan listrik dan benda elektronik</h2>
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto pengecekan <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6 upload-block">
