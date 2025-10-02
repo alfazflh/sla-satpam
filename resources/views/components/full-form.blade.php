@@ -586,8 +586,8 @@
 
                 <!-- BAGIAN 19: Upload Foto Simulasi -->
                 <div class="form-section hidden" data-section="19">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Kegiatan Simulasi Tanggap Darurat</h2>
-                    <p class="text-sm text-gray-600 mb-4">Lampirkan foto <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi kegiatan simulasi tanggap darurat yang di koordinasikan dengan bidang lain.</h2>
+                    <p class="text-sm text-gray-600 mb-4">Lampirkan foto Dokumentasi kegiatan simulasi tanggap darurat yang di koordinasikan dengan bidang lain.<span class="text-red-500">*</span></p>
                     
                     <div class="mb-6 upload-block">
                         <!-- Tombol custom -->
@@ -614,8 +614,8 @@
 
                 <!-- BAGIAN 20: Penyegaran -->
                 <div class="form-section hidden" data-section="20">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">9. Melaksanakan Penyegaran dan Kebugaran Fisik</h2>
-                    <p class="text-sm text-gray-600 mb-4">100% penyelesaian program penyegaran dan kebugaran fisik <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">9. Melaksanakan penyegaran dan kebugaran fisik sesuai standar SMP  </h2>
+                    <p class="text-sm text-gray-600 mb-4">100% penyelesaian program penyegaran dan kebugaran fisik sesuai dengan target pelaksanaan, Melaksanakan penyegaran dan kebugaran fisik sesuai standar SMP <span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -640,8 +640,8 @@
 
                 <!-- BAGIAN 21: Upload Foto Penyegaran -->
                 <div class="form-section hidden" data-section="21">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Penyegaran dan Kebugaran Fisik</h2>
-                    <p class="text-sm text-gray-600 mb-4">Lampirkan Foto penyegaran dan kebugaran fisik <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi penyegaran dan kebugaran fisik sesuai standar SMP </h2>
+                    <p class="text-sm text-gray-600 mb-4">Lampirkan Foto penyegaran dan kebugaran fisik sesuai standar SMP <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6 upload-block">
                         <!-- Tombol custom -->
