@@ -291,7 +291,7 @@
 
                 <!-- BAGIAN 8: Upload Foto Lembur -->
                 <div class="form-section hidden" data-section="8">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Fungsi Pengamanan Khusus</h2>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Melaksanakan fungsi pengamanan dalam kegiatan / peristiwa khusus (pameran, family day, dll) yang diselenggarakan PLN sesuai standar Sistem Manajemen Pengamanan</h2>
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Foto Giat Lembur Kegiatan <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6 upload-block">
@@ -319,7 +319,7 @@
 
                 <!-- BAGIAN 9: Kronologi Gangguan -->
                 <div class="form-section hidden" data-section="9">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Laporan Gangguan Fungsi Pengamanan Khusus</h2>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Laporan gangguan Dokumentasi Melaksanakan fungsi pengamanan dalam kegiatan / peristiwa khusus (pameran, family day, dll) yang diselenggarakan PLN sesuai standar Sistem Manajemen Pengamanan</h2>
                     <p class="text-sm text-gray-600 mb-4">Tuliskan Kronologi Kejadian <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6">
