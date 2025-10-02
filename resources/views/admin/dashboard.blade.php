@@ -7,8 +7,8 @@
                     <!-- Card Welcome -->
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                         <div class="p-6 text-gray-900">
-                            <h2 class="text-2xl font-bold">Dashboard Admin</h2>
-                            <p class="text-gray-600 mt-1">Selamat datang di Dashboard Admin!</p>
+                            <h2 class="text-2xl font-bold">Ringkasan</h2>
+                            <p class="text-gray-600 mt-1">Form Pelaporan Satpam Pusharlis UP2W VI</p>
                         </div>
                     </div>
     
