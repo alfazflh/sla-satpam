@@ -100,7 +100,7 @@
     const areaData = @json($areaData);
     const petugasData = @json($petugasData);
 
-    // Chart 1: Waktu Jaga Shift (Pie Chart)
+    // Chart 1: Waktu Jaga Shift (Pie Chart) - TETAP SAMA
     const shiftCtx = document.getElementById('shiftChart').getContext('2d');
     new Chart(shiftCtx, {
         type: 'pie',
@@ -142,7 +142,7 @@
         plugins: [ChartDataLabels]
     });
 
-    // Chart 2: Area Kerja (Pie Chart)
+    // Chart 2: Area Kerja (Pie Chart) - TETAP SAMA
     const areaCtx = document.getElementById('areaChart').getContext('2d');
     new Chart(areaCtx, {
         type: 'pie',
@@ -184,49 +184,66 @@
         plugins: [ChartDataLabels]
     });
 
-    // Chart 3: Nama Petugas Jaga (Horizontal Bar Chart) - TETAP SAMA
-    const petugasCtx = document.getElementById('petugasChart').getContext('2d');
-    new Chart(petugasCtx, {
-        type: 'bar',
-        data: {
-            labels: petugasData.map(item => item.nama),
-            datasets: [{
-                data: petugasData.map(item => item.count),
-                backgroundColor: '#D4AF77',
-                borderWidth: 0
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.parsed.x + ' (' + petugasData[context.dataIndex].percentage + '%)';
-                        }
+// Chart 3: Nama Petugas Jaga (Horizontal Bar Chart)
+const petugasCtx = document.getElementById('petugasChart').getContext('2d');
+new Chart(petugasCtx, {
+    type: 'bar',
+    data: {
+        labels: petugasData.map(item => item.nama),
+        datasets: [{
+            data: petugasData.map(item => item.count),
+            backgroundColor: '#D4AF77',
+            borderWidth: 0
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.parsed.x + ' (' + petugasData[context.dataIndex].percentage + '%)';
                     }
                 }
             },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    grid: {
-                        display: false
-                    }
+            datalabels: {
+                anchor: 'end',
+                align: 'end',
+                color: '#374151',
+                font: {
+                    size: 12
                 },
-                y: {
-                    grid: {
-                        display: false
-                    }
+                formatter: (value, context) => {
+                    const percentage = petugasData[context.dataIndex].percentage;
+                    return value + ' (' + percentage + '%)';
+                }
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    stepSize: 50,  // Tambah ini - interval 50
+                    precision: 0    // Tambah ini - tanpa desimal
+                }
+            },
+            y: {
+                grid: {
+                    display: false
                 }
             }
         }
-    });
+    },
+    plugins: [ChartDataLabels]
+});
 </script>
 @endif
 </x-app-layout>
