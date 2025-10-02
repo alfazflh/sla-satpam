@@ -396,8 +396,9 @@
 
                 <!-- BAGIAN 12: Pelayanan -->
                 <div class="form-section hidden" data-section="12">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">5. Memberikan Pelayanan Informasi</h2>
-                    <p class="text-sm text-gray-600 mb-4">100% permintaan pelayanan informasi terselesaikan <span class="text-red-500">*</span></p>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">5. Memberikan pelayanan informasi yang di butuhkan oleh tamu karyawan dan tenan sesuai standar SMP </h2>
+                    <p class="text-sm text-gray-600 mb-4">100% permintaan pelayanan informasi, keluhan keamanan dan petunjuk lokasi bagi tamu, karyawan, dan tenan terselesaikan sesuai standar Sistem Manajemen Pengamanan <span class="text-red-500">*</span></p>
+                    <p class="text-sm text-gray-600 mb-4">Memberikan pelayanan informasi yang di butuhkan oleh tamu karyawan dan tenan sesuai standar SMP  <span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
                         <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
@@ -422,7 +423,7 @@
 
                 <!-- BAGIAN 13: Upload Foto Panduan -->
                 <div class="form-section hidden" data-section="13">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi Panduan Keselamatan Kerja</h2>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Dokumentasi panduan keselamatan kerja ke mitra atau tamu </h2>
                     <p class="text-sm text-gray-600 mb-4">Lampirkan Dokumentasi panduan keselamatan kerja ke mitra atau tamu <span class="text-red-500">*</span></p>
                     
                     <div class="mb-6 upload-block">
