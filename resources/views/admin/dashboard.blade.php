@@ -17,7 +17,7 @@
                         <div class="p-6">
                             <div class="flex justify-between items-center mb-4">
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">1. Waktu Jaga Shift</h3>
+                                    <h3 class="text-m font-bold text-gray-900">1. Waktu Jaga Shift</h3>
                                     <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
                                 </div>
                             </div>
