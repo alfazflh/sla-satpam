@@ -90,14 +90,14 @@
                                 1. Penggunaan Seragam dan Kelengkapan Atribut sesuai Ketentuan</h3>
                         </div>
                         <div class="p-6">
+                            <div class="mb-4">
+                                <p class="text-gray-700">Menggunakan seragam sesuai ketentuan yang berlaku</p>
+                                <p class="text-gray-500 text-sm">( foto apel serah terima )</p>
+                            </div>
                             <div class="flex justify-between items-center mb-4">
                                 <div>
                                     <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
                                 </div>
-                            </div>
-                            <div class="mb-4">
-                                <p class="text-gray-700">Menggunakan seragam sesuai ketentuan yang berlaku</p>
-                                <p class="text-gray-500 text-sm">( foto apel serah terima )</p>
                             </div>
                             <div class="flex flex-col md:flex-row items-center gap-6">
                                 <div class="w-full md:w-1/4">
