@@ -132,7 +132,7 @@
                             </div>
 
                             <!-- Gallery Container -->
-                            <div id="photoGallery" class="space-y-3">
+                            <div id="photoGallery" class="space-y-1">
                                 <!-- Photos akan ditampilkan di sini via JavaScript -->
                             </div>
 
