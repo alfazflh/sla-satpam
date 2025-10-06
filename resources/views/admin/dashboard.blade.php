@@ -397,7 +397,7 @@
                 
                 const photoItem = document.createElement('div');
                 photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-                photoItem.onclick = () => window.open('/storage/' + foto.foto_serahterima, '_blank');
+                photoItem.onclick = () => window.open('/storage/app/public/' + foto.foto_serahterima, '_blank');
                 
                 photoItem.innerHTML = `
                     <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
