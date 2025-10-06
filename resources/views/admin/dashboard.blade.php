@@ -381,7 +381,7 @@
         // Photo Gallery Logic
         let currentIndex = 0;
         const photosPerLoad = 5;
-        const initialLoad = 10;
+        const initialLoad = 6;
 
         function extractFilename(path) {
             if (!path) return '';
