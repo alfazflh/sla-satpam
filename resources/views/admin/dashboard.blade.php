@@ -260,6 +260,14 @@
         });
 
         // Chart 3: Nama Petugas Jaga (Horizontal Bar Chart)
+        const maxValue = Math.max(...petugasData.map(item => item.count));
+        let stepSize = 1;
+        if (maxValue >= 100) {
+            stepSize = 100;
+        } else if (maxValue >= 10) {
+            stepSize = 10;
+        }
+
         const petugasCtx = document.getElementById('petugasChart').getContext('2d');
         new Chart(petugasCtx, {
             type: 'bar',
@@ -282,9 +290,7 @@
                     }
                 },
                 plugins: {
-                    legend: { 
-                        display: false 
-                    },
+                    legend: { display: false },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
@@ -296,10 +302,7 @@
                         anchor: 'end',
                         align: 'end',
                         color: '#374151',
-                        font: { 
-                            size: 10,
-                            weight: 'normal'
-                        },
+                        font: { size: 10, weight: 'normal' },
                         formatter: (value, context) => {
                             const percentage = petugasData[context.dataIndex].percentage;
                             return value + ' (' + percentage + '%)';
@@ -309,26 +312,18 @@
                 scales: {
                     x: {
                         beginAtZero: true,
-                        grid: { 
-                            display: false 
-                        },
+                        grid: { display: false },
                         ticks: {
-                            stepSize: 1,
+                            stepSize: stepSize,
                             precision: 0,
-                            font: {
-                                size: 10
-                            }
+                            font: { size: 10 }
                         }
                     },
                     y: {
-                        grid: { 
-                            display: false 
-                        },
+                        grid: { display: false },
                         ticks: {
                             autoSkip: false,
-                            font: {
-                                size: 11
-                            }
+                            font: { size: 11 }
                         }
                     }
                 }
