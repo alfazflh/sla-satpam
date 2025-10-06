@@ -159,12 +159,24 @@ class AdminController extends Controller
             ];
         }
 
+        // 5. Ambil foto-foto dari kolom foto_serahterima
+        $fotoSerahterima = DB::table('laporan_pengamanan')
+            ->select('id', 'foto_serahterima', 'tanggal', 'waktu')
+            ->whereNotNull('foto_serahterima')
+            ->where('foto_serahterima', '!=', '')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $totalFoto = $fotoSerahterima->count();
+
         return view('admin.dashboard', compact(
             'totalJawaban',
             'shiftData',
             'areaData',
             'petugasData',
-            'seragamData'
+            'seragamData',
+            'fotoSerahterima',
+            'totalFoto'
         ));
     }
 }
