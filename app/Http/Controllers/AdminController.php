@@ -194,27 +194,40 @@ class AdminController extends Controller
             ];
         }
 
+
         // 7. Ambil foto-foto dari kolom foto_patroli
         $fotoPatroli = DB::table('laporan_pengamanan')
-            ->select('id', 'foto_patroli', 'created_at')
-            ->whereNotNull('foto_patroli')
-            ->where('foto_patroli', '!=', '')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        ->select('id', 'foto_patroli', 'created_at')
+        ->whereNotNull('foto_patroli')
+        ->where('foto_patroli', '!=', '')
+        ->orderBy('created_at', 'desc')
+        ->get();
 
         $totalFotoPatroli = $fotoPatroli->count();
 
+        // 8. Ambil data kronologi dari kolom kronologi_kriminal
+        $kronologiData = DB::table('laporan_pengamanan')
+        ->select('id', 'kronologi_kriminal', 'created_at')
+        ->whereNotNull('kronologi_kriminal')
+        ->where('kronologi_kriminal', '!=', '')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        $totalKronologi = $kronologiData->count();
+
         return view('admin.dashboard', compact(
-            'totalJawaban',
-            'shiftData',
-            'areaData',
-            'petugasData',
-            'seragamData',
-            'fotoSerahterima',
-            'totalFoto',
-            'pengamananData',
-            'fotoPatroli',
-            'totalFotoPatroli'
+        'totalJawaban',
+        'shiftData',
+        'areaData',
+        'petugasData',
+        'seragamData',
+        'fotoSerahterima',
+        'totalFoto',
+        'pengamananData',
+        'fotoPatroli',
+        'totalFotoPatroli',
+        'kronologiData',
+        'totalKronologi'
         ));
-    }
-}
+        }
+        }
