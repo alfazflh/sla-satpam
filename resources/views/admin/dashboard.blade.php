@@ -83,7 +83,7 @@
                         </div>
                     </div>
 
-                    <!-- 1. Penggunaan Seragam dan Kelengkapan Atribut -->
+                    <!-- 4. Penggunaan Seragam dan Kelengkapan Atribut -->
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                         <div class="bg-[#d9c99a] p-4">
                             <h3 class="text-m font-bold text-gray-900">
@@ -117,7 +117,42 @@
                             </div>
                         </div>
                     </div>
-                    
+
+                    <!-- 5. Dokumentasi Foto Serah Terima -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                Dokumentasi Penggunaan Seragam dan Kelengkapan Atribut sesuai Ketentuan
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-4">
+                                <p class="text-gray-700 font-medium">Lampirkan Foto Saat Apel Serah Terima Antar Shift</p>
+                                <p class="text-sm text-gray-500">{{ $totalFoto }} jawaban</p>
+                            </div>
+
+                            <!-- Gallery Container -->
+                            <div id="photoGallery" class="space-y-3">
+                                <!-- Photos akan ditampilkan di sini via JavaScript -->
+                            </div>
+
+                            <!-- Tombol Load More -->
+                            <div id="loadMoreContainer" class="mt-6 text-center" style="display: none;">
+                                <button id="loadMoreBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition duration-150">
+                                    Muat 5 Foto Lainnya
+                                </button>
+                                <p id="remainingCount" class="text-sm text-gray-500 mt-2"></p>
+                            </div>
+
+                            <!-- Link Lihat Folder -->
+                            <div class="mt-4 flex items-center text-blue-600 hover:text-blue-700">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                                </svg>
+                                <a href="#" class="font-medium">Lihat folder</a>
+                            </div>
+                        </div>
+                    </div>
     
                 @else
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -139,11 +174,13 @@
         const areaData = @json($areaData);
         const petugasData = @json($petugasData);
         const seragamData = @json($seragamData);
+        const fotoData = @json($fotoSerahterima);
 
         console.log('Shift Data:', shiftData);
         console.log('Area Data:', areaData);
         console.log('Petugas Data:', petugasData);
         console.log('Seragam Data:', seragamData);
+        console.log('Foto Data:', fotoData);
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
@@ -344,6 +381,67 @@
             },
             plugins: [ChartDataLabels]
         });
+
+        // Photo Gallery Logic
+        let currentIndex = 0;
+        const photosPerLoad = 5;
+        const initialLoad = 10;
+
+        function extractFilename(path) {
+            if (!path) return '';
+            return path.split('/').pop();
+        }
+
+        function renderPhotos(startIndex, count) {
+            const gallery = document.getElementById('photoGallery');
+            const endIndex = Math.min(startIndex + count, fotoData.length);
+
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = fotoData[i];
+                const filename = extractFilename(foto.foto_serahterima);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.foto_serahterima, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-10 h-10 text-red-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
+
+            currentIndex = endIndex;
+            updateLoadMoreButton();
+        }
+
+        function updateLoadMoreButton() {
+            const container = document.getElementById('loadMoreContainer');
+            const btn = document.getElementById('loadMoreBtn');
+            const remaining = document.getElementById('remainingCount');
+            const remainingPhotos = fotoData.length - currentIndex;
+
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        document.getElementById('loadMoreBtn').addEventListener('click', function() {
+            renderPhotos(currentIndex, photosPerLoad);
+        });
+
+        // Initial render
+        if (fotoData.length > 0) {
+            renderPhotos(0, initialLoad);
+        } else {
+            document.getElementById('photoGallery').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
     </script>
     @endif
 </x-app-layout>
