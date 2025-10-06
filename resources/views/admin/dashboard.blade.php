@@ -211,6 +211,41 @@
                             </div>
                         </div>
                     </div>
+
+                                        <!-- 8. Kronologi Kejadian -->
+                                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                                            <div class="bg-[#d9c99a] p-4">
+                                                <h3 class="text-m font-bold text-gray-900">
+                                                    Laporan Terjadi Tindakan Kriminal kegiatan pengamanan di sekitar objek pengamanan
+                                                </h3>
+                                            </div>
+                                            <div class="p-6">
+                                                <div class="-mt-4 mb-1">
+                                                    <p class="text-gray-700">Tuliskan Kronologi Kejadian</p>
+                                                    <p class="text-sm text-gray-500">{{ $totalKronologi }} jawaban</p>
+                                                </div>
+                                            </br>
+                    
+                                                <!-- Kronologi Container with Scroll -->
+                                                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                                    <div id="kronologiContainer" class="max-h-96 overflow-y-auto">
+                                                        @if($kronologiData->count() > 0)
+                                                            <div class="divide-y divide-gray-200">
+                                                                @foreach($kronologiData as $kronologi)
+                                                                <div class="space-y-2">
+                                                                        <div class="bg-gray-50 rounded-lg px-4 py-2">
+                                                                            <p class="text-sm text-gray-800">{{ $kronologi->kronologi_kriminal }}</p>
+                                                                        </div>
+                                                                </div>                                                                
+                                                                @endforeach
+                                                            </div>
+                                                        @else
+                                                            <p class="text-gray-500 text-center py-8">Tidak ada kronologi yang tersedia</p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
     
                 @else
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
