@@ -121,13 +121,13 @@
                     <!-- 5. Dokumentasi Foto Serah Terima -->
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                         <div class="bg-[#d9c99a] p-4">
-                            <h3 class="text-m text-gray-900">
+                            <h3 class="text-m font-bold text-gray-900">
                                 Dokumentasi Penggunaan Seragam dan Kelengkapan Atribut sesuai Ketentuan
                             </h3>
                         </div>
                         <div class="p-6">
                             <div class="-mt-4 mb-1">
-                                <p class="text-gray-700">Lampirkan Foto Saat Apel Serah Terima Antar Shift</p>
+                                <p class="text-gray-700 font-medium">Lampirkan Foto Saat Apel Serah Terima Antar Shift</p>
                                 <p class="text-sm text-gray-500">{{ $totalFoto }} jawaban</p>
                             </div>
                         </br>
