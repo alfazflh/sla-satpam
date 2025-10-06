@@ -142,7 +142,7 @@
                                 <button id="loadMoreBtn" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-3 rounded-md transition duration-150">
                                     Muat Foto Lainnya
                                 </button>
-                                <p id="remainingCount" class="text-sm text-gray-500 mt-2"></p>
+                                <p id="remainingCount" class="text-xs text-gray-500 mt-1 pl-1"></p>
                             </div>
                         </div>
                     </div>
