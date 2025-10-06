@@ -138,8 +138,8 @@
                             </div>
 
                             <!-- Tombol Load More -->
-                            <div id="loadMoreContainer" class="mt-6 text-left" style="display: none;">
-                                <button id="loadMoreBtn" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-1.5 px-4 rounded-md transition duration-150">
+                            <div id="loadMoreContainer" class="mt-2 text-left" style="display: none;">
+                                <button id="loadMoreBtn" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-3 rounded-md transition duration-150">
                                     Muat Foto Lainnya
                                 </button>
                                 <p id="remainingCount" class="text-sm text-gray-500 mt-2"></p>
