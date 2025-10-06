@@ -90,7 +90,7 @@
                                 1. Penggunaan Seragam dan Kelengkapan Atribut sesuai Ketentuan</h3>
                         </div>
                         <div class="p-6">
-                            <div class="-mt-3 mb-1">
+                            <div class="-mt-4 mb-1">
                                 <p class="text-gray-700">Menggunakan seragam sesuai ketentuan yang berlaku</p>
                                 <p class="text-gray-500 text-sm">( foto apel serah terima )</p>
                             </div>
