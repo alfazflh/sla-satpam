@@ -76,7 +76,7 @@
                                 </div>
                             </div>
                             <div class="w-full overflow-auto">
-                                <div style="height: {{ max(300, count($petugasData) * 40) }}px; min-height: 200px;">
+                                <div style="height: {{ max(400, count($petugasData) * 30) }}px; min-height: 400px;">
                                     <canvas id="petugasChart"></canvas>
                                 </div>
                             </div>
@@ -132,7 +132,7 @@
                             </div>
 
                             <!-- Gallery Container -->
-                            <div id="photoGallery" class="space-y-1">
+                            <div id="photoGallery" class="space-y-3">
                                 <!-- Photos akan ditampilkan di sini via JavaScript -->
                             </div>
 
@@ -142,6 +142,14 @@
                                     Muat 5 Foto Lainnya
                                 </button>
                                 <p id="remainingCount" class="text-sm text-gray-500 mt-2"></p>
+                            </div>
+
+                            <!-- Link Lihat Folder -->
+                            <div class="mt-4 flex items-center text-blue-600 hover:text-blue-700">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                                </svg>
+                                <a href="#" class="font-medium">Lihat folder</a>
                             </div>
                         </div>
                     </div>
@@ -268,7 +276,7 @@
                     data: petugasData.map(item => item.count),
                     backgroundColor: '#D4AF77',
                     borderWidth: 0,
-                    barThickness: 25
+                    barThickness: 20
                 }]
             },
             options: {
@@ -277,7 +285,7 @@
                 maintainAspectRatio: false,
                 layout: {
                     padding: {
-                        right: 80
+                        right: 70
                     }
                 },
                 plugins: {
@@ -296,7 +304,7 @@
                         align: 'end',
                         color: '#374151',
                         font: { 
-                            size: 11,
+                            size: 10,
                             weight: 'normal'
                         },
                         formatter: (value, context) => {
@@ -313,7 +321,10 @@
                         },
                         ticks: {
                             stepSize: 1,
-                            precision: 0
+                            precision: 0,
+                            font: {
+                                size: 10
+                            }
                         }
                     },
                     y: {
@@ -323,7 +334,7 @@
                         ticks: {
                             autoSkip: false,
                             font: {
-                                size: 12
+                                size: 11
                             }
                         }
                     }
