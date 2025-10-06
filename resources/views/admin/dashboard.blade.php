@@ -262,10 +262,18 @@
         // Chart 3: Nama Petugas Jaga (Horizontal Bar Chart)
         const maxValue = Math.max(...petugasData.map(item => item.count));
         let stepSize = 1;
-        if (maxValue >= 100) {
-            stepSize = 100;
+        if (maxValue >= 1000000) {
+            stepSize = 100000; // jutaan
+        } else if (maxValue >= 100000) {
+            stepSize = 10000; // ratusan ribu
+        } else if (maxValue >= 10000) {
+            stepSize = 1000; // puluhan ribu
+        } else if (maxValue >= 1000) {
+            stepSize = 100; // ribuan
+        } else if (maxValue >= 100) {
+            stepSize = 10; // ratusan
         } else if (maxValue >= 10) {
-            stepSize = 10;
+            stepSize = 1; // puluhan
         }
 
         const petugasCtx = document.getElementById('petugasChart').getContext('2d');
