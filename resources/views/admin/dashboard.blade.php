@@ -267,7 +267,7 @@
                 labels: petugasData.map(item => item.nama),
                 datasets: [{
                     data: petugasData.map(item => item.count),
-                    backgroundColor: '#D4AF77',
+                    backgroundColor: '#d9c99a',
                     borderWidth: 0,
                     barThickness: 20
                 }]
