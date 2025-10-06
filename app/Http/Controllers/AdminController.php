@@ -161,7 +161,7 @@ class AdminController extends Controller
 
         // 5. Ambil foto-foto dari kolom foto_serahterima
         $fotoSerahterima = DB::table('laporan_pengamanan')
-            ->select('id', 'foto_serahterima', 'tanggal', 'waktu')
+            ->select('id', 'foto_serahterima', 'created_at')
             ->whereNotNull('foto_serahterima')
             ->where('foto_serahterima', '!=', '')
             ->orderBy('created_at', 'desc')
