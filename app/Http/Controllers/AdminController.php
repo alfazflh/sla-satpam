@@ -124,11 +124,47 @@ class AdminController extends Controller
             ];
         }
 
+        // 4. Data Penggunaan Seragam dan Kelengkapan Atribut
+        $seragamCounts = DB::table('laporan_pengamanan')
+            ->select('ketentuan_seragam', DB::raw('count(*) as total'))
+            ->whereNotNull('ketentuan_seragam')
+            ->groupBy('ketentuan_seragam')
+            ->get();
+
+        $seragamData = [];
+        
+        // Mapping warna dan label berdasarkan nilai ketentuan_seragam
+        $seragamColorMap = [
+            'Sesuai 100%' => '#4A90E2',     // Biru
+            'Tidak Sesuai' => '#E94B3C'     // Merah
+        ];
+
+        $seragamLabelMap = [
+            'Sesuai 100%' => 'Sesuai 100%',
+            'Tidak Sesuai' => 'Tidak Sesuai'
+        ];
+
+        foreach ($seragamCounts as $seragam) {
+            $percentage = $totalJawaban > 0 ? ($seragam->total / $totalJawaban) * 100 : 0;
+            
+            // Ambil label dan warna berdasarkan nilai ketentuan_seragam dari database
+            $label = $seragamLabelMap[$seragam->ketentuan_seragam] ?? $seragam->ketentuan_seragam;
+            $color = $seragamColorMap[$seragam->ketentuan_seragam] ?? '#cccccc';
+            
+            $seragamData[] = [
+                'label' => $label,
+                'count' => $seragam->total,
+                'percentage' => round($percentage, 1),
+                'color' => $color
+            ];
+        }
+
         return view('admin.dashboard', compact(
             'totalJawaban',
             'shiftData',
             'areaData',
-            'petugasData'
+            'petugasData',
+            'seragamData'
         ));
     }
 }

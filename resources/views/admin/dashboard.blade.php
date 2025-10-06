@@ -82,6 +82,37 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 4. Penggunaan Seragam dan Kelengkapan Atribut -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">4. Penggunaan Seragam dan Kelengkapan Atribut sesuai Ketentuan</h3>
+                                    <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-gray-700">Menggunakan seragam sesuai ketentuan yang berlaku</p>
+                                <p class="text-gray-500 text-sm">( foto apel serah terima )</p>
+                            </div>
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <div class="w-full md:w-1/4">
+                                    <canvas id="seragamChart" width="300" height="300"></canvas>
+                                </div>
+                                <div class="w-full md:w-2/4 md:pl-8">
+                                    <div class="space-y-3">
+                                        @foreach($seragamData as $seragam)
+                                        <div class="flex items-center">
+                                            <span class="w-4 h-4 rounded-full mr-3" style="background-color: {{ $seragam['color'] }}"></span>
+                                            <span class="text-gray-700">{{ $seragam['label'] }}</span>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
     
                 @else
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -102,10 +133,12 @@
         const shiftData = @json($shiftData);
         const areaData = @json($areaData);
         const petugasData = @json($petugasData);
+        const seragamData = @json($seragamData);
 
         console.log('Shift Data:', shiftData);
         console.log('Area Data:', areaData);
         console.log('Petugas Data:', petugasData);
+        console.log('Seragam Data:', seragamData);
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
@@ -258,6 +291,48 @@
                             font: {
                                 size: 12
                             }
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        // Chart 4: Penggunaan Seragam (Pie Chart)
+        const seragamCtx = document.getElementById('seragamChart').getContext('2d');
+        new Chart(seragamCtx, {
+            type: 'pie',
+            data: {
+                labels: seragamData.map(item => item.label),
+                datasets: [{
+                    data: seragamData.map(item => item.percentage),
+                    backgroundColor: seragamData.map(item => item.color),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 16
+                        },
+                        formatter: (value) => {
+                            return value.toFixed(1) + '%';
                         }
                     }
                 }
