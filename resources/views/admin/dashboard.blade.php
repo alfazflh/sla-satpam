@@ -83,12 +83,15 @@
                         </div>
                     </div>
 
-                    <!-- 4. Penggunaan Seragam dan Kelengkapan Atribut -->
+                    <!-- 1. Penggunaan Seragam dan Kelengkapan Atribut -->
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-xl font-bold text-gray-900">
+                                1. Penggunaan Seragam dan Kelengkapan Atribut sesuai Ketentuan</h3>
+                        </div>
                         <div class="p-6">
                             <div class="flex justify-between items-center mb-4">
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">4. Penggunaan Seragam dan Kelengkapan Atribut sesuai Ketentuan</h3>
                                     <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
                                 </div>
                             </div>
@@ -113,6 +116,7 @@
                             </div>
                         </div>
                     </div>
+                    
     
                 @else
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
