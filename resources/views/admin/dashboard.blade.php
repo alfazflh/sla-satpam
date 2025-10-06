@@ -126,13 +126,14 @@
                             </h3>
                         </div>
                         <div class="p-6">
-                            <div class="mb-4">
+                            <div class="-mt-4 mb-1">
                                 <p class="text-gray-700 font-medium">Lampirkan Foto Saat Apel Serah Terima Antar Shift</p>
                                 <p class="text-sm text-gray-500">{{ $totalFoto }} jawaban</p>
                             </div>
+                        </br>
 
                             <!-- Gallery Container -->
-                            <div id="photoGallery" class="space-y-3">
+                            <div id="photoGallery" class="space-y-1">
                                 <!-- Photos akan ditampilkan di sini via JavaScript -->
                             </div>
 
@@ -142,14 +143,6 @@
                                     Muat 5 Foto Lainnya
                                 </button>
                                 <p id="remainingCount" class="text-sm text-gray-500 mt-2"></p>
-                            </div>
-
-                            <!-- Link Lihat Folder -->
-                            <div class="mt-4 flex items-center text-blue-600 hover:text-blue-700">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
-                                </svg>
-                                <a href="#" class="font-medium">Lihat folder</a>
                             </div>
                         </div>
                     </div>
@@ -403,15 +396,9 @@
                 const foto = fotoData[i];
                 const filename = extractFilename(foto.foto_serahterima);
                 
-                // Bersihkan path - hapus 'app/public/' jika ada
-                let cleanPath = foto.foto_serahterima;
-                if (cleanPath.startsWith('app/public/')) {
-                    cleanPath = cleanPath.replace('app/public/', '');
-                }
-                
                 const photoItem = document.createElement('div');
                 photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-                photoItem.onclick = () => window.open('/storage/' + cleanPath, '_blank');
+                photoItem.onclick = () => window.open('/storage/' + foto.foto_serahterima, '_blank');
                 
                 photoItem.innerHTML = `
                     <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
