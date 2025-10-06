@@ -247,7 +247,106 @@
                         </div>
                     </div>
 
-                    
+                    <!-- 9. Fungsi Pengamanan Khusus -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                3. Melaksanakan fungsi pengamanan dalam kegiatan / peristiwa khusus (pameran, family day, dll) yang diselenggarakan PLN sesuai standar Sistem Manajemen Pengamanan
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="-mt-4 mb-1">
+                                <p class="text-gray-700">Melaksanakan fungsi pengamanan khusus</p>
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <div>
+                                    <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
+                                </div>
+                            </div>
+                        
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <div class="w-full md:w-1/4">
+                                    <canvas id="fungsiKhususChart" width="300" height="300"></canvas>
+                                </div>
+                                <div class="w-full md:w-2/4 md:pl-8">
+                                    <div class="space-y-3">
+                                        @foreach($fungsiKhususData as $fungsi)
+                                        <div class="flex items-center">
+                                            <span class="w-4 h-4 rounded-full mr-3" style="background-color: {{ $fungsi['color'] }}"></span>
+                                            <span class="text-gray-700">{{ $fungsi['label'] }}</span>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 10. Dokumentasi Foto Lembur -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                Dokumentasi Melaksanakan fungsi pengamanan dalam kegiatan / peristiwa khusus (pameran, family day, dll) yang diselenggarakan PLN sesuai standar Sistem Manajemen Pengamanan
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="-mt-4 mb-1">
+                                <p class="text-gray-700">Lampirkan Foto Giat Lembur Kegiatan</p>
+                                <p class="text-sm text-gray-500">{{ $totalFotoLembur }} jawaban</p>
+                            </div>
+                        </br>
+
+                            <!-- Gallery Container -->
+                            <div id="photoGalleryLembur" class="space-y-1">
+                                <!-- Photos akan ditampilkan di sini via JavaScript -->
+                            </div>
+
+                            <!-- Tombol Load More -->
+                            <div id="loadMoreContainerLembur" class="mt-2 text-left" style="display: none;">
+                                <button id="loadMoreBtnLembur" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-3 rounded-md transition duration-150">
+                                    Muat Foto Lainnya
+                                </button>
+                                <p id="remainingCountLembur" class="text-xs text-gray-500 mt-1 pl-1"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 11. Kronologi Gangguan -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                Laporan gangguan Dokumentasi Melaksanakan fungsi pengamanan dalam kegiatan / peristiwa khusus (pameran, family day, dll) yang diselenggarakan PLN sesuai standar Sistem Manajemen Pengamanan
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="-mt-4 mb-1">
+                                <p class="text-gray-700">Tuliskan Kronologi Kejadian</p>
+                                <p class="text-sm text-gray-500">{{ $totalKronologiGangguan }} jawaban</p>
+                            </div>
+                        </br>
+
+                            <!-- Kronologi Container with Scroll -->
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div id="kronologiGangguanContainer" class="max-h-96 overflow-y-auto">
+                                    @if($kronologiGangguan->count() > 0)
+                                        <div class="divide-y divide-gray-200">
+                                            @foreach($kronologiGangguan as $kronologi)
+                                            <div class="space-y-2">
+                                                <div class="bg-gray-50 rounded-lg px-4 py-2">
+                                                    <p class="text-sm text-gray-800">{{ $kronologi->kronologi_gangguan }}</p>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <p class="text-gray-500 text-center py-8">Tidak ada kronologi yang tersedia</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
     
                 @else
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -272,6 +371,8 @@
         const fotoData = @json($fotoSerahterima);
         const pengamananData = @json($pengamananData);
         const fotoPatroliData = @json($fotoPatroli);
+        const fungsiKhususData = @json($fungsiKhususData);
+        const fotoLemburData = @json($fotoLembur);
 
         console.log('Shift Data:', shiftData);
         console.log('Area Data:', areaData);
@@ -280,6 +381,8 @@
         console.log('Foto Data:', fotoData);
         console.log('Pengamanan Data:', pengamananData);
         console.log('Foto Patroli Data:', fotoPatroliData);
+        console.log('Fungsi Khusus Data:', fungsiKhususData);
+        console.log('Foto Lembur Data:', fotoLemburData);
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
@@ -636,6 +739,102 @@
             renderPhotosPatroli(0, initialLoadPatroli);
         } else {
             document.getElementById('photoGalleryPatroli').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
+
+        const fungsiKhususCtx = document.getElementById('fungsiKhususChart').getContext('2d');
+        new Chart(fungsiKhususCtx, {
+            type: 'pie',
+            data: {
+                labels: fungsiKhususData.map(item => item.label),
+                datasets: [{
+                    data: fungsiKhususData.map(item => item.percentage),
+                    backgroundColor: fungsiKhususData.map(item => item.color),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 16
+                        },
+                        formatter: (value) => {
+                            return value.toFixed(1) + '%';
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        // Photo Gallery Logic untuk Foto Lembur
+        let currentIndexLembur = 0;
+        const photosPerLoadLembur = 5;
+        const initialLoadLembur = 6;
+
+        function renderPhotosLembur(startIndex, count) {
+            const gallery = document.getElementById('photoGalleryLembur');
+            const endIndex = Math.min(startIndex + count, fotoLemburData.length);
+
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = fotoLemburData[i];
+                const filename = extractFilename(foto.foto_lembur);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.foto_lembur, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
+
+            currentIndexLembur = endIndex;
+            updateLoadMoreButtonLembur();
+        }
+
+        function updateLoadMoreButtonLembur() {
+            const container = document.getElementById('loadMoreContainerLembur');
+            const remaining = document.getElementById('remainingCountLembur');
+            const remainingPhotos = fotoLemburData.length - currentIndexLembur;
+
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        document.getElementById('loadMoreBtnLembur').addEventListener('click', function() {
+            renderPhotosLembur(currentIndexLembur, photosPerLoadLembur);
+        });
+
+        // Initial render untuk foto lembur
+        if (fotoLemburData.length > 0) {
+            renderPhotosLembur(0, initialLoadLembur);
+        } else {
+            document.getElementById('photoGalleryLembur').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
         }
     </script>
     @endif

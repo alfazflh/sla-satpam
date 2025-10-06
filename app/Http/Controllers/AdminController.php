@@ -215,19 +215,79 @@ class AdminController extends Controller
 
         $totalKronologi = $kronologiData->count();
 
-        return view('admin.dashboard', compact(
-        'totalJawaban',
-        'shiftData',
-        'areaData',
-        'petugasData',
-        'seragamData',
-        'fotoSerahterima',
-        'totalFoto',
-        'pengamananData',
-        'fotoPatroli',
-        'totalFotoPatroli',
-        'kronologiData',
-        'totalKronologi'
-        ));
+        // 9. Data Fungsi Pengamanan Khusus (dari kolom 'fungsi_khusus')
+$fungsiKhususCounts = DB::table('laporan_pengamanan')
+->select('fungsi_khusus', DB::raw('count(*) as total'))
+->whereNotNull('fungsi_khusus')
+->groupBy('fungsi_khusus')
+->get();
+
+$fungsiKhususData = [];
+
+$fungsiKhususColorMap = [
+'Nol (0) tindak kriminal' => '#4A90E2',
+'Terjadi tindak kriminal' => '#E94B3C',
+'Nihil Kegiatan' => '#F5A623'
+];
+
+$fungsiKhususLabelMap = [
+'Nol (0) tindak kriminal' => 'Nol (0) tindak kriminal',
+'Terjadi tindak kriminal' => 'Terjadi tindak kriminal',
+'Nihil Kegiatan' => 'Nihil Kegiatan'
+];
+
+foreach ($fungsiKhususCounts as $fungsi) {
+$percentage = $totalJawaban > 0 ? ($fungsi->total / $totalJawaban) * 100 : 0;
+
+$label = $fungsiKhususLabelMap[$fungsi->fungsi_khusus] ?? $fungsi->fungsi_khusus;
+$color = $fungsiKhususColorMap[$fungsi->fungsi_khusus] ?? '#cccccc';
+
+$fungsiKhususData[] = [
+    'label' => $label,
+    'count' => $fungsi->total,
+    'percentage' => round($percentage, 1),
+    'color' => $color
+];
+}
+
+// 10. Ambil foto-foto dari kolom foto_lembur
+$fotoLembur = DB::table('laporan_pengamanan')
+->select('id', 'foto_lembur', 'created_at')
+->whereNotNull('foto_lembur')
+->where('foto_lembur', '!=', '')
+->orderBy('created_at', 'desc')
+->get();
+
+$totalFotoLembur = $fotoLembur->count();
+
+// 11. Ambil data kronologi dari kolom kronologi_gangguan
+$kronologiGangguan = DB::table('laporan_pengamanan')
+->select('id', 'kronologi_gangguan', 'created_at')
+->whereNotNull('kronologi_gangguan')
+->where('kronologi_gangguan', '!=', '')
+->orderBy('created_at', 'desc')
+->get();
+
+$totalKronologiGangguan = $kronologiGangguan->count();
+
+return view('admin.dashboard', compact(
+    'totalJawaban',
+    'shiftData',
+    'areaData',
+    'petugasData',
+    'seragamData',
+    'fotoSerahterima',
+    'totalFoto',
+    'pengamananData',
+    'fotoPatroli',
+    'totalFotoPatroli',
+    'kronologiData',
+    'totalKronologi',
+    'fungsiKhususData',
+    'fotoLembur',
+    'totalFotoLembur',
+    'kronologiGangguan',
+    'totalKronologiGangguan'
+));
         }
         }
