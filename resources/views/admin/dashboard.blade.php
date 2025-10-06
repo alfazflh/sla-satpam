@@ -127,7 +127,7 @@
                         </div>
                         <div class="p-6">
                             <div class="-mt-4 mb-1">
-                                <p class="text-gray-700 font-medium">Lampirkan Foto Saat Apel Serah Terima Antar Shift</p>
+                                <p class="text-gray-700">Lampirkan Foto Saat Apel Serah Terima Antar Shift</p>
                                 <p class="text-sm text-gray-500">{{ $totalFoto }} jawaban</p>
                             </div>
                         </br>
