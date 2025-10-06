@@ -76,7 +76,7 @@
                                 </div>
                             </div>
                             <div class="w-full overflow-auto">
-                                <div style="height: {{ max(300, count($petugasData) * 40) }}px; min-height: 300px;">
+                                <div style="height: {{ max(300, count($petugasData) * 40) }}px; min-height: 200px;">
                                     <canvas id="petugasChart"></canvas>
                                 </div>
                             </div>
@@ -393,11 +393,11 @@
                 const filename = extractFilename(foto.foto_serahterima);
                 
                 const photoItem = document.createElement('div');
-                photoItem.className = 'flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer';
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
                 photoItem.onclick = () => window.open('/storage/' + foto.foto_serahterima, '_blank');
                 
                 photoItem.innerHTML = `
-                    <svg class="w-10 h-10 text-red-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
                     </svg>
                     <span class="text-gray-700 text-sm">${filename}</span>
