@@ -146,6 +146,71 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 6. Kegiatan Pengamanan -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                2. Melaksanakan kegiatan pengamanan di sekitar objek pengamanan
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="-mt-4 mb-1">
+                                <p class="text-gray-700">Melaksanakan kegiatan pengamanan di sekitar obyek pengamanan.</p>
+                                <p class="text-gray-500 text-sm">( foto patroli luar area kantor dan rumdin )</p>
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <div>
+                                    <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
+                                </div>
+                            </div>
+                        
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <div class="w-full md:w-1/4">
+                                    <canvas id="pengamananChart" width="300" height="300"></canvas>
+                                </div>
+                                <div class="w-full md:w-2/4 md:pl-8">
+                                    <div class="space-y-3">
+                                        @foreach($pengamananData as $pengamanan)
+                                        <div class="flex items-center">
+                                            <span class="w-4 h-4 rounded-full mr-3" style="background-color: {{ $pengamanan['color'] }}"></span>
+                                            <span class="text-gray-700">{{ $pengamanan['label'] }}</span>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. Dokumentasi Foto Patroli -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                Dokumentasi Nol (0) Tindakan Kriminal kegiatan pengamanan di sekitar objek pengamanan
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="-mt-4 mb-1">
+                                <p class="text-gray-700">Lampirkan Foto Patroli Kegiatan</p>
+                                <p class="text-sm text-gray-500">{{ $totalFotoPatroli }} jawaban</p>
+                            </div>
+                        </br>
+
+                            <!-- Gallery Container -->
+                            <div id="photoGalleryPatroli" class="space-y-1">
+                                <!-- Photos akan ditampilkan di sini via JavaScript -->
+                            </div>
+
+                            <!-- Tombol Load More -->
+                            <div id="loadMoreContainerPatroli" class="mt-2 text-left" style="display: none;">
+                                <button id="loadMoreBtnPatroli" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-3 rounded-md transition duration-150">
+                                    Muat Foto Lainnya
+                                </button>
+                                <p id="remainingCountPatroli" class="text-xs text-gray-500 mt-1 pl-1"></p>
+                            </div>
+                        </div>
+                    </div>
     
                 @else
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -168,12 +233,16 @@
         const petugasData = @json($petugasData);
         const seragamData = @json($seragamData);
         const fotoData = @json($fotoSerahterima);
+        const pengamananData = @json($pengamananData);
+        const fotoPatroliData = @json($fotoPatroli);
 
         console.log('Shift Data:', shiftData);
         console.log('Area Data:', areaData);
         console.log('Petugas Data:', petugasData);
         console.log('Seragam Data:', seragamData);
         console.log('Foto Data:', fotoData);
+        console.log('Pengamanan Data:', pengamananData);
+        console.log('Foto Patroli Data:', fotoPatroliData);
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
@@ -432,6 +501,104 @@
             renderPhotos(0, initialLoad);
         } else {
             document.getElementById('photoGallery').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
+
+            // Chart 6: Kegiatan Pengamanan (Pie Chart)
+        const pengamananCtx = document.getElementById('pengamananChart').getContext('2d');
+        new Chart(pengamananCtx, {
+            type: 'pie',
+            data: {
+                labels: pengamananData.map(item => item.label),
+                datasets: [{
+                    data: pengamananData.map(item => item.percentage),
+                    backgroundColor: pengamananData.map(item => item.color),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 16
+                        },
+                        formatter: (value) => {
+                            return value.toFixed(1) + '%';
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        // Photo Gallery Logic untuk Foto Patroli
+        let currentIndexPatroli = 0;
+        const photosPerLoadPatroli = 5;
+        const initialLoadPatroli = 6;
+
+        function renderPhotosPatroli(startIndex, count) {
+            const gallery = document.getElementById('photoGalleryPatroli');
+            const endIndex = Math.min(startIndex + count, fotoPatroliData.length);
+
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = fotoPatroliData[i];
+                const filename = extractFilename(foto.foto_patroli);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.foto_patroli, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
+
+            currentIndexPatroli = endIndex;
+            updateLoadMoreButtonPatroli();
+        }
+
+        function updateLoadMoreButtonPatroli() {
+            const container = document.getElementById('loadMoreContainerPatroli');
+            const btn = document.getElementById('loadMoreBtnPatroli');
+            const remaining = document.getElementById('remainingCountPatroli');
+            const remainingPhotos = fotoPatroliData.length - currentIndexPatroli;
+
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        document.getElementById('loadMoreBtnPatroli').addEventListener('click', function() {
+            renderPhotosPatroli(currentIndexPatroli, photosPerLoadPatroli);
+        });
+
+        // Initial render untuk foto patroli
+        if (fotoPatroliData.length > 0) {
+            renderPhotosPatroli(0, initialLoadPatroli);
+        } else {
+            document.getElementById('photoGalleryPatroli').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
         }
     </script>
     @endif
