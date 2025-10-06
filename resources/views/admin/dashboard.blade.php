@@ -140,7 +140,7 @@
                             <!-- Tombol Load More -->
                             <div id="loadMoreContainer" class="mt-6 text-center" style="display: none;">
                                 <button id="loadMoreBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition duration-150">
-                                    Muat 5 Foto Lainnya
+                                    Muat Foto Lainnya
                                 </button>
                                 <p id="remainingCount" class="text-sm text-gray-500 mt-2"></p>
                             </div>
