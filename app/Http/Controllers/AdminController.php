@@ -27,7 +27,7 @@ class AdminController extends Controller
             ->get();
 
         $shiftData = [];
-        $colors = ['#4A90E2', '#E94B3C', '#F5A623']; // Biru, Merah, Orange
+        $colors = ['#4A90E2', '#E94B3C', '#F5A623'];
         $shiftLabels = [
             'Shift 1 : 07.00 SD 15.00',
             'Shift 2 : 15.00 SD 23.00',
@@ -54,10 +54,9 @@ class AdminController extends Controller
 
         $areaData = [];
         
-        // Mapping warna dan label berdasarkan nilai area aktual
         $areaColorMap = [
-            'Pos Jaga Bersama UP3 SBS' => '#4A90E2',  // Biru
-            'UP2W VI' => '#E94B3C'                     // Merah
+            'Pos Jaga Bersama UP3 SBS' => '#4A90E2',
+            'UP2W VI' => '#E94B3C'
         ];
 
         $areaLabelMap = [
@@ -68,7 +67,6 @@ class AdminController extends Controller
         foreach ($areaCounts as $area) {
             $percentage = $totalJawaban > 0 ? ($area->total / $totalJawaban) * 100 : 0;
             
-            // Ambil label dan warna berdasarkan nilai area dari database
             $label = $areaLabelMap[$area->area] ?? $area->area;
             $color = $areaColorMap[$area->area] ?? '#cccccc';
             
@@ -81,22 +79,18 @@ class AdminController extends Controller
         }
 
         // 3. Data Nama Petugas Jaga
-        // Ambil semua data nama
         $allNames = DB::table('laporan_pengamanan')
             ->whereNotNull('nama')
             ->where('nama', '!=', '')
             ->pluck('nama');
 
-        // Pisahkan nama yang dipisah koma dan hitung
         $nameCount = [];
         
         foreach ($allNames as $nameString) {
-            // Split berdasarkan koma dan bersihkan spasi
             $names = array_map('trim', explode(',', $nameString));
             
             foreach ($names as $name) {
                 if (!empty($name)) {
-                    // Normalisasi nama (uppercase dan hapus extra spaces)
                     $nameUpper = strtoupper(preg_replace('/\s+/', ' ', $name));
                     
                     if (isset($nameCount[$nameUpper])) {
@@ -108,10 +102,8 @@ class AdminController extends Controller
             }
         }
 
-        // Sort by count descending
         arsort($nameCount);
 
-        // Total nama individual (bukan total row)
         $totalNamaIndividual = array_sum($nameCount);
 
         $petugasData = [];
@@ -133,10 +125,9 @@ class AdminController extends Controller
 
         $seragamData = [];
         
-        // Mapping warna dan label berdasarkan nilai ketentuan_seragam
         $seragamColorMap = [
-            'Sesuai 100%' => '#4A90E2',     // Biru
-            'Tidak Sesuai' => '#E94B3C'     // Merah
+            'Sesuai 100%' => '#4A90E2',
+            'Tidak Sesuai' => '#E94B3C'
         ];
 
         $seragamLabelMap = [
@@ -147,7 +138,6 @@ class AdminController extends Controller
         foreach ($seragamCounts as $seragam) {
             $percentage = $totalJawaban > 0 ? ($seragam->total / $totalJawaban) * 100 : 0;
             
-            // Ambil label dan warna berdasarkan nilai ketentuan_seragam dari database
             $label = $seragamLabelMap[$seragam->ketentuan_seragam] ?? $seragam->ketentuan_seragam;
             $color = $seragamColorMap[$seragam->ketentuan_seragam] ?? '#cccccc';
             
@@ -169,6 +159,51 @@ class AdminController extends Controller
 
         $totalFoto = $fotoSerahterima->count();
 
+        // 6. Data Kegiatan Pengamanan (dari kolom 'pengamanan')
+        $pengamananCounts = DB::table('laporan_pengamanan')
+            ->select('pengamanan', DB::raw('count(*) as total'))
+            ->whereNotNull('pengamanan')
+            ->groupBy('pengamanan')
+            ->get();
+
+        $pengamananData = [];
+        
+        $pengamananColorMap = [
+            'Nol (0) tindak kriminal' => '#4A90E2',
+            'Tidak Dilaksanakan' => '#E94B3C',
+            'Terjadi Tindak Kriminal, Ancaman dan Gangguan Keamanan' => '#F5A623'
+        ];
+
+        $pengamananLabelMap = [
+            'Nol (0) tindak kriminal' => 'Nol (0) tindak kriminal',
+            'Tidak Dilaksanakan' => 'Tidak Dilaksanakan',
+            'Terjadi Tindak Kriminal, Ancaman dan Gangguan Keamanan' => 'Terjadi Tindak Kriminal, Ancaman dan Gangguan Keamanan'
+        ];
+
+        foreach ($pengamananCounts as $pengamanan) {
+            $percentage = $totalJawaban > 0 ? ($pengamanan->total / $totalJawaban) * 100 : 0;
+            
+            $label = $pengamananLabelMap[$pengamanan->pengamanan] ?? $pengamanan->pengamanan;
+            $color = $pengamananColorMap[$pengamanan->pengamanan] ?? '#cccccc';
+            
+            $pengamananData[] = [
+                'label' => $label,
+                'count' => $pengamanan->total,
+                'percentage' => round($percentage, 1),
+                'color' => $color
+            ];
+        }
+
+        // 7. Ambil foto-foto dari kolom foto_patroli
+        $fotoPatroli = DB::table('laporan_pengamanan')
+            ->select('id', 'foto_patroli', 'created_at')
+            ->whereNotNull('foto_patroli')
+            ->where('foto_patroli', '!=', '')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $totalFotoPatroli = $fotoPatroli->count();
+
         return view('admin.dashboard', compact(
             'totalJawaban',
             'shiftData',
@@ -176,7 +211,10 @@ class AdminController extends Controller
             'petugasData',
             'seragamData',
             'fotoSerahterima',
-            'totalFoto'
+            'totalFoto',
+            'pengamananData',
+            'fotoPatroli',
+            'totalFotoPatroli'
         ));
     }
 }
