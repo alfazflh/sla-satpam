@@ -605,6 +605,70 @@
                                         </div>
                                     </div>
 
+                                <!-- 20. Simulasi Tanggap Darurat -->
+                                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                                    <div class="bg-[#d9c99a] p-4">
+                                        <h3 class="text-m font-bold text-gray-900">
+                                            8. Mengikuti dan memahami kegiatan simulasi tanggap darurat yang di koordinasikan dengan bidang lain
+                                        </h3>
+                                    </div>
+                                    <div class="p-6">
+                                        <div class="-mt-4 mb-1">
+                                            <p class="text-gray-700">Mengikuti dan memahami kegiatan simulasi tanggap darurat yang di koordinasikan dengan bidang lain.</p>
+                                        </div>
+                                        <div class="flex justify-between items-center mb-2">
+                                            <div>
+                                                <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="flex flex-col md:flex-row items-center gap-6">
+                                            <div class="w-full md:w-1/4">
+                                                <canvas id="simulasiChart" width="300" height="300"></canvas>
+                                            </div>
+                                            <div class="w-full md:w-2/4 md:pl-8">
+                                                <div class="space-y-3">
+                                                    @foreach($simulasiData as $simulasi)
+                                                    <div class="flex items-center">
+                                                        <span class="w-4 h-4 rounded-full mr-3" style="background-color: {{ $simulasi['color'] }}"></span>
+                                                        <span class="text-gray-700">{{ $simulasi['label'] }}</span>
+                                                    </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 21. Dokumentasi Foto Simulasi -->
+                                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                                    <div class="bg-[#d9c99a] p-4">
+                                        <h3 class="text-m font-bold text-gray-900">
+                                            Dokumentasi kegiatan simulasi tanggap darurat yang di koordinasikan dengan bidang lain
+                                        </h3>
+                                    </div>
+                                    <div class="p-6">
+                                        <div class="-mt-4 mb-1">
+                                            <p class="text-gray-700">Lampirkan Foto kegiatan simulasi tanggap darurat yang di koordinasikan dengan bidang lain</p>
+                                            <p class="text-sm text-gray-500">{{ $totalFotoSimulasi }} jawaban</p>
+                                        </div>
+                                    </br>
+
+                                        <!-- Gallery Container -->
+                                        <div id="photoGallerySimulasi" class="space-y-1">
+                                            <!-- Photos akan ditampilkan di sini via JavaScript -->
+                                        </div>
+
+                                        <!-- Tombol Load More -->
+                                        <div id="loadMoreContainerSimulasi" class="mt-2 text-left" style="display: none;">
+                                            <button id="loadMoreBtnSimulasi" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-3 rounded-md transition duration-150">
+                                                Muat Foto Lainnya
+                                            </button>
+                                            <p id="remainingCountSimulasi" class="text-xs text-gray-500 mt-1 pl-1"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
 
     
                 @else
