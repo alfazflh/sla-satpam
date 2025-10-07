@@ -724,6 +724,8 @@
         console.log('Foto Force Data:', fotoForceData);
         console.log('Penertiban Data:', penertibanData);
         console.log('Foto Penertiban Data:', fotoPenertibanData);
+        console.log('Simulasi Data:', simulasiData);
+        console.log('Foto Simulasi Data:', fotoSimulasiData);
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
