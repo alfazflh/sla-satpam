@@ -1666,6 +1666,8 @@ if (fotoSimulasiData.length > 0) {
     document.getElementById('photoGallerySimulasi').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
 }
 
+
+
     </script>
     @endif
 </x-app-layout>
