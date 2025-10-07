@@ -270,6 +270,49 @@ $kronologiGangguan = DB::table('laporan_pengamanan')
 
 $totalKronologiGangguan = $kronologiGangguan->count();
 
+// 12. Data Memantau dan Mencatat (dari kolom 'memantau')
+$memantauCounts = DB::table('laporan_pengamanan')
+    ->select('memantau', DB::raw('count(*) as total'))
+    ->whereNotNull('memantau')
+    ->groupBy('memantau')
+    ->get();
+
+$memantauData = [];
+
+$memantauColorMap = [
+    'Tercatat, Tertib dan Aman' => '#4A90E2',
+    'Tidak Tercatat' => '#E94B3C'
+];
+
+$memantauLabelMap = [
+    'Tercatat, Tertib dan Aman' => 'Tercatat, Tertib dan Aman',
+    'Tidak Tercatat' => 'Tidak Tercatat'
+];
+
+foreach ($memantauCounts as $memantau) {
+    $percentage = $totalJawaban > 0 ? ($memantau->total / $totalJawaban) * 100 : 0;
+    
+    $label = $memantauLabelMap[$memantau->memantau] ?? $memantau->memantau;
+    $color = $memantauColorMap[$memantau->memantau] ?? '#cccccc';
+    
+    $memantauData[] = [
+        'label' => $label,
+        'count' => $memantau->total,
+        'percentage' => round($percentage, 1),
+        'color' => $color
+    ];
+}
+
+// 13. Ambil foto-foto dari kolom foto_tamu
+$fotoTamu = DB::table('laporan_pengamanan')
+    ->select('id', 'foto_tamu', 'created_at')
+    ->whereNotNull('foto_tamu')
+    ->where('foto_tamu', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalFotoTamu = $fotoTamu->count();
+
 return view('admin.dashboard', compact(
     'totalJawaban',
     'shiftData',
@@ -287,7 +330,10 @@ return view('admin.dashboard', compact(
     'fotoLembur',
     'totalFotoLembur',
     'kronologiGangguan',
-    'totalKronologiGangguan'
+    'totalKronologiGangguan',
+    'memantauData',
+    'fotoTamu',
+    'totalFotoTamu'
 ));
         }
         }
