@@ -836,6 +836,8 @@
         const fotoSimulasiData = @json($fotoSimulasi);
         const penyegaranData = @json($penyegaranData);
         const fotoPenyegaranData = @json($fotoPenyegaran);
+        const teleponData = @json($teleponData);
+        const fotoTeleponData = @json($fotoTelepon);
 
         console.log('Shift Data:', shiftData);
         console.log('Area Data:', areaData);
@@ -858,6 +860,8 @@
         console.log('Foto Simulasi Data:', fotoSimulasiData);
         console.log('Penyegaran Data:', penyegaranData);
         console.log('Foto Penyegaran Data:', fotoPenyegaranData);
+        console.log('Telepon Data:', teleponData);
+        console.log('Foto Telepon Data:', fotoTeleponData);
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
