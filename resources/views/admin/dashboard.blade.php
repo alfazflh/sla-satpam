@@ -475,6 +475,71 @@
                                     </div>
                                 </div>
 
+                                <!-- 16. Fungsi Pengamanan Force Majure -->
+                                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                                    <div class="bg-[#d9c99a] p-4">
+                                        <h3 class="text-m font-bold text-gray-900">
+                                            6. Melaksanakan fungsi pengamanan dalam kejadian force majure sesuai standar SMP
+                                        </h3>
+                                    </div>
+                                    <div class="p-6">
+                                        <div class="-mt-4 mb-1">
+                                            <p class="text-gray-700">Melaksanakan fungsi pengamanan dalam kejadian force majure sesuai standar SMP</p>
+                                            <p class="text-gray-500 text-sm">( foto pengamanan jika ada bencana alam, kerusuhan )</p>
+                                        </div>
+                                        <div class="flex justify-between items-center mb-2">
+                                            <div>
+                                                <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="flex flex-col md:flex-row items-center gap-6">
+                                            <div class="w-full md:w-1/4">
+                                                <canvas id="fungsiForceChart" width="300" height="300"></canvas>
+                                            </div>
+                                            <div class="w-full md:w-2/4 md:pl-8">
+                                                <div class="space-y-3">
+                                                    @foreach($fungsiForceData as $force)
+                                                    <div class="flex items-center">
+                                                        <span class="w-4 h-4 rounded-full mr-3" style="background-color: {{ $force['color'] }}"></span>
+                                                        <span class="text-gray-700">{{ $force['label'] }}</span>
+                                                    </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+            
+                                <!-- 17. Dokumentasi Foto Force Majure -->
+                                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                                    <div class="bg-[#d9c99a] p-4">
+                                        <h3 class="text-m font-bold text-gray-900">
+                                            Dokumentasi Pelaksanaan fungsi pengamanan dalam kejadian force majure sesuai standar SMP
+                                        </h3>
+                                    </div>
+                                    <div class="p-6">
+                                        <div class="-mt-4 mb-1">
+                                            <p class="text-gray-700">Lampirkan Foto Pelaksanaan fungsi pengamanan dalam kejadian force majure sesuai standar SMP</p>
+                                            <p class="text-sm text-gray-500">{{ $totalFotoForce }} jawaban</p>
+                                        </div>
+                                    </br>
+            
+                                        <!-- Gallery Container -->
+                                        <div id="photoGalleryForce" class="space-y-1">
+                                            <!-- Photos akan ditampilkan di sini via JavaScript -->
+                                        </div>
+            
+                                        <!-- Tombol Load More -->
+                                        <div id="loadMoreContainerForce" class="mt-2 text-left" style="display: none;">
+                                            <button id="loadMoreBtnForce" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-3 rounded-md transition duration-150">
+                                                Muat Foto Lainnya
+                                            </button>
+                                            <p id="remainingCountForce" class="text-xs text-gray-500 mt-1 pl-1"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
 
     
                 @else
@@ -506,6 +571,8 @@
         const fotoTamuData = @json($fotoTamu);
         const layananData = @json($layananData);
         const fotoPanduanData = @json($fotoPanduan);
+        const fungsiForceData = @json($fungsiForceData);
+        const fotoForceData = @json($fotoForce);
 
         console.log('Shift Data:', shiftData);
         console.log('Area Data:', areaData);
@@ -520,6 +587,7 @@
         console.log('Foto Tamu Data:', fotoTamuData);
         console.log('Layanan Data:', layananData);
         console.log('Foto Panduan Data:', fotoPanduanData);
+        
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
