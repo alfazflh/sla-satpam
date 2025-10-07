@@ -468,7 +468,10 @@ return view('admin.dashboard', compact(
     'totalFotoPanduan',
     'fungsiForceData',
     'fotoForce',
-    'totalFotoForce'
+    'totalFotoForce',
+    'penertibanData',
+    'fotoPenertiban',
+    'totalFotoPenertiban'
 ));
         }
         }
