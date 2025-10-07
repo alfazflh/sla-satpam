@@ -528,44 +528,50 @@ $fotoPenyegaran = DB::table('laporan_pengamanan')
 
 $totalFotoPenyegaran = $fotoPenyegaran->count();
 
+// 24. Data Menerima dan Mendata Telepon (dari kolom 'telepon')
+$teleponCounts = DB::table('laporan_pengamanan')
+    ->select('telepon', DB::raw('count(*) as total'))
+    ->whereNotNull('telepon')
+    ->groupBy('telepon')
+    ->get();
+
+$teleponData = [];
+
+$teleponColorMap = [
+    'Ada pendataan' => '#4A90E2',
+    'Tidak Ada' => '#E94B3C'
+];
+
+$teleponLabelMap = [
+    'Ada pendataan' => 'Ada pendataan',
+    'Tidak Ada' => 'Tidak Ada'
+];
+
+foreach ($teleponCounts as $telepon) {
+    $percentage = $totalJawaban > 0 ? ($telepon->total / $totalJawaban) * 100 : 0;
+    
+    $label = $teleponLabelMap[$telepon->telepon] ?? $telepon->telepon;
+    $color = $teleponColorMap[$telepon->telepon] ?? '#cccccc';
+    
+    $teleponData[] = [
+        'label' => $label,
+        'count' => $telepon->total,
+        'percentage' => round($percentage, 1),
+        'color' => $color
+    ];
+}
+
+// 25. Ambil foto-foto dari kolom foto_telepon
+$fotoTelepon = DB::table('laporan_pengamanan')
+    ->select('id', 'foto_telepon', 'created_at')
+    ->whereNotNull('foto_telepon')
+    ->where('foto_telepon', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalFotoTelepon = $fotoTelepon->count();
 
 
-return view('admin.dashboard', compact(
-    'totalJawaban',
-    'shiftData',
-    'areaData',
-    'petugasData',
-    'seragamData',
-    'fotoSerahterima',
-    'totalFoto',
-    'pengamananData',
-    'fotoPatroli',
-    'totalFotoPatroli',
-    'kronologiData',
-    'totalKronologi',
-    'fungsiKhususData',
-    'fotoLembur',
-    'totalFotoLembur',
-    'kronologiGangguan',
-    'totalKronologiGangguan',
-    'memantauData',
-    'fotoTamu',
-    'totalFotoTamu',
-    'layananData',
-    'fotoPanduan',
-    'totalFotoPanduan',
-    'fungsiForceData',
-    'fotoForce',
-    'totalFotoForce',
-    'penertibanData',
-    'fotoPenertiban',
-    'totalFotoPenertiban',
-    'simulasiData',
-    'fotoSimulasi',
-    'totalFotoSimulasi',
-    'penyegaranData',      
-    'fotoPenyegaran',      
-    'totalFotoPenyegaran'   
-));
+
         }
         }
