@@ -1569,6 +1569,103 @@ if (fotoPenertibanData.length > 0) {
     document.getElementById('photoGalleryPenertiban').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
 }
 
+// Chart 20: Simulasi Tanggap Darurat (Pie Chart)
+const simulasiCtx = document.getElementById('simulasiChart').getContext('2d');
+new Chart(simulasiCtx, {
+    type: 'pie',
+    data: {
+        labels: simulasiData.map(item => item.label),
+        datasets: [{
+            data: simulasiData.map(item => item.percentage),
+            backgroundColor: simulasiData.map(item => item.color),
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                    }
+                }
+            },
+            datalabels: {
+                color: '#fff',
+                font: {
+                    weight: 'bold',
+                    size: 16
+                },
+                formatter: (value) => {
+                    return value.toFixed(1) + '%';
+                }
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+
+// Photo Gallery Logic untuk Foto Simulasi
+let currentIndexSimulasi = 0;
+const photosPerLoadSimulasi = 5;
+const initialLoadSimulasi = 6;
+
+function renderPhotosSimulasi(startIndex, count) {
+    const gallery = document.getElementById('photoGallerySimulasi');
+    const endIndex = Math.min(startIndex + count, fotoSimulasiData.length);
+
+    for (let i = startIndex; i < endIndex; i++) {
+        const foto = fotoSimulasiData[i];
+        const filename = extractFilename(foto.foto_simulasi);
+        
+        const photoItem = document.createElement('div');
+        photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+        photoItem.onclick = () => window.open('/storage/' + foto.foto_simulasi, '_blank');
+        
+        photoItem.innerHTML = `
+            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+            </svg>
+            <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+        `;
+        
+        gallery.appendChild(photoItem);
+    }
+
+    currentIndexSimulasi = endIndex;
+    updateLoadMoreButtonSimulasi();
+}
+
+function updateLoadMoreButtonSimulasi() {
+    const container = document.getElementById('loadMoreContainerSimulasi');
+    const remaining = document.getElementById('remainingCountSimulasi');
+    const remainingPhotos = fotoSimulasiData.length - currentIndexSimulasi;
+
+    if (remainingPhotos > 0) {
+        container.style.display = 'block';
+        remaining.textContent = `${remainingPhotos} file lainnya`;
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+document.getElementById('loadMoreBtnSimulasi').addEventListener('click', function() {
+    renderPhotosSimulasi(currentIndexSimulasi, photosPerLoadSimulasi);
+});
+
+// Initial render untuk foto simulasi
+if (fotoSimulasiData.length > 0) {
+    renderPhotosSimulasi(0, initialLoadSimulasi);
+} else {
+    document.getElementById('photoGallerySimulasi').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+}
+
     </script>
     @endif
 </x-app-layout>
