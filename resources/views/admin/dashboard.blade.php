@@ -901,6 +901,103 @@
         } else {
             document.getElementById('photoGalleryLembur').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
         }
+
+        // Chart 12: Memantau dan Mencatat (Pie Chart)
+const memantauCtx = document.getElementById('memantauChart').getContext('2d');
+new Chart(memantauCtx, {
+    type: 'pie',
+    data: {
+        labels: memantauData.map(item => item.label),
+        datasets: [{
+            data: memantauData.map(item => item.percentage),
+            backgroundColor: memantauData.map(item => item.color),
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                    }
+                }
+            },
+            datalabels: {
+                color: '#fff',
+                font: {
+                    weight: 'bold',
+                    size: 16
+                },
+                formatter: (value) => {
+                    return value.toFixed(1) + '%';
+                }
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+
+// Photo Gallery Logic untuk Foto Tamu
+let currentIndexTamu = 0;
+const photosPerLoadTamu = 5;
+const initialLoadTamu = 6;
+
+function renderPhotosTamu(startIndex, count) {
+    const gallery = document.getElementById('photoGalleryTamu');
+    const endIndex = Math.min(startIndex + count, fotoTamuData.length);
+
+    for (let i = startIndex; i < endIndex; i++) {
+        const foto = fotoTamuData[i];
+        const filename = extractFilename(foto.foto_tamu);
+        
+        const photoItem = document.createElement('div');
+        photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+        photoItem.onclick = () => window.open('/storage/' + foto.foto_tamu, '_blank');
+        
+        photoItem.innerHTML = `
+            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+            </svg>
+            <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+        `;
+        
+        gallery.appendChild(photoItem);
+    }
+
+    currentIndexTamu = endIndex;
+    updateLoadMoreButtonTamu();
+}
+
+function updateLoadMoreButtonTamu() {
+    const container = document.getElementById('loadMoreContainerTamu');
+    const remaining = document.getElementById('remainingCountTamu');
+    const remainingPhotos = fotoTamuData.length - currentIndexTamu;
+
+    if (remainingPhotos > 0) {
+        container.style.display = 'block';
+        remaining.textContent = `${remainingPhotos} file lainnya`;
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+document.getElementById('loadMoreBtnTamu').addEventListener('click', function() {
+    renderPhotosTamu(currentIndexTamu, photosPerLoadTamu);
+});
+
+// Initial render untuk foto tamu
+if (fotoTamuData.length > 0) {
+    renderPhotosTamu(0, initialLoadTamu);
+} else {
+    document.getElementById('photoGalleryTamu').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+}
     </script>
     @endif
 </x-app-layout>
