@@ -18,6 +18,11 @@
                         class="text-white hover:text-[#196275]">
                         {{ __('Dashboard') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('welcome')" 
+                        :active="request()->routeIs('welcome')" 
+                        class="text-white hover:text-[#196275]">
+                        {{ __('Form') }}
+                        </x-nav-link>
                     </div>
                 @endauth
             </div>
