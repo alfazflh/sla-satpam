@@ -346,6 +346,71 @@
                         </div>
                     </div>
 
+                            <!-- 12. Memantau dan Mencatat -->
+                            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                                <div class="bg-[#d9c99a] p-4">
+                                    <h3 class="text-m font-bold text-gray-900">
+                                        4. Memantau dan mencatat secara detail lalu lintas orang dan kendaraan yang masuk dan keluar di sekitar objek pengamanan
+                                    </h3>
+                                </div>
+                                <div class="p-6">
+                                    <div class="-mt-4 mb-1">
+                                        <p class="text-gray-700">Memantau dan mencatat lalu lintas orang dan kendaraan yang keluar dan masuk di obyek pengamanan.</p>
+                                        <p class="text-gray-500 text-sm">( Foto jurnal, kendaraan dinas )</p>
+                                    </div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <div>
+                                            <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="flex flex-col md:flex-row items-center gap-6">
+                                        <div class="w-full md:w-1/4">
+                                            <canvas id="memantauChart" width="300" height="300"></canvas>
+                                        </div>
+                                        <div class="w-full md:w-2/4 md:pl-8">
+                                            <div class="space-y-3">
+                                                @foreach($memantauData as $memantau)
+                                                <div class="flex items-center">
+                                                    <span class="w-4 h-4 rounded-full mr-3" style="background-color: {{ $memantau['color'] }}"></span>
+                                                    <span class="text-gray-700">{{ $memantau['label'] }}</span>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            <!-- 13. Dokumentasi Foto Tamu -->
+                            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                                <div class="bg-[#d9c99a] p-4">
+                                    <h3 class="text-m font-bold text-gray-900">
+                                        Dokumentasi lalu lintas orang dan kendaraan yang masuk dan keluar di sekitar objek pengamanan
+                                    </h3>
+                                </div>
+                                <div class="p-6">
+                                    <div class="-mt-4 mb-1">
+                                        <p class="text-gray-700">Lampirkan Foto Jurnal Satpam dan pencatatan tamu/ kendaraan</p>
+                                        <p class="text-sm text-gray-500">{{ $totalFotoTamu }} jawaban</p>
+                                    </div>
+                                </br>
+        
+                                    <!-- Gallery Container -->
+                                    <div id="photoGalleryTamu" class="space-y-1">
+                                        <!-- Photos akan ditampilkan di sini via JavaScript -->
+                                    </div>
+        
+                                    <!-- Tombol Load More -->
+                                    <div id="loadMoreContainerTamu" class="mt-2 text-left" style="display: none;">
+                                        <button id="loadMoreBtnTamu" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-3 rounded-md transition duration-150">
+                                            Muat Foto Lainnya
+                                        </button>
+                                        <p id="remainingCountTamu" class="text-xs text-gray-500 mt-1 pl-1"></p>
+                                    </div>
+                                </div>
+                            </div>
+
 
     
                 @else
