@@ -411,7 +411,69 @@
                                 </div>
                             </div>
 
-                    
+                                <!-- 14. Memberikan Pelayanan Informasi -->
+                                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                                    <div class="bg-[#d9c99a] p-4">
+                                        <h3 class="text-m font-bold text-gray-900">
+                                            5. Memberikan pelayanan informasi yang di butuhkan oleh tamu karyawan dan tenan sesuai standar SMP
+                                        </h3>
+                                    </div>
+                                    <div class="p-6">
+                                        <div class="-mt-4 mb-1">
+                                            <p class="text-gray-700">Memberikan pelayanan informasi yang di butuhkan oleh tamu karyawan dan tenan sesuai standar SMP</p>
+                                        </div>
+                                        <div class="flex justify-between items-center mb-2">
+                                            <div>
+                                                <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="flex flex-col md:flex-row items-center gap-6">
+                                            <div class="w-full md:w-1/4">
+                                                <canvas id="layananChart" width="300" height="300"></canvas>
+                                            </div>
+                                            <div class="w-full md:w-2/4 md:pl-8">
+                                                <div class="space-y-3">
+                                                    @foreach($layananData as $layanan)
+                                                    <div class="flex items-center">
+                                                        <span class="w-4 h-4 rounded-full mr-3" style="background-color: {{ $layanan['color'] }}"></span>
+                                                        <span class="text-gray-700">{{ $layanan['label'] }}</span>
+                                                    </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+            
+                                <!-- 15. Dokumentasi Foto Panduan -->
+                                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                                    <div class="bg-[#d9c99a] p-4">
+                                        <h3 class="text-m font-bold text-gray-900">
+                                            Dokumentasi panduan keselamatan kerja ke mitra atau tamu
+                                        </h3>
+                                    </div>
+                                    <div class="p-6">
+                                        <div class="-mt-4 mb-1">
+                                            <p class="text-gray-700">Lampirkan Dokumentasi panduan keselamatan kerja ke mitra atau tamu</p>
+                                            <p class="text-sm text-gray-500">{{ $totalFotoPanduan }} jawaban</p>
+                                        </div>
+                                    </br>
+            
+                                        <!-- Gallery Container -->
+                                        <div id="photoGalleryPanduan" class="space-y-1">
+                                            <!-- Photos akan ditampilkan di sini via JavaScript -->
+                                        </div>
+            
+                                        <!-- Tombol Load More -->
+                                        <div id="loadMoreContainerPanduan" class="mt-2 text-left" style="display: none;">
+                                            <button id="loadMoreBtnPanduan" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-3 rounded-md transition duration-150">
+                                                Muat Foto Lainnya
+                                            </button>
+                                            <p id="remainingCountPanduan" class="text-xs text-gray-500 mt-1 pl-1"></p>
+                                        </div>
+                                    </div>
+                                </div>
 
 
     
@@ -442,6 +504,8 @@
         const fotoLemburData = @json($fotoLembur);
         const memantauData = @json($memantauData);
         const fotoTamuData = @json($fotoTamu);
+        const layananData = @json($layananData);
+        const fotoPanduanData = @json($fotoPanduan);
 
         console.log('Shift Data:', shiftData);
         console.log('Area Data:', areaData);
@@ -454,6 +518,8 @@
         console.log('Foto Lembur Data:', fotoLemburData);
         console.log('Memantau Data:', memantauData);
         console.log('Foto Tamu Data:', fotoTamuData);
+        console.log('Layanan Data:', layananData);
+        console.log('Foto Panduan Data:', fotoPanduanData);
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
@@ -1004,6 +1070,103 @@ if (fotoTamuData.length > 0) {
 } else {
     document.getElementById('photoGalleryTamu').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
 }
+
+        // Chart 14: Memberikan Pelayanan Informasi (Pie Chart)
+        const layananCtx = document.getElementById('layananChart').getContext('2d');
+        new Chart(layananCtx, {
+            type: 'pie',
+            data: {
+                labels: layananData.map(item => item.label),
+                datasets: [{
+                    data: layananData.map(item => item.percentage),
+                    backgroundColor: layananData.map(item => item.color),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold',
+                            size: 16
+                        },
+                        formatter: (value) => {
+                            return value.toFixed(1) + '%';
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        // Photo Gallery Logic untuk Foto Panduan
+        let currentIndexPanduan = 0;
+        const photosPerLoadPanduan = 5;
+        const initialLoadPanduan = 6;
+
+        function renderPhotosPanduan(startIndex, count) {
+            const gallery = document.getElementById('photoGalleryPanduan');
+            const endIndex = Math.min(startIndex + count, fotoPanduanData.length);
+
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = fotoPanduanData[i];
+                const filename = extractFilename(foto.foto_panduan);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.foto_panduan, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
+
+            currentIndexPanduan = endIndex;
+            updateLoadMoreButtonPanduan();
+        }
+
+        function updateLoadMoreButtonPanduan() {
+            const container = document.getElementById('loadMoreContainerPanduan');
+            const remaining = document.getElementById('remainingCountPanduan');
+            const remainingPhotos = fotoPanduanData.length - currentIndexPanduan;
+
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        document.getElementById('loadMoreBtnPanduan').addEventListener('click', function() {
+            renderPhotosPanduan(currentIndexPanduan, photosPerLoadPanduan);
+        });
+
+        // Initial render untuk foto panduan
+        if (fotoPanduanData.length > 0) {
+            renderPhotosPanduan(0, initialLoadPanduan);
+        } else {
+            document.getElementById('photoGalleryPanduan').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
     </script>
     @endif
 </x-app-layout>
