@@ -704,6 +704,8 @@
         const fotoForceData = @json($fotoForce);
         const penertibanData = @json($penertibanData);
         const fotoPenertibanData = @json($fotoPenertiban);
+        const simulasiData = @json($simulasiData);
+        const fotoSimulasiData = @json($fotoSimulasi);
 
         console.log('Shift Data:', shiftData);
         console.log('Area Data:', areaData);
