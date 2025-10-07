@@ -560,9 +560,12 @@ return view('admin.dashboard', compact(
     'penertibanData',
     'fotoPenertiban',
     'totalFotoPenertiban',
-    'simulasiData',       
-    'fotoSimulasi',       
-    'totalFotoSimulasi'     
+    'simulasiData',
+    'fotoSimulasi',
+    'totalFotoSimulasi',
+    'penyegaranData',      
+    'fotoPenyegaran',      
+    'totalFotoPenyegaran'   
 ));
         }
         }
