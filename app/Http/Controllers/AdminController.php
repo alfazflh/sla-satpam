@@ -399,6 +399,49 @@ $fotoForce = DB::table('laporan_pengamanan')
 
 $totalFotoForce = $fotoForce->count();
 
+// 18. Data Penertiban Area Perpakiran (dari kolom 'penertiban')
+$penertibanCounts = DB::table('laporan_pengamanan')
+    ->select('penertiban', DB::raw('count(*) as total'))
+    ->whereNotNull('penertiban')
+    ->groupBy('penertiban')
+    ->get();
+
+$penertibanData = [];
+
+$penertibanColorMap = [
+    'Tertib' => '#4A90E2',
+    'Tidak Tertib' => '#E94B3C'
+];
+
+$penertibanLabelMap = [
+    'Tertib' => 'Tertib',
+    'Tidak Tertib' => 'Tidak Tertib'
+];
+
+foreach ($penertibanCounts as $penertiban) {
+    $percentage = $totalJawaban > 0 ? ($penertiban->total / $totalJawaban) * 100 : 0;
+    
+    $label = $penertibanLabelMap[$penertiban->penertiban] ?? $penertiban->penertiban;
+    $color = $penertibanColorMap[$penertiban->penertiban] ?? '#cccccc';
+    
+    $penertibanData[] = [
+        'label' => $label,
+        'count' => $penertiban->total,
+        'percentage' => round($percentage, 1),
+        'color' => $color
+    ];
+}
+
+// 19. Ambil foto-foto dari kolom foto_penertiban
+$fotoPenertiban = DB::table('laporan_pengamanan')
+    ->select('id', 'foto_penertiban', 'created_at')
+    ->whereNotNull('foto_penertiban')
+    ->where('foto_penertiban', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalFotoPenertiban = $fotoPenertiban->count();
+
 return view('admin.dashboard', compact(
     'totalJawaban',
     'shiftData',
