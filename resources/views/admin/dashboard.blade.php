@@ -587,7 +587,8 @@
         console.log('Foto Tamu Data:', fotoTamuData);
         console.log('Layanan Data:', layananData);
         console.log('Foto Panduan Data:', fotoPanduanData);
-        
+        console.log('Fungsi Force Data:', fungsiForceData);
+        console.log('Foto Force Data:', fotoForceData);
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
@@ -1235,6 +1236,106 @@ if (fotoTamuData.length > 0) {
         } else {
             document.getElementById('photoGalleryPanduan').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
         }
+
+        // Chart 16: Fungsi Pengamanan Force Majure (Pie Chart)
+// Tambahkan setelah chart dan gallery foto panduan
+const fungsiForceCtx = document.getElementById('fungsiForceChart').getContext('2d');
+new Chart(fungsiForceCtx, {
+    type: 'pie',
+    data: {
+        labels: fungsiForceData.map(item => item.label),
+        datasets: [{
+            data: fungsiForceData.map(item => item.percentage),
+            backgroundColor: fungsiForceData.map(item => item.color),
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                    }
+                }
+            },
+            datalabels: {
+                color: '#fff',
+                font: {
+                    weight: 'bold',
+                    size: 16
+                },
+                formatter: (value) => {
+                    return value.toFixed(1) + '%';
+                }
+            }
+        }
+    },
+    plugins: [ChartDataLabels]
+});
+
+// Photo Gallery Logic untuk Foto Force Majure
+let currentIndexForce = 0;
+const photosPerLoadForce = 5;
+const initialLoadForce = 6;
+
+function renderPhotosForce(startIndex, count) {
+    const gallery = document.getElementById('photoGalleryForce');
+    const endIndex = Math.min(startIndex + count, fotoForceData.length);
+
+    for (let i = startIndex; i < endIndex; i++) {
+        const foto = fotoForceData[i];
+        const filename = extractFilename(foto.foto_force);
+        
+        const photoItem = document.createElement('div');
+        photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+        photoItem.onclick = () => window.open('/storage/' + foto.foto_force, '_blank');
+        
+        photoItem.innerHTML = `
+            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+            </svg>
+            <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+        `;
+        
+        gallery.appendChild(photoItem);
+    }
+
+    currentIndexForce = endIndex;
+    updateLoadMoreButtonForce();
+}
+
+function updateLoadMoreButtonForce() {
+    const container = document.getElementById('loadMoreContainerForce');
+    const remaining = document.getElementById('remainingCountForce');
+    const remainingPhotos = fotoForceData.length - currentIndexForce;
+
+    if (remainingPhotos > 0) {
+        container.style.display = 'block';
+        remaining.textContent = `${remainingPhotos} file lainnya`;
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+document.getElementById('loadMoreBtnForce').addEventListener('click', function() {
+    renderPhotosForce(currentIndexForce, photosPerLoadForce);
+});
+
+// Initial render untuk foto force
+if (fotoForceData.length > 0) {
+    renderPhotosForce(0, initialLoadForce);
+} else {
+    document.getElementById('photoGalleryForce').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+}
+
+
     </script>
     @endif
 </x-app-layout>
