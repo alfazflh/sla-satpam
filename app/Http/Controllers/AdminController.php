@@ -356,6 +356,49 @@ $fotoPanduan = DB::table('laporan_pengamanan')
 
 $totalFotoPanduan = $fotoPanduan->count();
 
+// 16. Data Fungsi Force Majure (dari kolom 'fungsi_force')
+$fungsiForceCounts = DB::table('laporan_pengamanan')
+    ->select('fungsi_force', DB::raw('count(*) as total'))
+    ->whereNotNull('fungsi_force')
+    ->groupBy('fungsi_force')
+    ->get();
+
+$fungsiForceData = [];
+
+$fungsiForceColorMap = [
+    'Dilaksanakan' => '#4A90E2',
+    'Tidak Terjadi' => '#E94B3C'
+];
+
+$fungsiForceLabelMap = [
+    'Dilaksanakan' => 'Dilaksanakan',
+    'Tidak Terjadi' => 'Tidak Terjadi'
+];
+
+foreach ($fungsiForceCounts as $force) {
+    $percentage = $totalJawaban > 0 ? ($force->total / $totalJawaban) * 100 : 0;
+    
+    $label = $fungsiForceLabelMap[$force->fungsi_force] ?? $force->fungsi_force;
+    $color = $fungsiForceColorMap[$force->fungsi_force] ?? '#cccccc';
+    
+    $fungsiForceData[] = [
+        'label' => $label,
+        'count' => $force->total,
+        'percentage' => round($percentage, 1),
+        'color' => $color
+    ];
+}
+
+// 17. Ambil foto-foto dari kolom foto_force
+$fotoForce = DB::table('laporan_pengamanan')
+    ->select('id', 'foto_force', 'created_at')
+    ->whereNotNull('foto_force')
+    ->where('foto_force', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalFotoForce = $fotoForce->count();
+
 return view('admin.dashboard', compact(
     'totalJawaban',
     'shiftData',
@@ -379,7 +422,10 @@ return view('admin.dashboard', compact(
     'totalFotoTamu',
     'layananData',
     'fotoPanduan',
-    'totalFotoPanduan'
+    'totalFotoPanduan',
+    'fungsiForceData',
+    'fotoForce',
+    'totalFotoForce'
 ));
         }
         }
