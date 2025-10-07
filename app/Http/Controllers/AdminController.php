@@ -442,6 +442,49 @@ $fotoPenertiban = DB::table('laporan_pengamanan')
 
 $totalFotoPenertiban = $fotoPenertiban->count();
 
+// 20. Data Simulasi Tanggap Darurat (dari kolom 'simulasi')
+$simulasiCounts = DB::table('laporan_pengamanan')
+    ->select('simulasi', DB::raw('count(*) as total'))
+    ->whereNotNull('simulasi')
+    ->groupBy('simulasi')
+    ->get();
+
+$simulasiData = [];
+
+$simulasiColorMap = [
+    '100% Berpartisipasi' => '#4A90E2',
+    'Tidak Berpartisipasi (Nihil Kegiatan)' => '#E94B3C'
+];
+
+$simulasiLabelMap = [
+    '100% Berpartisipasi' => '100% Berpartisipasi',
+    'Tidak Berpartisipasi (Nihil Kegiatan)' => 'Tidak Berpartisipasi (Nihil Kegiatan)'
+];
+
+foreach ($simulasiCounts as $simulasi) {
+    $percentage = $totalJawaban > 0 ? ($simulasi->total / $totalJawaban) * 100 : 0;
+    
+    $label = $simulasiLabelMap[$simulasi->simulasi] ?? $simulasi->simulasi;
+    $color = $simulasiColorMap[$simulasi->simulasi] ?? '#cccccc';
+    
+    $simulasiData[] = [
+        'label' => $label,
+        'count' => $simulasi->total,
+        'percentage' => round($percentage, 1),
+        'color' => $color
+    ];
+}
+
+// 21. Ambil foto-foto dari kolom foto_simulasi
+$fotoSimulasi = DB::table('laporan_pengamanan')
+    ->select('id', 'foto_simulasi', 'created_at')
+    ->whereNotNull('foto_simulasi')
+    ->where('foto_simulasi', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalFotoSimulasi = $fotoSimulasi->count();
+
 return view('admin.dashboard', compact(
     'totalJawaban',
     'shiftData',
