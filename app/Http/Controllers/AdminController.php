@@ -485,6 +485,51 @@ $fotoSimulasi = DB::table('laporan_pengamanan')
 
 $totalFotoSimulasi = $fotoSimulasi->count();
 
+// 22. Data Penyegaran dan Kebugaran Fisik (dari kolom 'penyegaran')
+$penyegaranCounts = DB::table('laporan_pengamanan')
+    ->select('penyegaran', DB::raw('count(*) as total'))
+    ->whereNotNull('penyegaran')
+    ->groupBy('penyegaran')
+    ->get();
+
+$penyegaranData = [];
+
+$penyegaranColorMap = [
+    'Dilaksanakan' => '#4A90E2',
+    'Tidak Ada Kegiatan' => '#E94B3C'
+];
+
+$penyegaranLabelMap = [
+    'Dilaksanakan' => 'Dilaksanakan',
+    'Tidak Ada Kegiatan' => 'Tidak Ada Kegiatan'
+];
+
+foreach ($penyegaranCounts as $penyegaran) {
+    $percentage = $totalJawaban > 0 ? ($penyegaran->total / $totalJawaban) * 100 : 0;
+    
+    $label = $penyegaranLabelMap[$penyegaran->penyegaran] ?? $penyegaran->penyegaran;
+    $color = $penyegaranColorMap[$penyegaran->penyegaran] ?? '#cccccc';
+    
+    $penyegaranData[] = [
+        'label' => $label,
+        'count' => $penyegaran->total,
+        'percentage' => round($percentage, 1),
+        'color' => $color
+    ];
+}
+
+// 23. Ambil foto-foto dari kolom foto_penyegaran
+$fotoPenyegaran = DB::table('laporan_pengamanan')
+    ->select('id', 'foto_penyegaran', 'created_at')
+    ->whereNotNull('foto_penyegaran')
+    ->where('foto_penyegaran', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalFotoPenyegaran = $fotoPenyegaran->count();
+
+
+
 return view('admin.dashboard', compact(
     'totalJawaban',
     'shiftData',
