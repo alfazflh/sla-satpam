@@ -313,38 +313,38 @@ $fotoTamu = DB::table('laporan_pengamanan')
 
 $totalFotoTamu = $fotoTamu->count();
 
-// 14. Data Memberikan Pelayanan Informasi (dari kolom 'layanan')
-$layananCounts = DB::table('laporan_pengamanan')
-    ->select('layanan', DB::raw('count(*) as total'))
-    ->whereNotNull('layanan')
-    ->groupBy('layanan')
-    ->get();
+        // 14. Data Memberikan Pelayanan Informasi (dari kolom 'pelayanan')
+        $layananCounts = DB::table('laporan_pengamanan')
+            ->select('pelayanan', DB::raw('count(*) as total'))
+            ->whereNotNull('pelayanan')
+            ->groupBy('pelayanan')
+            ->get();
 
-$layananData = [];
+        $layananData = [];
 
-$layananColorMap = [
-    '100% Terpenuhi' => '#4A90E2',
-    'Nihil Tamu' => '#E94B3C'
-];
+        $layananColorMap = [
+            '100% Terpenuhi' => '#4A90E2',
+            'Nihil Tamu' => '#E94B3C'
+        ];
 
-$layananLabelMap = [
-    '100% Terpenuhi' => '100% Terpenuhi',
-    'Nihil Tamu' => 'Nihil Tamu'
-];
+        $layananLabelMap = [
+            '100% Terpenuhi' => '100% Terpenuhi',
+            'Nihil Tamu' => 'Nihil Tamu'
+        ];
 
-foreach ($layananCounts as $layanan) {
-    $percentage = $totalJawaban > 0 ? ($layanan->total / $totalJawaban) * 100 : 0;
-    
-    $label = $layananLabelMap[$layanan->layanan] ?? $layanan->layanan;
-    $color = $layananColorMap[$layanan->layanan] ?? '#cccccc';
-    
-    $layananData[] = [
-        'label' => $label,
-        'count' => $layanan->total,
-        'percentage' => round($percentage, 1),
-        'color' => $color
-    ];
-}
+        foreach ($layananCounts as $layanan) {
+            $percentage = $totalJawaban > 0 ? ($layanan->total / $totalJawaban) * 100 : 0;
+            
+            $label = $layananLabelMap[$layanan->pelayanan] ?? $layanan->pelayanan;
+            $color = $layananColorMap[$layanan->pelayanan] ?? '#cccccc';
+            
+            $layananData[] = [
+                'label' => $label,
+                'count' => $layanan->total,
+                'percentage' => round($percentage, 1),
+                'color' => $color
+            ];
+        }
 
 // 15. Ambil foto-foto dari kolom foto_panduan
 $fotoPanduan = DB::table('laporan_pengamanan')
