@@ -1105,6 +1105,9 @@
         const fotoRutinData = @json($fotoRutin);
         const pengecekanData = @json($pengecekanData);
         const fotoPengecekanData = @json($fotoPengecekan);
+        const cctvData = @json($cctvData);
+        const fotoCctvData = @json($fotoCctv);
+        const kronologiCctvList = @json($kronologiCctv);
 
         console.log('Shift Data:', shiftData);
         console.log('Area Data:', areaData);
