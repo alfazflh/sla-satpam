@@ -675,9 +675,9 @@ return view('admin.dashboard', compact(
     'totalTitik',       
     'fotoRutin',       
     'totalFotoRutin',
-    'pengecekanData',        // ← TAMBAHKAN INI
-    'fotoPengecekan',        // ← TAMBAHKAN INI
-    'totalFotoPengecekan'    // ← TAMBAHKAN INI
+    'pengecekanData',     
+    'fotoPengecekan',      
+    'totalFotoPengecekan'   
 ));
         }
         }
