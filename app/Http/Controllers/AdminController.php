@@ -664,7 +664,7 @@ return view('admin.dashboard', compact(
     'fotoTelepon',       
     'totalFotoTelepon',
     'rutinData',           // TAMBAHAN BARU
-    'titikData',           // TAMBAHAN BARU
+    'titikData',          
     'totalTitik',       
     'fotoRutin',       
     'totalFotoRutin'     
