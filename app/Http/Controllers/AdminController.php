@@ -667,7 +667,7 @@ return view('admin.dashboard', compact(
     'titikData',           // TAMBAHAN BARU
     'totalTitik',          // TAMBAHAN BARU
     'fotoRutin',           // TAMBAHAN BARU
-    'totalFotoRutin'       // TAMBAHAN BARU
+    'totalFotoRutin'     
 ));
         }
         }
