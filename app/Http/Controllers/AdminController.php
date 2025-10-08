@@ -663,7 +663,7 @@ return view('admin.dashboard', compact(
     'teleponData',  
     'fotoTelepon',       
     'totalFotoTelepon',
-    'rutinData',           // TAMBAHAN BARU
+    'rutinData',          
     'titikData',          
     'totalTitik',       
     'fotoRutin',       
