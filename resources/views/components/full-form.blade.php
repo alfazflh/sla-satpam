@@ -842,7 +842,7 @@
 
                 <!-- BAGIAN 28: CCTV -->
                 <div class="form-section hidden" data-section="28">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">14. Melakukan Pengawasan Area melalui CCTV</h2>
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800">13. Melakukan Pengawasan Area melalui CCTV</h2>
                     <p class="text-sm text-gray-600 mb-4">100% pengawasan area pengamanan melalui CCTV dari layar monitor CCTV, Melakukan pengawasan area melalui CCTV* <span class="text-red-500">*</span></p>
                     
                     <div class="space-y-2 mb-6">
