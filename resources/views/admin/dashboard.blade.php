@@ -1137,6 +1137,7 @@
         console.log('Foto Rutin Data:', fotoRutinData);
         console.log('Pengecekan Data:', pengecekanData);
         console.log('Foto Pengecekan Data:', fotoPengecekanData);
+        
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
