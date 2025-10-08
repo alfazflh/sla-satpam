@@ -961,6 +961,105 @@
                         </div>
                     </div>
 
+                                <!-- 31. Pengawasan Area Melalui CCTV -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                13. Melakukan pengawasan area melalui CCTV
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="-mt-4 mb-1">
+                                <p class="text-gray-700">Melakukan pengawasan area melalui CCTV</p>
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <div>
+                                    <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
+                                </div>
+                            </div>
+                        
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <div class="w-full md:w-1/4">
+                                    <canvas id="cctvChart" width="300" height="300"></canvas>
+                                </div>
+                                <div class="w-full md:w-2/4 md:pl-8">
+                                    <div class="space-y-3">
+                                        @foreach($cctvData as $cctv)
+                                        <div class="flex items-center">
+                                            <span class="w-4 h-4 rounded-full mr-3" style="background-color: {{ $cctv['color'] }}"></span>
+                                            <span class="text-gray-700">{{ $cctv['label'] }}</span>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 32. Dokumentasi Foto CCTV -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                Dokumentasi pengawasan area melalui CCTV
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="-mt-4 mb-1">
+                                <p class="text-gray-700">Lampirkan Foto pengawasan area melalui CCTV (Foto Layar Monitor CCTV)</p>
+                                <p class="text-sm text-gray-500">{{ $totalFotoCctv }} jawaban</p>
+                            </div>
+                        </br>
+
+                            <!-- Gallery Container -->
+                            <div id="photoGalleryCctv" class="space-y-1">
+                                <!-- Photos akan ditampilkan di sini via JavaScript -->
+                            </div>
+
+                            <!-- Tombol Load More -->
+                            <div id="loadMoreContainerCctv" class="mt-2 text-left" style="display: none;">
+                                <button id="loadMoreBtnCctv" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-3 rounded-md transition duration-150">
+                                    Muat Foto Lainnya
+                                </button>
+                                <p id="remainingCountCctv" class="text-xs text-gray-500 mt-1 pl-1"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 33. Kronologi CCTV -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                CCTV Rusak / Ada Kejadian
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="-mt-4 mb-1">
+                                <p class="text-gray-700">Kronologi CCTV Rusak / Ada kejadian Potensi Ancaman Gangguan</p>
+                                <p class="text-sm text-gray-500">{{ $totalKronologiCctv }} jawaban</p>
+                            </div>
+                        </br>
+
+                            <!-- Kronologi Container with Scroll -->
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div id="kronologiCctvContainer" class="max-h-96 overflow-y-auto">
+                                    @if($kronologiCctv->count() > 0)
+                                        <div class="divide-y divide-gray-200">
+                                            @foreach($kronologiCctv as $kronologi)
+                                            <div class="space-y-2">
+                                                <div class="bg-gray-50 rounded-lg px-4 py-2">
+                                                    <p class="text-sm text-gray-800">{{ $kronologi->kronologi_cctv }}</p>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <p class="text-gray-500 text-center py-8">Tidak ada kronologi yang tersedia</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 
     
                 @else
