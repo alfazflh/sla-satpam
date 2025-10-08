@@ -666,7 +666,7 @@ return view('admin.dashboard', compact(
     'rutinData',           // TAMBAHAN BARU
     'titikData',           // TAMBAHAN BARU
     'totalTitik',          // TAMBAHAN BARU
-    'fotoRutin',           // TAMBAHAN BARU
+    'fotoRutin',       
     'totalFotoRutin'     
 ));
         }
