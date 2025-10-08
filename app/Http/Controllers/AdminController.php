@@ -571,6 +571,59 @@ $fotoTelepon = DB::table('laporan_pengamanan')
 
 $totalFotoTelepon = $fotoTelepon->count();
 
+// 26. Data Patroli Rutin (dari kolom 'rutin')
+$rutinCounts = DB::table('laporan_pengamanan')
+    ->select('rutin', DB::raw('count(*) as total'))
+    ->whereNotNull('rutin')
+    ->groupBy('rutin')
+    ->get();
+
+$rutinData = [];
+
+$rutinColorMap = [
+    '100% Dilaksanakan Sesuai Jadwal dan Titik Patrol Terkontrol' => '#4A90E2',
+    'Tidak Dilaukan Patroli' => '#E94B3C'
+];
+
+$rutinLabelMap = [
+    '100% Dilaksanakan Sesuai Jadwal dan Titik Patrol Terkontrol' => '100% Dilaksanakan Sesuai Jadwal dan Titik Patrol Terkontrol',
+    'Tidak Dilaukan Patroli' => 'Tidak Dilaukan Patroli'
+];
+
+foreach ($rutinCounts as $rutin) {
+    $percentage = $totalJawaban > 0 ? ($rutin->total / $totalJawaban) * 100 : 0;
+    
+    $label = $rutinLabelMap[$rutin->rutin] ?? $rutin->rutin;
+    $color = $rutinColorMap[$rutin->rutin] ?? '#cccccc';
+    
+    $rutinData[] = [
+        'label' => $label,
+        'count' => $rutin->total,
+        'percentage' => round($percentage, 1),
+        'color' => $color
+    ];
+}
+
+// 27. Ambil data titik patroli dari kolom titik
+$titikData = DB::table('laporan_pengamanan')
+    ->select('id', 'titik', 'created_at')
+    ->whereNotNull('titik')
+    ->where('titik', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalTitik = $titikData->count();
+
+// 28. Ambil foto-foto dari kolom foto_rutin
+$fotoRutin = DB::table('laporan_pengamanan')
+    ->select('id', 'foto_rutin', 'created_at')
+    ->whereNotNull('foto_rutin')
+    ->where('foto_rutin', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalFotoRutin = $fotoRutin->count();
+
 
 return view('admin.dashboard', compact(
     'totalJawaban',
