@@ -771,7 +771,12 @@ return view('admin.dashboard', compact(
     'totalFotoRutin',
     'pengecekanData',     
     'fotoPengecekan',      
-    'totalFotoPengecekan'   
+    'totalFotoPengecekan',
+    'cctvData',           // BARU
+    'fotoCctv',           // BARU
+    'totalFotoCctv',      // BARU
+    'kronologiCctv',      // BARU
+    'totalKronologiCctv'  // BARU
 ));
         }
         }
