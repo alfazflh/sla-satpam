@@ -773,7 +773,7 @@ return view('admin.dashboard', compact(
     'fotoPengecekan',      
     'totalFotoPengecekan',
     'cctvData',      
-    'fotoCctv',           // BARU
+    'fotoCctv',         
     'totalFotoCctv',      // BARU
     'kronologiCctv',      // BARU
     'totalKronologiCctv'  // BARU
