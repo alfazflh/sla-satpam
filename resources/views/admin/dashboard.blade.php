@@ -965,7 +965,9 @@
         console.log('Foto Penyegaran Data:', fotoPenyegaranData);
         console.log('Telepon Data:', teleponData);
         console.log('Foto Telepon Data:', fotoTeleponData);
-        
+        console.log('Rutin Data:', rutinData);
+        console.log('Titik Data:', titikDataList);
+        console.log('Foto Rutin Data:', fotoRutinData);
 
         // Chart 1: Waktu Jaga Shift (Pie Chart)
         const shiftCtx = document.getElementById('shiftChart').getContext('2d');
