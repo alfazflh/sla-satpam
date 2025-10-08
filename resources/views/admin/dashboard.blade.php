@@ -1004,6 +1004,8 @@
         const rutinData = @json($rutinData);
         const titikDataList = @json($titikData);
         const fotoRutinData = @json($fotoRutin);
+        const pengecekanData = @json($pengecekanData);
+        const fotoPengecekanData = @json($fotoPengecekan);
 
         console.log('Shift Data:', shiftData);
         console.log('Area Data:', areaData);
