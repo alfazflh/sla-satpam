@@ -671,6 +671,59 @@ $fotoPengecekan = DB::table('laporan_pengamanan')
 
 $totalFotoPengecekan = $fotoPengecekan->count();
 
+// 31. Data Pengawasan Area Melalui CCTV (dari kolom 'cctv')
+$cctvCounts = DB::table('laporan_pengamanan')
+    ->select('cctv', DB::raw('count(*) as total'))
+    ->whereNotNull('cctv')
+    ->groupBy('cctv')
+    ->get();
+
+$cctvData = [];
+
+$cctvColorMap = [
+    '100% CCTV aman dan Tidak Ada Kejadian' => '#4A90E2',
+    'CCTV Rusak / Ada Kejadian' => '#E94B3C'
+];
+
+$cctvLabelMap = [
+    '100% CCTV aman dan Tidak Ada Kejadian' => '100% CCTV aman dan Tidak Ada Kejadian',
+    'CCTV Rusak / Ada Kejadian' => 'CCTV Rusak / Ada Kejadian'
+];
+
+foreach ($cctvCounts as $cctv) {
+    $percentage = $totalJawaban > 0 ? ($cctv->total / $totalJawaban) * 100 : 0;
+    
+    $label = $cctvLabelMap[$cctv->cctv] ?? $cctv->cctv;
+    $color = $cctvColorMap[$cctv->cctv] ?? '#cccccc';
+    
+    $cctvData[] = [
+        'label' => $label,
+        'count' => $cctv->total,
+        'percentage' => round($percentage, 1),
+        'color' => $color
+    ];
+}
+
+// 32. Ambil foto-foto dari kolom foto_cctv
+$fotoCctv = DB::table('laporan_pengamanan')
+    ->select('id', 'foto_cctv', 'created_at')
+    ->whereNotNull('foto_cctv')
+    ->where('foto_cctv', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalFotoCctv = $fotoCctv->count();
+
+// 33. Ambil data kronologi dari kolom kronologi_cctv
+$kronologiCctv = DB::table('laporan_pengamanan')
+    ->select('id', 'kronologi_cctv', 'created_at')
+    ->whereNotNull('kronologi_cctv')
+    ->where('kronologi_cctv', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalKronologiCctv = $kronologiCctv->count();
+
 
 return view('admin.dashboard', compact(
     'totalJawaban',
