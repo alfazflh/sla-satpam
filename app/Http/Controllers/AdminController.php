@@ -775,7 +775,7 @@ return view('admin.dashboard', compact(
     'cctvData',      
     'fotoCctv',         
     'totalFotoCctv',    
-    'kronologiCctv',      // BARU
+    'kronologiCctv',  
     'totalKronologiCctv'  // BARU
 ));
         }
