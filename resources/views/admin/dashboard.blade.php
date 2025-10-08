@@ -897,6 +897,70 @@
                         </div>
                     </div>
 
+                    <!-- 29. Pengecekan Sekitar Objek Pengamanan -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                12. Melakukan pengecekan sekitar objek pengamanan setelah jam pulang kantor dan mematikan listrik dan benda elektronik
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="-mt-4 mb-1">
+                                <p class="text-gray-700">Melakukan pengecekan sekitar objek pengamanan setelah jam pulang kantor dan mematikan listrik dan benda elektronik</p>
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <div>
+                                    <p class="text-sm text-gray-500">{{ $totalJawaban }} jawaban</p>
+                                </div>
+                            </div>
+                        
+                            <div class="flex flex-col md:flex-row items-center gap-6">
+                                <div class="w-full md:w-1/4">
+                                    <canvas id="pengecekanChart" width="300" height="300"></canvas>
+                                </div>
+                                <div class="w-full md:w-2/4 md:pl-8">
+                                    <div class="space-y-3">
+                                        @foreach($pengecekanData as $pengecekan)
+                                        <div class="flex items-center">
+                                            <span class="w-4 h-4 rounded-full mr-3" style="background-color: {{ $pengecekan['color'] }}"></span>
+                                            <span class="text-gray-700">{{ $pengecekan['label'] }}</span>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 30. Dokumentasi Foto Pengecekan -->
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-[#d9c99a] p-4">
+                            <h3 class="text-m font-bold text-gray-900">
+                                Dokumentasi pengecekan sekitar objek pengamanan setelah jam pulang kantor dan mematikan listrik dan benda elektronik
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="-mt-4 mb-1">
+                                <p class="text-gray-700">Lampirkan Foto pengecekan sekitar objek pengamanan setelah jam pulang kantor dan mematikan listrik dan benda elektronik</p>
+                                <p class="text-sm text-gray-500">{{ $totalFotoPengecekan }} jawaban</p>
+                            </div>
+                        </br>
+
+                            <!-- Gallery Container -->
+                            <div id="photoGalleryPengecekan" class="space-y-1">
+                                <!-- Photos akan ditampilkan di sini via JavaScript -->
+                            </div>
+
+                            <!-- Tombol Load More -->
+                            <div id="loadMoreContainerPengecekan" class="mt-2 text-left" style="display: none;">
+                                <button id="loadMoreBtnPengecekan" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-medium py-1 px-3 rounded-md transition duration-150">
+                                    Muat Foto Lainnya
+                                </button>
+                                <p id="remainingCountPengecekan" class="text-xs text-gray-500 mt-1 pl-1"></p>
+                            </div>
+                        </div>
+                    </div>
+
 
     
                 @else
@@ -914,7 +978,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script>
-        // Deklarasi data SEKALI di awal
         const shiftData = @json($shiftData);
         const areaData = @json($areaData);
         const petugasData = @json($petugasData);
