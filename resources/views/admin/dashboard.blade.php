@@ -2267,7 +2267,7 @@ if (fotoRutinData.length > 0) {
     document.getElementById('photoGalleryRutin').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
 }
 
-/ Chart 29: Pengecekan Sekitar Objek Pengamanan (Pie Chart)
+// Chart 29: Pengecekan Sekitar Objek Pengamanan (Pie Chart)
     const pengecekanCtx = document.getElementById('pengecekanChart').getContext('2d');
     new Chart(pengecekanCtx, {
         type: 'pie',
