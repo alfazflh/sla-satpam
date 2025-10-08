@@ -625,45 +625,5 @@ $fotoRutin = DB::table('laporan_pengamanan')
 $totalFotoRutin = $fotoRutin->count();
 
 
-return view('admin.dashboard', compact(
-    'totalJawaban',
-    'shiftData',
-    'areaData',
-    'petugasData',
-    'seragamData',
-    'fotoSerahterima',
-    'totalFoto',
-    'pengamananData',
-    'fotoPatroli',
-    'totalFotoPatroli',
-    'kronologiData',
-    'totalKronologi',
-    'fungsiKhususData',
-    'fotoLembur',
-    'totalFotoLembur',
-    'kronologiGangguan',
-    'totalKronologiGangguan',
-    'memantauData',
-    'fotoTamu',
-    'totalFotoTamu',
-    'layananData',
-    'fotoPanduan',
-    'totalFotoPanduan',
-    'fungsiForceData',
-    'fotoForce',
-    'totalFotoForce',
-    'penertibanData',
-    'fotoPenertiban',
-    'totalFotoPenertiban',
-    'simulasiData',
-    'fotoSimulasi',
-    'totalFotoSimulasi',
-    'penyegaranData',
-    'fotoPenyegaran',
-    'totalFotoPenyegaran',
-    'teleponData',  
-    'fotoTelepon',       
-    'totalFotoTelepon'   
-));
         }
         }
