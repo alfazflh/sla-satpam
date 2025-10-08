@@ -580,24 +580,28 @@ $rutinCounts = DB::table('laporan_pengamanan')
 
 $rutinData = [];
 
-$rutinColorMap = [
-    '100% Dilaksanakan Sesuai Jadwal dan Titik Patrol Terkontrol' => '#4A90E2',
-    'Tidak Dilaukan Patroli' => '#E94B3C'
-];
+// Default colors jika hanya ada 2 opsi
+$defaultColors = ['#4A90E2', '#E94B3C', '#F5A623', '#50C878'];
 
-$rutinLabelMap = [
-    '100% Dilaksanakan Sesuai Jadwal dan Titik Patrol Terkontrol' => '100% Dilaksanakan Sesuai Jadwal dan Titik Patrol Terkontrol',
-    'Tidak Dilaukan Patroli' => 'Tidak Dilaukan Patroli'
-];
-
-foreach ($rutinCounts as $rutin) {
+foreach ($rutinCounts as $index => $rutin) {
     $percentage = $totalJawaban > 0 ? ($rutin->total / $totalJawaban) * 100 : 0;
     
-    $label = $rutinLabelMap[$rutin->rutin] ?? $rutin->rutin;
-    $color = $rutinColorMap[$rutin->rutin] ?? '#cccccc';
+    // Tentukan warna berdasarkan konten
+    $color = '#cccccc'; // default
+    
+    // Cek jika mengandung kata kunci tertentu
+    if (stripos($rutin->rutin, '100%') !== false || 
+        stripos($rutin->rutin, 'Dilaksanakan') !== false || 
+        stripos($rutin->rutin, 'Sesuai') !== false) {
+        $color = '#4A90E2'; // Biru untuk positif
+    } elseif (stripos($rutin->rutin, 'Tidak') !== false) {
+        $color = '#E94B3C'; // Merah untuk negatif
+    } else {
+        $color = $defaultColors[$index % count($defaultColors)];
+    }
     
     $rutinData[] = [
-        'label' => $label,
+        'label' => $rutin->rutin, // Langsung pakai dari database
         'count' => $rutin->total,
         'percentage' => round($percentage, 1),
         'color' => $color
