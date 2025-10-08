@@ -628,8 +628,49 @@ $fotoRutin = DB::table('laporan_pengamanan')
 
 $totalFotoRutin = $fotoRutin->count();
 
-// Update bagian return view di AdminController.php (sekitar baris 590-620)
-// Tambahkan 'pengecekanData', 'fotoPengecekan', 'totalFotoPengecekan' ke dalam compact()
+// 29. Data Pengecekan Sekitar Objek Pengamanan (dari kolom 'pengecekan')
+$pengecekanCounts = DB::table('laporan_pengamanan')
+    ->select('pengecekan', DB::raw('count(*) as total'))
+    ->whereNotNull('pengecekan')
+    ->groupBy('pengecekan')
+    ->get();
+
+$pengecekanData = [];
+
+$pengecekanColorMap = [
+    'Dilaksanakan' => '#4A90E2',
+    'Tidak Dilaksanakan' => '#E94B3C'
+];
+
+$pengecekanLabelMap = [
+    'Dilaksanakan' => 'Dilaksanakan',
+    'Tidak Dilaksanakan' => 'Tidak Dilaksanakan'
+];
+
+foreach ($pengecekanCounts as $pengecekan) {
+    $percentage = $totalJawaban > 0 ? ($pengecekan->total / $totalJawaban) * 100 : 0;
+    
+    $label = $pengecekanLabelMap[$pengecekan->pengecekan] ?? $pengecekan->pengecekan;
+    $color = $pengecekanColorMap[$pengecekan->pengecekan] ?? '#cccccc';
+    
+    $pengecekanData[] = [
+        'label' => $label,
+        'count' => $pengecekan->total,
+        'percentage' => round($percentage, 1),
+        'color' => $color
+    ];
+}
+
+// 30. Ambil foto-foto dari kolom foto_pengecekan
+$fotoPengecekan = DB::table('laporan_pengamanan')
+    ->select('id', 'foto_pengecekan', 'created_at')
+    ->whereNotNull('foto_pengecekan')
+    ->where('foto_pengecekan', '!=', '')
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+$totalFotoPengecekan = $fotoPengecekan->count();
+
 
 return view('admin.dashboard', compact(
     'totalJawaban',
