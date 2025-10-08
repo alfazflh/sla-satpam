@@ -628,6 +628,9 @@ $fotoRutin = DB::table('laporan_pengamanan')
 
 $totalFotoRutin = $fotoRutin->count();
 
+// Update bagian return view di AdminController.php (sekitar baris 590-620)
+// Tambahkan 'pengecekanData', 'fotoPengecekan', 'totalFotoPengecekan' ke dalam compact()
+
 return view('admin.dashboard', compact(
     'totalJawaban',
     'shiftData',
@@ -671,7 +674,10 @@ return view('admin.dashboard', compact(
     'titikData',          
     'totalTitik',       
     'fotoRutin',       
-    'totalFotoRutin'     
+    'totalFotoRutin',
+    'pengecekanData',        // ← TAMBAHKAN INI
+    'fotoPengecekan',        // ← TAMBAHKAN INI
+    'totalFotoPengecekan'    // ← TAMBAHKAN INI
 ));
         }
         }
