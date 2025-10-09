@@ -20,19 +20,19 @@ class FormController extends Controller
             'nama' => 'required|string|max:255',
 
             // semua foto opsional, bisa nullable
-            'foto_serahterima' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_patroli' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_lembur' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_tamu' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_panduan' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_force' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_penertiban' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_simulasi' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_penyegaran' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_telepon' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_rutin' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_pengecekan' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            'foto_cctv' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'foto_serahterima' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_patroli' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_lembur' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_tamu' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_panduan' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_force' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_penertiban' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_simulasi' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_penyegaran' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_telepon' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_rutin' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_pengecekan' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+            'foto_cctv' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',            
         ]);
 
         // simpan data ke DB
