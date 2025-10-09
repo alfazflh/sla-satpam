@@ -1450,13 +1450,76 @@
             }
         }
     
+        // Upload foto handlers
+        function chooseSource(btn) {
+            const container = btn.closest('.upload-block');
+            const cameraInput = container.querySelector('.camera');
+            const galleryInput = container.querySelector('.gallery');
+    
+            Swal.fire({
+                title: 'Pilih Sumber Foto',
+                text: 'Ambil foto langsung atau pilih dari galeri?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '📷 Kamera',
+                cancelButtonText: '🖼️ Galeri',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    cameraInput.click();
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    galleryInput.click();
+                }
+            });
+    
+            // bind event listener hanya sekali per blok
+            cameraInput.onchange = updateFileName;
+            galleryInput.onchange = updateFileName;
+        }
+    
+        function updateFileName(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const container = event.target.closest('.upload-block');
+                const fileNameSpan = container.querySelector('.fileName');
+                const btn = container.querySelector('button[onclick*="chooseSource"]');
+    
+                fileNameSpan.textContent = "📄 " + file.name;
+                if (btn) {
+                    btn.classList.remove("bg-indigo-50", "text-indigo-700");
+                    btn.classList.add("bg-green-100", "text-green-700");
+                }
+            }
+        }
+    
+        // Tampilkan halaman sukses
+        function showSuccessPage() {
+            document.querySelector('.max-w-3xl').innerHTML = `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-8 text-center">
+                        <div class="mb-6">
+                            <svg class="mx-auto h-24 w-24 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl font-bold text-gray-800 mb-4">LAPORAN KEGIATAN ANGGOTA SATUAN PENGAMANAN</h1>
+                        <p class="text-xl text-gray-600 mb-8">Jawaban Anda telah direkam.</p>
+                        <a href="javascript:location.reload()" class="inline-block bg-[#1f7389] text-white px-6 py-3 rounded-lg hover:bg-[#196275] font-medium transition">
+                            Kirim jawaban lain
+                        </a>
+                    </div>
+                </div>
+            `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    
         // Initialize form
         document.addEventListener('DOMContentLoaded', function() {
             showSection(1);
             updateRequiredFields();
         });
     
-        // Form submission dengan SweetAlert loading
+        // Form submission dengan halaman sukses - HANYA SATU INI YANG DIPAKAI!
         document.getElementById('mainForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -1475,8 +1538,13 @@
                 }
             });
     
-            // Submit form
-            this.submit();
+            // Simulasi submit (ganti dengan this.submit(); untuk real submit ke server)
+            setTimeout(() => {
+                showSuccessPage();
+            }, 2000);
+            
+            // UNTUK PRODUCTION: Uncomment baris dibawah dan hapus setTimeout diatas
+            // this.submit();
         });
     
         // Auto-refresh CSRF token (mencegah 419 error)
@@ -1492,46 +1560,5 @@
                 .catch(err => console.log('CSRF refresh failed'));
         }, 600000); // Refresh setiap 10 menit
     </script>
-    <script>
-        function chooseSource(btn) {
-        const container = btn.closest('.upload-block');
-        const cameraInput = container.querySelector('.camera');
-        const galleryInput = container.querySelector('.gallery');
-
-        Swal.fire({
-            title: 'Pilih Sumber Foto',
-            text: 'Ambil foto langsung atau pilih dari galeri?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: '📷 Kamera',
-            cancelButtonText: '🖼️ Galeri',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-            cameraInput.click();
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-            galleryInput.click();
-            }
-        });
-
-        // bind event listener hanya sekali per blok
-        cameraInput.onchange = updateFileName;
-        galleryInput.onchange = updateFileName;
-        }
-
-        function updateFileName(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const container = event.target.closest('.upload-block');
-            const fileNameSpan = container.querySelector('.fileName');
-            const btn = container.querySelector('.upload-btn');
-
-            fileNameSpan.textContent = "📄 " + file.name;
-            btn.classList.remove("bg-indigo-50", "text-indigo-700");
-            btn.classList.add("bg-green-100", "text-green-700");
-        }
-        }
-
-    </script>  
 </body>
 </html>
