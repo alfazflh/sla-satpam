@@ -57,5 +57,6 @@ class FormController extends Controller
         $form->save();
 
         return redirect()->back()->with('success', 'Form berhasil disimpan!');
+        
     }
 }

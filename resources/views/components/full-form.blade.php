@@ -1507,6 +1507,16 @@
                         <a href="javascript:location.reload()" class="inline-block bg-[#1f7389] text-white px-6 py-3 rounded-lg hover:bg-[#196275] font-medium transition">
                             Kirim jawaban lain
                         </a>
+                        <div class="mt-8 pt-6 border-t border-gray-200 text-sm text-gray-500">
+                            <p>Konten ini tidak dibuat atau didukung oleh Google. - 
+                            <a href="#" class="text-blue-600 hover:underline">Hubungi pemilik formulir</a> - 
+                            <a href="#" class="text-blue-600 hover:underline">Persyaratan Layanan</a> - 
+                            <a href="#" class="text-blue-600 hover:underline">Kebijakan Privasi</a></p>
+                            <div class="mt-4 text-gray-400">
+                                <span style="font-family: 'Product Sans', Arial, sans-serif; font-size: 20px;">Google</span>
+                                <span style="font-family: Arial, sans-serif; font-size: 16px; margin-left: 8px;">Formulir</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1519,7 +1529,7 @@
             updateRequiredFields();
         });
     
-        // Form submission dengan halaman sukses - HANYA SATU INI YANG DIPAKAI!
+        // Form submission DENGAN AJAX + Page Sukses! 🎉
         document.getElementById('mainForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -1538,13 +1548,39 @@
                 }
             });
     
-            // Simulasi submit (ganti dengan this.submit(); untuk real submit ke server)
-            setTimeout(() => {
-                showSuccessPage();
-            }, 2000);
+            // Submit dengan AJAX
+            const formData = new FormData(this);
             
-            // UNTUK PRODUCTION: Uncomment baris dibawah dan hapus setTimeout diatas
-            // this.submit();
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+                if (data.success) {
+                    showSuccessPage();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: data.message || 'Terjadi kesalahan saat mengirim laporan',
+                        confirmButtonColor: '#1f7389'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.close();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan jaringan. Silakan coba lagi.',
+                    confirmButtonColor: '#1f7389'
+                });
+            });
         });
     
         // Auto-refresh CSRF token (mencegah 419 error)
