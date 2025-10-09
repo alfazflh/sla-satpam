@@ -165,8 +165,7 @@
                                 focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_serahterima" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_serahterima" accept="image/*" style="display:none">
+                        <input type="file" name="foto_serahterima" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -223,8 +222,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_patroli" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_patroli" accept="image/*" style="display:none">
+                        <input type="file" name="foto_patroli" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -1564,31 +1562,36 @@
         }, 600000); // Refresh setiap 10 menit
     </script>
     <script>
-        function chooseSource(btn) {
-        const container = btn.closest('.upload-block');
-        const cameraInput = container.querySelector('.camera');
-        const galleryInput = container.querySelector('.gallery');
+            function chooseSource(btn) {
+            const container = btn.closest('.upload-block');
+            const input = container.querySelector('input[type="file"]');
+            const fileName = container.querySelector('.fileName');
 
-        Swal.fire({
-            title: 'Pilih Sumber Foto',
-            text: 'Ambil foto langsung atau pilih dari galeri?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: '📷 Kamera',
-            cancelButtonText: '🖼️ Galeri',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-            cameraInput.click();
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-            galleryInput.click();
+            Swal.fire({
+                title: 'Pilih Sumber Foto',
+                text: 'Ambil foto langsung atau pilih dari galeri?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '📷 Kamera',
+                cancelButtonText: '🖼️ Galeri',
+                reverseButtons: true
+            }).then((result) => {
+                // set capture sesuai pilihan
+                if (result.isConfirmed) {
+                input.removeAttribute('capture');
+                input.setAttribute('capture', 'environment'); // aktifkan kamera
+                } else {
+                input.removeAttribute('capture'); // supaya galeri terbuka
+                }
+                input.click();
+            });
+
+            input.onchange = (e) => {
+                if (e.target.files && e.target.files[0]) {
+                fileName.textContent = 'File terpilih: ' + e.target.files[0].name;
+                }
+            };
             }
-        });
-
-        // bind event listener hanya sekali per blok
-        cameraInput.onchange = updateFileName;
-        galleryInput.onchange = updateFileName;
-        }
 
         function updateFileName(event) {
         const file = event.target.files[0];
