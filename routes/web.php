@@ -6,18 +6,23 @@ use App\Http\Controllers\FormController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\SatpamController;
 use App\Http\Controllers\AdminController;
 
-// Halaman awal (welcome + form create) - INI YANG DIPAKAI!
+// Laporan Satpam
+Route::get('/laporan-satpam', [SatpamController::class, 'create'])->name('laporan.create');
+Route::post('/laporan-satpam', [SatpamController::class, 'store'])->name('laporan.store');
+
+// Halaman awal (welcome + form create)
 Route::get('/', [FormController::class, 'create'])->name('welcome');
-Route::post('/laporan/store', [FormController::class, 'store'])->name('laporan.store');
+Route::post('/store', [FormController::class, 'store'])->name('form.store');
 
 // Dashboard User
 Route::get('/user', function () {
     return view('user.dashboard');
 })->middleware(['auth', 'verified'])->name('user.dashboard');
 
-// Dashboard Admin
+// Dashboard Admin - PAKAI INI SAJA (lewat Controller)
 Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function () {
     Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 });
@@ -42,11 +47,6 @@ Route::get('/dashboard', function () {
         ? redirect()->route('admin.dashboard')
         : redirect()->route('user.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
-// CSRF refresh route untuk form
-Route::get('/refresh-csrf', function () {
-    return response()->json(['token' => csrf_token()]);
-});
 
 // Route auth bawaan Breeze
 require __DIR__.'/auth.php';
