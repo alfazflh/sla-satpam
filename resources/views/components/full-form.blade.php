@@ -12,7 +12,7 @@
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <!-- Header -->
             <div class="bg-[#1f7389] text-white p-6">
-                <h1 class="text-2xl font-bold">LAPORAN KEGIATAN ANGGOTA SATUAN PENGAMANAN</h1>
+                <h1 class="text-2xl font-bold">LAPORAN KEGIATAN ANGGOTA SATUAN PENGAMANA</h1>
                 <p class="text-white mt-2">Silakan isi form dengan lengkap</p>
             </div>
 
