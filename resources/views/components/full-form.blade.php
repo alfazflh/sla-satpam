@@ -376,8 +376,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_tamu" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_tamu" accept="image/*" style="display:none">
+                        <input type="file" name="foto_tamu" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -431,8 +430,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_panduan" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_panduan" accept="image/*" style="display:none">
+                        <input type="file" name="foto_panduan" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -485,8 +483,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_force" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_force" accept="image/*" style="display:none">
+                        <input type="file" name="foto_force" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -540,8 +537,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_penertiban" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_penertiban" accept="image/*" style="display:none">
+                        <input type="file" name="foto_penertiban" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -594,8 +590,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_simulasi" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_simulasi" accept="image/*" style="display:none">
+                        <input type="file" name="foto_simulasi" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -648,8 +643,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_penyegaran" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_penyegaran" accept="image/*" style="display:none">
+                        <input type="file" name="foto_penyegaran" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -702,8 +696,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_telepon" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_telepon" accept="image/*" style="display:none">
+                        <input type="file" name="foto_telepon" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -768,8 +761,7 @@
                                         focus:ring-offset-1 cursor-pointer transition">
                                 📷 Upload Foto
                             </button>
-                            <input type="file" class="camera" name="foto_rutin" accept="image/*" capture="environment" style="display:none">
-                            <input type="file" class="gallery" name="foto_rutin" accept="image/*" style="display:none">
+                            <input type="file" name="foto_rutin" accept="image/*" style="display:none">
                             <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -822,8 +814,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_pengecekan" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_pengecekan" accept="image/*" style="display:none">
+                        <input type="file" name="foto_pengecekan" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -876,8 +867,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" class="camera" name="foto_cctv" accept="image/*" capture="environment" style="display:none">
-                        <input type="file" class="gallery" name="foto_cctv" accept="image/*" style="display:none">
+                        <input type="file" name="foto_cctv" accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
