@@ -1569,10 +1569,19 @@ document.getElementById('mainForm').addEventListener('submit', function(e) {
         }, 600000); // Refresh setiap 10 menit
     </script>
     <script>
+// Object untuk menyimpan file per input field
+const fileStorage = {};
+
 function chooseSource(btn) {
     const container = btn.closest('.upload-block');
-    const input = container.querySelector('input[type="file"]');
+    const realInput = container.querySelector('input[type="file"]');
     const fileName = container.querySelector('.fileName');
+    const fieldName = realInput.name;
+
+    // Inisialisasi storage untuk field ini jika belum ada
+    if (!fileStorage[fieldName]) {
+        fileStorage[fieldName] = [];
+    }
 
     Swal.fire({
         title: 'Pilih Sumber Foto',
@@ -1583,15 +1592,11 @@ function chooseSource(btn) {
         cancelButtonText: '🖼️ Galeri',
         reverseButtons: true
     }).then((result) => {
-        if (result.isConfirmed) {
-            input.setAttribute('capture', 'environment');
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-            input.removeAttribute('capture');
-        } else {
+        if (result.isDismissed) {
             return; // User cancelled
         }
 
-        // Buat temporary input untuk menangkap file baru
+        // Buat temporary input untuk ambil file baru
         const tempInput = document.createElement('input');
         tempInput.type = 'file';
         tempInput.multiple = true;
@@ -1601,53 +1606,87 @@ function chooseSource(btn) {
             tempInput.setAttribute('capture', 'environment');
         }
 
-        // Handler untuk file baru yang dipilih
+        // Handler ketika user pilih file
         tempInput.addEventListener('change', function(e) {
             const newFiles = Array.from(e.target.files);
             
             if (newFiles.length > 0) {
-                // Ambil file yang sudah ada sebelumnya
-                const existingFiles = input.files ? Array.from(input.files) : [];
+                // Tambahkan file baru ke storage
+                fileStorage[fieldName].push(...newFiles);
                 
-                // Gabungkan file lama dengan file baru
-                const allFiles = [...existingFiles, ...newFiles];
-                
-                // Buat DataTransfer untuk menggabungkan files
+                // Update DataTransfer dengan semua file
                 const dataTransfer = new DataTransfer();
-                allFiles.forEach(file => {
+                fileStorage[fieldName].forEach(file => {
                     dataTransfer.items.add(file);
                 });
                 
-                // Set files ke input asli
-                input.files = dataTransfer.files;
+                // Set ke input asli
+                realInput.files = dataTransfer.files;
                 
                 // Tampilkan semua nama file
-                const allFileNames = allFiles.map(f => f.name);
-                fileName.textContent = "📄 " + allFileNames.join(', ');
+                const allFileNames = fileStorage[fieldName].map(f => f.name);
+                fileName.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="flex-1">📄 ${allFileNames.join(', ')}</span>
+                        <button type="button" onclick="clearFiles(this)" 
+                            class="ml-2 text-red-600 hover:text-red-800 text-sm underline">
+                            Hapus Semua
+                        </button>
+                    </div>
+                `;
                 
                 // Ubah warna tombol jadi hijau
                 btn.classList.remove("bg-indigo-50", "text-indigo-700");
                 btn.classList.add("bg-green-100", "text-green-700");
+                btn.textContent = `✅ ${fileStorage[fieldName].length} Foto - Tambah Lagi`;
                 
-                console.log(`Total ${allFiles.length} file(s) untuk ${input.name}:`, allFileNames);
+                console.log(`Total ${fileStorage[fieldName].length} file untuk ${fieldName}:`, allFileNames);
             }
         });
 
-        // Trigger click pada temporary input
+        // Trigger file picker
         tempInput.click();
     });
 }
 
-// Fungsi untuk reset upload (opsional)
-function resetUpload(btn) {
+// Fungsi untuk hapus semua file
+function clearFiles(btn) {
     const container = btn.closest('.upload-block');
-    const input = container.querySelector('input[type="file"]');
+    const realInput = container.querySelector('input[type="file"]');
     const fileName = container.querySelector('.fileName');
+    const uploadBtn = container.querySelector('button[onclick^="chooseSource"]');
+    const fieldName = realInput.name;
     
-    input.value = '';
-    fileName.textContent = '';
-    btn.classList.remove("bg-green-100", "text-green-700");
-    btn.classList.add("bg-indigo-50", "text-indigo-700");
+    Swal.fire({
+        title: 'Hapus Semua Foto?',
+        text: 'Semua foto yang sudah dipilih akan dihapus',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Reset storage
+            fileStorage[fieldName] = [];
+            realInput.value = '';
+            fileName.textContent = '';
+            
+            // Reset tombol
+            uploadBtn.classList.remove("bg-green-100", "text-green-700");
+            uploadBtn.classList.add("bg-indigo-50", "text-indigo-700");
+            uploadBtn.textContent = '📷 Upload Foto';
+            
+            Swal.fire({
+                title: 'Berhasil!',
+                text: 'Semua foto telah dihapus',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    });
 }
 
     </script>  
