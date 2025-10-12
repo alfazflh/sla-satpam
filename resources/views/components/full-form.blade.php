@@ -1551,49 +1551,59 @@
         }, 600000); // Refresh setiap 10 menit
     </script>
     <script>
-            function chooseSource(btn) {
-            const container = btn.closest('.upload-block');
-            const input = container.querySelector('input[type="file"]');
-            const fileName = container.querySelector('.fileName');
+function chooseSource(btn) {
+    const container = btn.closest('.upload-block');
+    const input = container.querySelector('input[type="file"]');
+    const fileName = container.querySelector('.fileName');
 
-            Swal.fire({
-                title: 'Pilih Sumber Foto',
-                text: 'Ambil foto langsung atau pilih dari galeri?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: '📷 Kamera',
-                cancelButtonText: '🖼️ Galeri',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                input.setAttribute('capture', 'environment');
-                } else {
-                input.removeAttribute('capture');
-                }
-                input.click();
-            });
+    Swal.fire({
+        title: 'Pilih Sumber Foto',
+        text: 'Ambil foto langsung atau pilih dari galeri?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '📷 Kamera',
+        cancelButtonText: '🖼️ Galeri',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            input.setAttribute('capture', 'environment');
+        } else {
+            input.removeAttribute('capture');
+        }
 
-            input.onchange = (e) => {
-                const files = Array.from(e.target.files);
-                if (files.length > 0) {
-                fileName.textContent = files.map(f => f.name).join(', ');
-                }
-            };
+        // reset agar bisa pilih ulang file yang sama
+        input.value = '';
+        input.click();
+    });
+
+    // pasang event listener hanya sekali per input
+    if (!input.dataset.listenerAttached) {
+        input.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+
+            if (files.length > 0) {
+                // ambil file lama (jika sebelumnya sudah pilih)
+                let existing = fileName.dataset.allFiles
+                    ? JSON.parse(fileName.dataset.allFiles)
+                    : [];
+
+                files.forEach(f => existing.push(f.name));
+
+                // simpan daftar nama file ke dataset
+                fileName.dataset.allFiles = JSON.stringify(existing);
+
+                // tampilkan semua nama file dipisahkan koma
+                fileName.textContent = "📄 " + existing.join(', ');
+
+                // ubah warna tombol jadi hijau
+                btn.classList.remove("bg-indigo-50", "text-indigo-700");
+                btn.classList.add("bg-green-100", "text-green-700");
             }
+        });
 
-
-        function updateFileName(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const container = event.target.closest('.upload-block');
-            const fileNameSpan = container.querySelector('.fileName');
-            const btn = container.querySelector('.upload-btn');
-
-            fileNameSpan.textContent = "📄 " + file.name;
-            btn.classList.remove("bg-indigo-50", "text-indigo-700");
-            btn.classList.add("bg-green-100", "text-green-700");
-        }
-        }
+        input.dataset.listenerAttached = true;
+    }
+}
 
     </script>  
 </body>
