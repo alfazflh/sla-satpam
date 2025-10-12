@@ -20,12 +20,14 @@ class FormController extends Controller
         Log::info('Files Received:', $request->allFiles());
 
         try {
-            // STEP 1: VALIDASI FIELD TEKS SAJA (semua boleh kosong, kecuali minimal waktu & area)
+            // =========================
+            // 1️⃣ VALIDASI DATA TEKS
+            // =========================
             $validated = $request->validate([
                 'waktu' => 'nullable|string|max:255',
                 'area' => 'nullable|string|max:255',
                 'nama' => 'nullable|array',
-                'nama.*' => 'string|max:255',
+                'nama.*' => 'nullable|string|max:255',
 
                 'ketentuan_seragam' => 'nullable|string|max:255',
                 'pengamanan' => 'nullable|string|max:255',
@@ -44,53 +46,54 @@ class FormController extends Controller
                 'pengecekan' => 'nullable|string|max:255',
                 'cctv' => 'nullable|string|max:255',
                 'kronologi_cctv' => 'nullable|string|max:5000',
+
+                // ✅ VALIDASI FILE MULTIPLE (PERBAIKAN INTI)
+                'foto_serahterima' => 'nullable|array',
+                'foto_serahterima.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_patroli' => 'nullable|array',
+                'foto_patroli.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_lembur' => 'nullable|array',
+                'foto_lembur.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_tamu' => 'nullable|array',
+                'foto_tamu.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_panduan' => 'nullable|array',
+                'foto_panduan.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_force' => 'nullable|array',
+                'foto_force.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_penertiban' => 'nullable|array',
+                'foto_penertiban.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_simulasi' => 'nullable|array',
+                'foto_simulasi.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_penyegaran' => 'nullable|array',
+                'foto_penyegaran.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_telepon' => 'nullable|array',
+                'foto_telepon.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_rutin' => 'nullable|array',
+                'foto_rutin.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_pengecekan' => 'nullable|array',
+                'foto_pengecekan.*' => 'image|mimes:jpg,jpeg,png|max:51200',
+
+                'foto_cctv' => 'nullable|array',
+                'foto_cctv.*' => 'image|mimes:jpg,jpeg,png|max:51200',
             ]);
 
-            Log::info('✅ Text validation passed');
+            Log::info('✅ Semua validasi lulus.');
 
-            // STEP 2: FIELD FOTO
-            $fotoFields = [
-                'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu',
-                'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi',
-                'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan',
-                'foto_cctv'
-            ];
-
-            $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg'];
-            $maxFileSize = 50 * 1024 * 1024; // 50 MB
-
-            foreach ($fotoFields as $field) {
-                if ($request->hasFile($field)) {
-                    $files = $request->file($field);
-                    if (!is_array($files)) $files = [$files];
-
-                    foreach ($files as $file) {
-                        if (!$file) continue;
-
-                        if (!$file->isValid()) {
-                            Log::error("❌ Invalid file: $field", ['error' => $file->getErrorMessage()]);
-                            throw new \Exception("$field: File tidak valid atau rusak");
-                        }
-
-                        $mimeType = $file->getMimeType();
-                        if (!in_array($mimeType, $allowedMimes)) {
-                            Log::error("❌ Invalid MIME type for $field", ['mime' => $mimeType]);
-                            throw new \Exception("$field: Hanya JPEG/PNG yang diperbolehkan");
-                        }
-
-                        if ($file->getSize() > $maxFileSize) {
-                            Log::error("❌ File terlalu besar: $field", ['size' => $file->getSize()]);
-                            throw new \Exception("$field: Maksimum 50MB per file");
-                        }
-                    }
-                }
-            }
-
-            Log::info('✅ File validation passed');
-
-            // STEP 3: SIMPAN DATA KE DATABASE
+            // =========================
+            // 2️⃣ SIMPAN DATA UTAMA
+            // =========================
             $form = new Form();
-
             $form->waktu = $request->waktu;
             $form->area = $request->area;
             $form->nama = $request->nama ? json_encode($request->nama) : null;
@@ -112,25 +115,22 @@ class FormController extends Controller
             $form->cctv = $request->cctv;
             $form->kronologi_cctv = $request->kronologi_cctv;
 
-            // STEP 4: SIMPAN SEMUA FOTO KE STORAGE
+            // =========================
+            // 3️⃣ UPLOAD SEMUA FOTO
+            // =========================
+            $fotoFields = [
+                'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu',
+                'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi',
+                'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan', 'foto_cctv'
+            ];
+
             foreach ($fotoFields as $field) {
                 $paths = [];
 
                 if ($request->hasFile($field)) {
-                    $files = $request->file($field);
-                    if (!is_array($files)) $files = [$files];
-
-                    foreach ($files as $file) {
+                    foreach ($request->file($field) as $file) {
                         if ($file && $file->isValid()) {
-                            $path = $file->store('uploads', 'public');
-                            $paths[] = $path;
-
-                            Log::info("✅ File uploaded: $field", [
-                                'path' => $path,
-                                'name' => $file->getClientOriginalName(),
-                                'size' => $file->getSize(),
-                                'mime' => $file->getMimeType(),
-                            ]);
+                            $paths[] = $file->store("uploads/$field", 'public');
                         }
                     }
                 }
@@ -140,7 +140,7 @@ class FormController extends Controller
 
             $form->save();
 
-            Log::info('=== FORM SUCCESSFULLY SAVED ===', ['id' => $form->id]);
+            Log::info('✅ FORM BERHASIL DISIMPAN', ['id' => $form->id]);
 
             return response()->json([
                 'success' => true,
@@ -149,7 +149,7 @@ class FormController extends Controller
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('❌ VALIDATION EXCEPTION:', ['errors' => $e->errors()]);
+            Log::error('❌ VALIDATION ERROR:', ['errors' => $e->errors()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Validasi gagal',
@@ -157,7 +157,7 @@ class FormController extends Controller
             ], 422);
 
         } catch (\Exception $e) {
-            Log::error('❌ GENERAL EXCEPTION:', [
+            Log::error('❌ GENERAL ERROR:', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
