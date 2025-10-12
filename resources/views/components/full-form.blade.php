@@ -1472,30 +1472,54 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.set('_token', csrfToken.value);
         }
         
-        // Tambahkan HANYA file valid dari storage (skip yang kosong/tidak ada)
+        // Debug log 1 - CEK FILE STORAGE
+        console.log('=== FILE STORAGE SEBELUM APPEND ===');
+        for (let fieldName in fileStorage) {
+            if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
+                console.log(`${fieldName}:`, fileStorage[fieldName].files.map(f => ({
+                    name: f.name,
+                    size: f.size,
+                    type: f.type,
+                    isFile: f instanceof File
+                })));
+            } else {
+                console.log(`${fieldName}: KOSONG/TIDAK ADA`);
+            }
+        }
+        
+        // Tambahkan HANYA file valid dari storage
         for (let fieldName in fileStorage) {
             if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
                 fileStorage[fieldName].files.forEach(file => {
-                    // HANYA tambahkan file yang valid (size > 0)
-                    if (file && file.size > 0) {
-                        formData.append(fieldName, file);
+                    // HANYA tambahkan file yang valid (size > 0 dan type image)
+                    if (file && file.size > 0 && file.type && file.type.startsWith('image/')) {
+                        formData.append(fieldName, file, file.name);
+                        console.log(`✅ APPENDING: ${fieldName} -> ${file.name} (${file.size} bytes, ${file.type})`);
+                    } else {
+                        console.warn(`❌ SKIPPED: ${fieldName} -> Invalid file`, {
+                            name: file?.name,
+                            size: file?.size,
+                            type: file?.type
+                        });
                     }
                 });
             }
-            // Jika tidak ada file valid, JANGAN append apa-apa (biar null)
         }
         
-        // Debug log
-        console.log('=== DATA YANG DIKIRIM ===');
+        // Debug log 2 - CEK FORMDATA FINAL
+        console.log('=== DATA YANG DIKIRIM KE SERVER ===');
+        let fileCount = 0;
         for (let [key, value] of formData.entries()) {
             if (value instanceof File) {
-                console.log(`${key}: [FILE] ${value.name} (${value.size} bytes)`);
+                fileCount++;
+                console.log(`${key}: [FILE] ${value.name} (${value.size} bytes, type: ${value.type})`);
             } else {
                 console.log(`${key}:`, value);
             }
         }
+        console.log(`Total files yang akan dikirim: ${fileCount}`);
         
-        // Lanjutkan dengan submit logic yang ada
+        // Lanjutkan dengan submit
         submitFormData(formData, form.action);
     }, false);
 });
@@ -1530,11 +1554,18 @@ function submitFormData(formData, actionUrl) {
         }
     })
     .then(response => {
-        console.log('Response Status:', response.status);
+        console.log('=== RESPONSE FROM SERVER ===');
+        console.log('Status:', response.status);
+        console.log('Status Text:', response.statusText);
         return response.json();
     })
     .then(data => {
-        console.log('Response Data:', data);
+        console.log('=== SERVER RESPONSE DATA ===');
+        console.log('Success:', data.success);
+        console.log('Message:', data.message);
+        if (data.errors) {
+            console.log('Errors:', data.errors);
+        }
         
         if (data.success) {
             document.body.innerHTML = `
@@ -1557,7 +1588,8 @@ function submitFormData(formData, actionUrl) {
                 </div>
             `;
         } else {
-            console.error('Validation Errors:', data.errors);
+            console.error('=== VALIDATION FAILED ===');
+            console.error('Errors:', data.errors);
             
             let errorList = '';
             if (data.errors) {
@@ -1578,6 +1610,7 @@ function submitFormData(formData, actionUrl) {
         }
     })
     .catch(error => {
+        console.error('=== FETCH ERROR ===');
         console.error('Error:', error);
         Swal.fire({
             icon: 'error',
