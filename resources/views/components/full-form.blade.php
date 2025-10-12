@@ -165,7 +165,7 @@
                                 focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_serahterima" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_serahterima[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -222,7 +222,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_patroli" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_patroli[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -300,7 +300,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_lembur" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_lembur[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -376,7 +376,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_tamu" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_tamu[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -430,7 +430,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_panduan" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_panduan[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -483,7 +483,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_force" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_force[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -537,7 +537,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_penertiban" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_penertiban[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -590,7 +590,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_simulasi" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_simulasi[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -643,7 +643,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_penyegaran" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_penyegaran[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -696,7 +696,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_telepon" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_telepon[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -761,7 +761,7 @@
                                         focus:ring-offset-1 cursor-pointer transition">
                                 📷 Upload Foto
                             </button>
-                            <input type="file" name="foto_rutin" multiple accept="image/*" style="display:none">
+                            <input type="file" name="foto_rutin[]" multiple accept="image/*" style="display:none">
                             <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -814,7 +814,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_pengecekan" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_pengecekan[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
@@ -867,7 +867,7 @@
                                     focus:ring-offset-1 cursor-pointer transition">
                             📷 Upload Foto
                         </button>
-                        <input type="file" name="foto_cctv" multiple accept="image/*" style="display:none">
+                        <input type="file" name="foto_cctv[]" multiple accept="image/*" style="display:none">
                         <span class="fileName block mt-2 text-sm text-gray-600 italic"></span>
                     </div>
 
