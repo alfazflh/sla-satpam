@@ -1565,22 +1565,22 @@
                 cancelButtonText: '🖼️ Galeri',
                 reverseButtons: true
             }).then((result) => {
-                // set capture sesuai pilihan
                 if (result.isConfirmed) {
-                input.removeAttribute('capture');
-                input.setAttribute('capture', 'environment'); // aktifkan kamera
+                input.setAttribute('capture', 'environment');
                 } else {
-                input.removeAttribute('capture'); // supaya galeri terbuka
+                input.removeAttribute('capture');
                 }
                 input.click();
             });
 
             input.onchange = (e) => {
-                if (e.target.files && e.target.files[0]) {
-                fileName.textContent = 'File terpilih: ' + e.target.files[0].name;
+                const files = Array.from(e.target.files);
+                if (files.length > 0) {
+                fileName.textContent = files.map(f => f.name).join(', ');
                 }
             };
             }
+
 
         function updateFileName(event) {
         const file = event.target.files[0];
