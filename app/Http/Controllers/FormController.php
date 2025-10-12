@@ -15,13 +15,13 @@ class FormController extends Controller
 
     public function store(Request $request)
     {
+        Log::info('=== FORM SUBMISSION START ===');
         Log::info('Form Data Received:', $request->all());
         Log::info('Files Received:', $request->allFiles());
-        Log::warning('🔥 MANUAL VALIDATION STARTING 🔥');
-        Log::warning('Has foto_serahterima:', [$request->hasFile('foto_serahterima')]);
 
         try {
-            // VALIDASI BASIC FIELDS DULU (TANPA FILE)
+            // STEP 1: VALIDASI HANYA TEXT FIELDS - TIDAK ADA FILE VALIDATORS!
+            // FILE VALIDATION DILAKUKAN MANUAL DI BAWAH
             $validated = $request->validate([
                 'waktu' => 'required|string|max:255',
                 'area' => 'required|string|max:255',
@@ -46,7 +46,9 @@ class FormController extends Controller
                 'kronologi_cctv' => 'nullable|string|max:5000',
             ]);
 
-            // ===== VALIDASI FILE MANUAL - BYPASS LARAVEL VALIDATOR =====
+            Log::info('✅ Text validation passed');
+
+            // STEP 2: MANUAL FILE VALIDATION - BYPASS LARAVEL IMAGE VALIDATOR
             $fotoFields = [
                 'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 
                 'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi', 
@@ -54,48 +56,42 @@ class FormController extends Controller
                 'foto_cctv'
             ];
 
-            // Whitelist MIME types yang diijinkan
             $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg'];
             $maxFileSize = 51200; // 50KB
 
-            // Validasi setiap file secara manual
             foreach ($fotoFields as $field) {
                 if ($request->hasFile($field)) {
                     $files = $request->file($field);
                     
-                    // Handle single file atau multiple files
                     if (!is_array($files)) {
                         $files = [$files];
                     }
 
                     foreach ($files as $file) {
-                        // Skip jika file tidak ada
                         if (!$file) continue;
 
-                        // Validasi: file harus valid
                         if (!$file->isValid()) {
+                            Log::error("❌ Invalid file: $field", ['error' => $file->getErrorMessage()]);
                             throw new \Exception("$field: File tidak valid atau corrupted");
                         }
 
-                        // Validasi: check MIME type
                         $mimeType = $file->getMimeType();
                         if (!in_array($mimeType, $allowedMimes)) {
-                            Log::warning("Invalid MIME type for $field", [
-                                'mime' => $mimeType,
-                                'name' => $file->getClientOriginalName()
-                            ]);
-                            throw new \Exception("$field: Hanya file gambar (JPEG/PNG) yang diijinkan. MIME: $mimeType");
+                            Log::error("❌ Invalid MIME type for $field", ['mime' => $mimeType]);
+                            throw new \Exception("$field: Hanya file gambar (JPEG/PNG) yang diijinkan. Anda upload: $mimeType");
                         }
 
-                        // Validasi: ukuran file
                         if ($file->getSize() > $maxFileSize) {
+                            Log::error("❌ File terlalu besar: $field", ['size' => $file->getSize()]);
                             throw new \Exception("$field: File terlalu besar (max 50KB, file Anda: " . round($file->getSize() / 1024, 2) . "KB)");
                         }
                     }
                 }
             }
 
-            // ===== JIKA SEMUA VALIDASI LOLOS, LANJUT SIMPAN DATA =====
+            Log::info('✅ File validation passed');
+
+            // STEP 3: SIMPAN DATA KE DATABASE
             $form = new Form();
             
             $form->waktu = $request->waktu;
@@ -119,7 +115,7 @@ class FormController extends Controller
             $form->cctv = $request->cctv;
             $form->kronologi_cctv = $request->kronologi_cctv;
 
-            // Proses upload semua foto
+            // STEP 4: UPLOAD SEMUA FILE
             foreach ($fotoFields as $field) {
                 $paths = [];
                 
@@ -135,11 +131,11 @@ class FormController extends Controller
                             $path = $file->store('uploads', 'public');
                             $paths[] = $path;
                             
-                            Log::info("✅ Uploaded $field:", [
+                            Log::info("✅ File uploaded: $field", [
                                 'path' => $path,
-                                'original_name' => $file->getClientOriginalName(),
+                                'name' => $file->getClientOriginalName(),
                                 'size' => $file->getSize(),
-                                'mime_type' => $file->getMimeType(),
+                                'mime' => $file->getMimeType(),
                             ]);
                         }
                     }
@@ -150,7 +146,7 @@ class FormController extends Controller
 
             $form->save();
 
-            Log::info('✅ Form saved successfully', ['id' => $form->id]);
+            Log::info('=== FORM SUCCESSFULLY SAVED ===', ['id' => $form->id]);
 
             return response()->json([
                 'success' => true,
@@ -159,10 +155,7 @@ class FormController extends Controller
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('❌ Validation Error:', [
-                'errors' => $e->errors(),
-                'files_received' => $request->allFiles(),
-            ]);
+            Log::error('❌ VALIDATION EXCEPTION:', ['errors' => $e->errors()]);
             
             return response()->json([
                 'success' => false,
@@ -171,7 +164,7 @@ class FormController extends Controller
             ], 422);
 
         } catch (\Exception $e) {
-            Log::error('❌ Form Submission Error:', [
+            Log::error('❌ GENERAL EXCEPTION:', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -179,7 +172,7 @@ class FormController extends Controller
             
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage() // Return pesan error yang spesifik
+                'message' => $e->getMessage()
             ], 400);
         }
     }
