@@ -1472,7 +1472,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
                 fileStorage[fieldName].files.forEach(file => {
                     if (file && file.size > 0) {
-                        formData.append(fieldName + '[]', file); // tetap [] karena name di HTML tidak pakai []
+                        formData.append(fieldName, file)
                     }
                 });
             }
