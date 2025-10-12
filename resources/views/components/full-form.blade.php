@@ -1447,43 +1447,38 @@
 // Override form submission untuk kirim file dari storage
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('mainForm');
-    
+
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        // Buat FormData baru TANPA file inputs
+
         const formData = new FormData();
-        
-        // Ambil semua input NON-FILE dulu
+
+        // Ambil semua input non-file
         const allInputs = form.querySelectorAll('input:not([type="file"]), textarea, select');
         allInputs.forEach(input => {
             if (input.type === 'checkbox' || input.type === 'radio') {
-                if (input.checked) {
-                    formData.append(input.name, input.value);
-                }
+                if (input.checked) formData.append(input.name, input.value);
             } else if (input.value) {
                 formData.set(input.name, input.value);
             }
         });
-        
+
         // Tambahkan CSRF token
         const csrfToken = form.querySelector('input[name="_token"]');
-        if (csrfToken) {
-            formData.set('_token', csrfToken.value);
-        }
-        
-        // Tambahkan HANYA file valid dari storage
+        if (csrfToken) formData.set('_token', csrfToken.value);
+
+        // Tambahkan file dari fileStorage
         for (let fieldName in fileStorage) {
             if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
                 fileStorage[fieldName].files.forEach(file => {
                     if (file && file.size > 0) {
-                        formData.append(fieldName + '[]', file);
+                        formData.append(fieldName + '[]', file); // tetap [] karena name di HTML tidak pakai []
                     }
                 });
             }
         }
-        
-        // Debug log
+
+        // Debug kiriman
         console.log('=== DATA YANG DIKIRIM ===');
         for (let [key, value] of formData.entries()) {
             if (value instanceof File) {
@@ -1492,21 +1487,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`${key}:`, value);
             }
         }
-        
-        // Lanjutkan dengan submit
+
         submitFormData(formData, form.action);
-    }, false);
+    });
 });
 
 function submitFormData(formData, actionUrl) {
-    const submitTime = new Date();
-    const formattedTime = submitTime.toLocaleString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
+    const submitTime = new Date().toLocaleString('id-ID', {
+        day: 'numeric', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
 
     Swal.fire({
@@ -1514,65 +1503,23 @@ function submitFormData(formData, actionUrl) {
         html: 'Mohon tunggu, data sedang diproses',
         allowOutsideClick: false,
         allowEscapeKey: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
+        didOpen: () => Swal.showLoading()
     });
 
     fetch(actionUrl, {
         method: 'POST',
         body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json'
-        }
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
     })
-    .then(response => {
+    .then(async response => {
         console.log('Response Status:', response.status);
-        return response.json();
-    })
-    .then(data => {
+        const data = await response.json();
         console.log('Response Data:', data);
-        
-        if (data.success) {
-            document.body.innerHTML = `
-                <div style="min-height: 100vh; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: Arial, sans-serif;">
-                    <div style="background: white; border: 2px solid #e5e7eb; border-radius: 16px; padding: 48px 40px; max-width: 500px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.07); text-align: center;">
-                        <div style="width: 90px; height: 90px; background: #1f7389; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px;">
-                            <svg style="width: 52px; height: 52px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </div>
-                        <h1 style="font-size: 28px; font-weight: bold; color: #1f7389; margin-bottom: 20px;">BERHASIL DISIMPAN</h1>
-                        <div style="background: #f0f9fb; padding: 20px; margin: 28px 0; border-radius: 10px;">
-                            <p style="color: #64748b; font-size: 13px; margin-bottom: 8px;">Waktu Submit</p>
-                            <p style="color: #1f7389; font-weight: 700; font-size: 17px;">${formattedTime}</p>
-                        </div>
-                        <a href="${window.location.pathname}" style="display: inline-block; margin-top: 28px; padding: 14px 36px; background: #1f7389; color: white; text-decoration: none; border-radius: 10px; font-weight: 600;">
-                            📝 Kirim Laporan Lain
-                        </a>
-                    </div>
-                </div>
-            `;
+
+        if (response.ok && data.success) {
+            showSuccessScreen(submitTime);
         } else {
-            console.error('Validation Errors:', data.errors);
-            
-            let errorList = '';
-            if (data.errors) {
-                errorList = '<ul style="text-align: left; margin-top: 10px;">';
-                for (let field in data.errors) {
-                    errorList += `<li><strong>${field}:</strong> ${data.errors[field].join(', ')}</li>`;
-                }
-                errorList += '</ul>';
-            }
-            
-            Swal.fire({
-                icon: 'error',
-                title: 'Validasi Gagal!',
-                html: `<p>${data.message || 'Terjadi kesalahan validasi'}</p>${errorList}`,
-                confirmButtonColor: '#ef4444',
-                width: '600px'
-            });
+            handleValidationError(data);
         }
     })
     .catch(error => {
@@ -1586,17 +1533,58 @@ function submitFormData(formData, actionUrl) {
     });
 }
 
-// Auto-refresh CSRF token
-setInterval(function() {
+function showSuccessScreen(formattedTime) {
+    document.body.innerHTML = `
+        <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#fff;">
+            <div style="background:white;border:2px solid #e5e7eb;border-radius:16px;padding:48px 40px;max-width:500px;width:100%;box-shadow:0 4px 6px rgba(0,0,0,0.07);text-align:center;">
+                <div style="width:90px;height:90px;background:#1f7389;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 28px;">
+                    <svg style="width:52px;height:52px;color:white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h1 style="font-size:28px;font-weight:bold;color:#1f7389;margin-bottom:20px;">BERHASIL DISIMPAN</h1>
+                <div style="background:#f0f9fb;padding:20px;margin:28px 0;border-radius:10px;">
+                    <p style="color:#64748b;font-size:13px;margin-bottom:8px;">Waktu Submit</p>
+                    <p style="color:#1f7389;font-weight:700;font-size:17px;">${formattedTime}</p>
+                </div>
+                <a href="${window.location.pathname}" style="display:inline-block;margin-top:28px;padding:14px 36px;background:#1f7389;color:white;text-decoration:none;border-radius:10px;font-weight:600;">
+                    📝 Kirim Laporan Lain
+                </a>
+            </div>
+        </div>
+    `;
+}
+
+function handleValidationError(data) {
+    console.error('Validation Errors:', data.errors);
+
+    let errorList = '';
+    if (data.errors) {
+        errorList = '<ul style="text-align:left;margin-top:10px;">';
+        for (let field in data.errors) {
+            errorList += `<li><strong>${field}:</strong> ${data.errors[field].join(', ')}</li>`;
+        }
+        errorList += '</ul>';
+    }
+
+    Swal.fire({
+        icon: 'error',
+        title: 'Validasi Gagal!',
+        html: `<p>${data.message || 'Terjadi kesalahan validasi'}</p>${errorList}`,
+        confirmButtonColor: '#ef4444',
+        width: '600px'
+    });
+}
+
+// Auto refresh CSRF token setiap 10 menit
+setInterval(() => {
     fetch('/refresh-csrf')
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
-            const csrfInput = document.querySelector('input[name="_token"]');
-            if (csrfInput) {
-                csrfInput.value = data.token;
-            }
+            const csrf = document.querySelector('input[name="_token"]');
+            if (csrf) csrf.value = data.token;
         })
-        .catch(err => console.log('CSRF refresh failed'));
+        .catch(() => console.log('CSRF refresh failed'));
 }, 600000);
     </script>
     <script>
