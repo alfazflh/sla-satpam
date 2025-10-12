@@ -1592,7 +1592,9 @@ function chooseSource(btn) {
         cancelButtonText: '🖼️ Galeri',
         reverseButtons: true
     }).then((result) => {
-        if (result.isDismissed) {
+        // Cek apakah user klik X atau ESC (bukan kamera/galeri)
+        if (result.dismiss === Swal.DismissReason.backdrop || 
+            result.dismiss === Swal.DismissReason.esc) {
             return; // User cancelled
         }
 
@@ -1602,9 +1604,11 @@ function chooseSource(btn) {
         tempInput.multiple = true;
         tempInput.accept = 'image/*';
         
+        // Jika klik Kamera (confirm), set capture
         if (result.isConfirmed) {
             tempInput.setAttribute('capture', 'environment');
         }
+        // Jika klik Galeri (cancel), tidak perlu capture
 
         // Handler ketika user pilih file
         tempInput.addEventListener('change', function(e) {
