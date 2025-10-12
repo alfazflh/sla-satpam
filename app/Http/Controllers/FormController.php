@@ -19,15 +19,12 @@ class FormController extends Controller
         Log::info('Files Received:', $request->allFiles());
 
         try {
-            // SOLUSI: Gunakan mimes TANPA image validator
-            // Laravel's 'image' validator sering bermasalah dengan MIME detection
-            // Gunakan 'mimes' yang lebih fleksibel
+            // VALIDASI BASIC FIELDS DULU (TANPA FILE)
             $validated = $request->validate([
                 'waktu' => 'required|string|max:255',
                 'area' => 'required|string|max:255',
                 'nama' => 'required|array|min:1',
                 'nama.*' => 'string|max:255',
-
                 'ketentuan_seragam' => 'nullable|string|max:255',
                 'pengamanan' => 'nullable|string|max:255',
                 'kronologi_kriminal' => 'nullable|string|max:5000',
@@ -45,51 +42,58 @@ class FormController extends Controller
                 'pengecekan' => 'nullable|string|max:255',
                 'cctv' => 'nullable|string|max:255',
                 'kronologi_cctv' => 'nullable|string|max:5000',
-
-                // ===== PERBAIKAN UTAMA =====
-                // Gunakan 'mimes:jpeg,png,jpg' TANPA 'image' validator
-                // Tambahkan file size limit juga
-                // Format: mimes:jpeg,png,jpg NOT mimes:jpg,png,jpeg
-                'foto_serahterima' => 'nullable|array',
-                'foto_serahterima.*' => 'nullable|file|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_patroli' => 'nullable|array',
-                'foto_patroli.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_lembur' => 'nullable|array',
-                'foto_lembur.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_tamu' => 'nullable|array',
-                'foto_tamu.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_panduan' => 'nullable|array',
-                'foto_panduan.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_force' => 'nullable|array',
-                'foto_force.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_penertiban' => 'nullable|array',
-                'foto_penertiban.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_simulasi' => 'nullable|array',
-                'foto_simulasi.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_penyegaran' => 'nullable|array',
-                'foto_penyegaran.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_telepon' => 'nullable|array',
-                'foto_telepon.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_rutin' => 'nullable|array',
-                'foto_rutin.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_pengecekan' => 'nullable|array',
-                'foto_pengecekan.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
-                
-                'foto_cctv' => 'nullable|array',
-                'foto_cctv.*' => 'nullable|mimes:jpeg,png,jpg|max:51200',
             ]);
 
+            // ===== VALIDASI FILE MANUAL - BYPASS LARAVEL VALIDATOR =====
+            $fotoFields = [
+                'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 
+                'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi', 
+                'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan', 
+                'foto_cctv'
+            ];
+
+            // Whitelist MIME types yang diijinkan
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg'];
+            $maxFileSize = 51200; // 50KB
+
+            // Validasi setiap file secara manual
+            foreach ($fotoFields as $field) {
+                if ($request->hasFile($field)) {
+                    $files = $request->file($field);
+                    
+                    // Handle single file atau multiple files
+                    if (!is_array($files)) {
+                        $files = [$files];
+                    }
+
+                    foreach ($files as $file) {
+                        // Skip jika file tidak ada
+                        if (!$file) continue;
+
+                        // Validasi: file harus valid
+                        if (!$file->isValid()) {
+                            throw new \Exception("$field: File tidak valid atau corrupted");
+                        }
+
+                        // Validasi: check MIME type
+                        $mimeType = $file->getMimeType();
+                        if (!in_array($mimeType, $allowedMimes)) {
+                            Log::warning("Invalid MIME type for $field", [
+                                'mime' => $mimeType,
+                                'name' => $file->getClientOriginalName()
+                            ]);
+                            throw new \Exception("$field: Hanya file gambar (JPEG/PNG) yang diijinkan. MIME: $mimeType");
+                        }
+
+                        // Validasi: ukuran file
+                        if ($file->getSize() > $maxFileSize) {
+                            throw new \Exception("$field: File terlalu besar (max 50KB, file Anda: " . round($file->getSize() / 1024, 2) . "KB)");
+                        }
+                    }
+                }
+            }
+
+            // ===== JIKA SEMUA VALIDASI LOLOS, LANJUT SIMPAN DATA =====
             $form = new Form();
             
             $form->waktu = $request->waktu;
@@ -113,13 +117,7 @@ class FormController extends Controller
             $form->cctv = $request->cctv;
             $form->kronologi_cctv = $request->kronologi_cctv;
 
-            $fotoFields = [
-                'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 
-                'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi', 
-                'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan', 
-                'foto_cctv'
-            ];
-
+            // Proses upload semua foto
             foreach ($fotoFields as $field) {
                 $paths = [];
                 
@@ -140,23 +138,12 @@ class FormController extends Controller
                                 'original_name' => $file->getClientOriginalName(),
                                 'size' => $file->getSize(),
                                 'mime_type' => $file->getMimeType(),
-                                'extension' => $file->getClientOriginalExtension()
-                            ]);
-                        } else {
-                            Log::warning("❌ Invalid file for $field:", [
-                                'error' => $file ? $file->getErrorMessage() : 'null file',
-                                'mime' => $file ? $file->getMimeType() : 'unknown'
                             ]);
                         }
                     }
                 }
                 
                 $form->$field = !empty($paths) ? json_encode($paths) : null;
-                
-                Log::info("Field $field stored:", [
-                    'count' => count($paths),
-                    'value' => $form->$field
-                ]);
             }
 
             $form->save();
@@ -173,7 +160,6 @@ class FormController extends Controller
             Log::error('❌ Validation Error:', [
                 'errors' => $e->errors(),
                 'files_received' => $request->allFiles(),
-                'input' => $request->except(['_token'])
             ]);
             
             return response()->json([
@@ -187,13 +173,12 @@ class FormController extends Controller
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
             ]);
             
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-            ], 500);
+                'message' => $e->getMessage() // Return pesan error yang spesifik
+            ], 400);
         }
     }
 }
