@@ -1472,7 +1472,20 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.set('_token', csrfToken.value);
         }
         
-        // Debug log 1 - CEK FILE STORAGE
+        // Tambahkan HANYA file valid dari storage (skip yang kosong/tidak ada)
+        for (let fieldName in fileStorage) {
+            if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
+                fileStorage[fieldName].files.forEach(file => {
+                    // HANYA tambahkan file yang valid (size > 0)
+                    if (file && file.size > 0) {
+                        formData.append(fieldName, file);
+                    }
+                });
+            }
+            // Jika tidak ada file valid, JANGAN append apa-apa (biar null)
+        }
+        
+        // Debug log - CEK FILE STORAGE
         console.log('=== FILE STORAGE SEBELUM APPEND ===');
         for (let fieldName in fileStorage) {
             if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
@@ -1482,157 +1495,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     type: f.type,
                     isFile: f instanceof File
                 })));
-            } else {
-                console.log(`${fieldName}: KOSONG/TIDAK ADA`);
             }
         }
         
-        // Tambahkan HANYA file valid dari storage
-        for (let fieldName in fileStorage) {
-            if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
-                fileStorage[fieldName].files.forEach(file => {
-                    // HANYA tambahkan file yang valid (size > 0 dan type image)
-                    if (file && file.size > 0 && file.type && file.type.startsWith('image/')) {
-                        formData.append(fieldName, file, file.name);
-                        console.log(`✅ APPENDING: ${fieldName} -> ${file.name} (${file.size} bytes, ${file.type})`);
-                    } else {
-                        console.warn(`❌ SKIPPED: ${fieldName} -> Invalid file`, {
-                            name: file?.name,
-                            size: file?.size,
-                            type: file?.type
-                        });
-                    }
-                });
-            }
-        }
-        
-        // Debug log 2 - CEK FORMDATA FINAL
-        console.log('=== DATA YANG DIKIRIM KE SERVER ===');
-        let fileCount = 0;
+        // Debug log - CEK FORMDATA
+        console.log('=== DATA YANG DIKIRIM ===');
         for (let [key, value] of formData.entries()) {
             if (value instanceof File) {
-                fileCount++;
                 console.log(`${key}: [FILE] ${value.name} (${value.size} bytes, type: ${value.type})`);
             } else {
                 console.log(`${key}:`, value);
             }
         }
-        console.log(`Total files yang akan dikirim: ${fileCount}`);
         
-        // Lanjutkan dengan submit
+        // Lanjutkan dengan submit logic yang ada
         submitFormData(formData, form.action);
     }, false);
 });
-
-function submitFormData(formData, actionUrl) {
-    const submitTime = new Date();
-    const formattedTime = submitTime.toLocaleString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    });
-
-    Swal.fire({
-        title: 'Mengirim Laporan...',
-        html: 'Mohon tunggu, data sedang diproses',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    fetch(actionUrl, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => {
-        console.log('=== RESPONSE FROM SERVER ===');
-        console.log('Status:', response.status);
-        console.log('Status Text:', response.statusText);
-        return response.json();
-    })
-    .then(data => {
-        console.log('=== SERVER RESPONSE DATA ===');
-        console.log('Success:', data.success);
-        console.log('Message:', data.message);
-        if (data.errors) {
-            console.log('Errors:', data.errors);
-        }
-        
-        if (data.success) {
-            document.body.innerHTML = `
-                <div style="min-height: 100vh; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: Arial, sans-serif;">
-                    <div style="background: white; border: 2px solid #e5e7eb; border-radius: 16px; padding: 48px 40px; max-width: 500px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.07); text-align: center;">
-                        <div style="width: 90px; height: 90px; background: #1f7389; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px;">
-                            <svg style="width: 52px; height: 52px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </div>
-                        <h1 style="font-size: 28px; font-weight: bold; color: #1f7389; margin-bottom: 20px;">BERHASIL DISIMPAN</h1>
-                        <div style="background: #f0f9fb; padding: 20px; margin: 28px 0; border-radius: 10px;">
-                            <p style="color: #64748b; font-size: 13px; margin-bottom: 8px;">Waktu Submit</p>
-                            <p style="color: #1f7389; font-weight: 700; font-size: 17px;">${formattedTime}</p>
-                        </div>
-                        <a href="${window.location.pathname}" style="display: inline-block; margin-top: 28px; padding: 14px 36px; background: #1f7389; color: white; text-decoration: none; border-radius: 10px; font-weight: 600;">
-                            📝 Kirim Laporan Lain
-                        </a>
-                    </div>
-                </div>
-            `;
-        } else {
-            console.error('=== VALIDATION FAILED ===');
-            console.error('Errors:', data.errors);
-            
-            let errorList = '';
-            if (data.errors) {
-                errorList = '<ul style="text-align: left; margin-top: 10px;">';
-                for (let field in data.errors) {
-                    errorList += `<li><strong>${field}:</strong> ${data.errors[field].join(', ')}</li>`;
-                }
-                errorList += '</ul>';
-            }
-            
-            Swal.fire({
-                icon: 'error',
-                title: 'Validasi Gagal!',
-                html: `<p>${data.message || 'Terjadi kesalahan validasi'}</p>${errorList}`,
-                confirmButtonColor: '#ef4444',
-                width: '600px'
-            });
-        }
-    })
-    .catch(error => {
-        console.error('=== FETCH ERROR ===');
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal!',
-            text: 'Terjadi kesalahan: ' + error.message,
-            confirmButtonColor: '#ef4444'
-        });
-    });
-}
-
-// Auto-refresh CSRF token (mencegah 419 error)
-setInterval(function() {
-    fetch('/refresh-csrf')
-        .then(response => response.json())
-        .then(data => {
-            const csrfInput = document.querySelector('input[name="_token"]');
-            if (csrfInput) {
-                csrfInput.value = data.token;
-            }
-        })
-        .catch(err => console.log('CSRF refresh failed'));
-}, 600000); // Refresh setiap 10 menit
     </script>
     <script>
 // Object untuk menyimpan file dan container per field
