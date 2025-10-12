@@ -1444,32 +1444,49 @@
         });
     
 // Override form submission untuk kirim file dari storage
+// Override form submission untuk kirim file dari storage
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('mainForm');
-    const originalSubmit = form.onsubmit;
     
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Buat FormData baru
-        const formData = new FormData(form);
+        // Buat FormData baru TANPA file inputs
+        const formData = new FormData();
         
-        // Hapus file input dari formData (karena kosong)
-        for (let fieldName in fileStorage) {
-            formData.delete(fieldName);
+        // Ambil semua input NON-FILE dulu
+        const allInputs = form.querySelectorAll('input:not([type="file"]), textarea, select');
+        allInputs.forEach(input => {
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                if (input.checked) {
+                    formData.append(input.name, input.value);
+                }
+            } else if (input.value) {
+                formData.set(input.name, input.value);
+            }
+        });
+        
+        // Tambahkan CSRF token
+        const csrfToken = form.querySelector('input[name="_token"]');
+        if (csrfToken) {
+            formData.set('_token', csrfToken.value);
         }
         
-        // Tambahkan file dari storage
+        // Tambahkan HANYA file valid dari storage (skip yang kosong/tidak ada)
         for (let fieldName in fileStorage) {
-            if (fileStorage[fieldName].files.length > 0) {
+            if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
                 fileStorage[fieldName].files.forEach(file => {
-                    formData.append(fieldName, file);
+                    // HANYA tambahkan file yang valid (size > 0)
+                    if (file && file.size > 0) {
+                        formData.append(fieldName, file);
+                    }
                 });
             }
+            // Jika tidak ada file valid, JANGAN append apa-apa (biar null)
         }
         
         // Debug log
-        console.log('=== FILES YANG DIKIRIM ===');
+        console.log('=== DATA YANG DIKIRIM ===');
         for (let [key, value] of formData.entries()) {
             if (value instanceof File) {
                 console.log(`${key}: [FILE] ${value.name} (${value.size} bytes)`);
@@ -1570,19 +1587,19 @@ function submitFormData(formData, actionUrl) {
         });
     });
 }
-    
-        // Auto-refresh CSRF token (mencegah 419 error)
-        setInterval(function() {
-            fetch('/refresh-csrf')
-                .then(response => response.json())
-                .then(data => {
-                    const csrfInput = document.querySelector('input[name="_token"]');
-                    if (csrfInput) {
-                        csrfInput.value = data.token;
-                    }
-                })
-                .catch(err => console.log('CSRF refresh failed'));
-        }, 600000); // Refresh setiap 10 menit
+
+// Auto-refresh CSRF token (mencegah 419 error)
+setInterval(function() {
+    fetch('/refresh-csrf')
+        .then(response => response.json())
+        .then(data => {
+            const csrfInput = document.querySelector('input[name="_token"]');
+            if (csrfInput) {
+                csrfInput.value = data.token;
+            }
+        })
+        .catch(err => console.log('CSRF refresh failed'));
+}, 600000); // Refresh setiap 10 menit
     </script>
     <script>
 // Object untuk menyimpan file dan container per field
