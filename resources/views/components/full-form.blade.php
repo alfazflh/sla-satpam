@@ -1444,98 +1444,116 @@
         });
     
         // Form submission dengan SweetAlert loading
-        // Form submission dengan SweetAlert loading
-        document.getElementById('mainForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (!validateCurrentSection()) {
-                return;
-            }
+// Form submission dengan FULL DEBUGGING
+document.getElementById('mainForm').addEventListener('submit', function(e) {
+    e.preventDefault();
     
-            const submitTime = new Date();
-            const formattedTime = submitTime.toLocaleString('id-ID', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+    if (!validateCurrentSection()) {
+        return;
+    }
+
+    const formData = new FormData(this);
     
-            // Tampilkan loading
-            Swal.fire({
-                title: 'Mengirim Laporan...',
-                html: 'Mohon tunggu, data sedang diproses',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-    
-            const formData = new FormData(this);
-            
-            // Submit via AJAX
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Tampilkan halaman sukses
-                    document.body.innerHTML = `
-                    <div style="min-height: 100vh; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: Arial, sans-serif;">
-                            <div style="background: white; border: 2px solid #e5e7eb; border-radius: 16px; padding: 48px 40px; max-width: 500px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.07); text-align: center;">
-                                <div style="width: 90px; height: 90px; background: #1f7389; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; box-shadow: 0 4px 12px rgba(31,115,137,0.25);">
-                                    <svg style="width: 52px; height: 52px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-                                
-                                <h1 style="font-size: 28px; font-weight: bold; color: #1f7389; margin-bottom: 20px; line-height: 1.3;">
-                                    LAPORAN KEGIATAN<br>ANGGOTA SATUAN<br>PENGAMANAN
-                                </h1>
-                                
-                                <div style="background: #f0f9fb; border: 1px solid #b8dde5; border-radius: 10px; padding: 20px; margin: 28px 0;">
-                                    <p style="color: #64748b; font-size: 13px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Waktu Submit</p>
-                                    <p style="color: #1f7389; font-weight: 700; font-size: 17px;">${formattedTime}</p>
-                                </div>
-                                
-                                <div style="margin: 24px 0; padding: 16px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #1f7389;">
-                                    <p style="color: #1f7389; font-weight: 600; font-size: 17px; margin: 0;">
-                                        ✓ Jawaban Anda telah berhasil direkam
-                                    </p>
-                                </div>
-                                
-                                <a href="${window.location.pathname}" 
-                                   style="display: inline-block; margin-top: 28px; padding: 14px 36px; background: #1f7389; color: white; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 15px; transition: all 0.3s; box-shadow: 0 4px 10px rgba(31,115,137,0.2);"
-                                   onmouseover="this.style.background='#175766'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 14px rgba(31,115,137,0.3)'"
-                                   onmouseout="this.style.background='#1f7389'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(31,115,137,0.2)'">
-                                    📝 Kirim Jawaban Lain
-                                </a>
-                                
-                                <p style="margin-top: 32px; color: #94a3b8; font-size: 12px;">
-                                    Terima kasih atas laporan Anda
-                                </p>
-                            </div>
+    // ✅ DEBUGGING: Log semua data yang akan dikirim
+    console.log('=== DATA YANG AKAN DIKIRIM ===');
+    for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+            console.log(`${key}: [FILE] ${value.name} (${value.size} bytes)`);
+        } else {
+            console.log(`${key}:`, value);
+        }
+    }
+
+    const submitTime = new Date();
+    const formattedTime = submitTime.toLocaleString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+
+    // Tampilkan loading
+    Swal.fire({
+        title: 'Mengirim Laporan...',
+        html: 'Mohon tunggu, data sedang diproses',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Submit via AJAX
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        console.log('Response Status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response Data:', data);
+        
+        if (data.success) {
+            // Success page
+            document.body.innerHTML = `
+                <div style="min-height: 100vh; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: Arial, sans-serif;">
+                    <div style="background: white; border: 2px solid #e5e7eb; border-radius: 16px; padding: 48px 40px; max-width: 500px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.07); text-align: center;">
+                        <div style="width: 90px; height: 90px; background: #1f7389; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px;">
+                            <svg style="width: 52px; height: 52px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                            </svg>
                         </div>
-                    `;
-                } else {
-                    throw new Error('Submit failed');
+                        <h1 style="font-size: 28px; font-weight: bold; color: #1f7389; margin-bottom: 20px;">BERHASIL DISIMPAN</h1>
+                        <div style="background: #f0f9fb; padding: 20px; margin: 28px 0; border-radius: 10px;">
+                            <p style="color: #64748b; font-size: 13px; margin-bottom: 8px;">Waktu Submit</p>
+                            <p style="color: #1f7389; font-weight: 700; font-size: 17px;">${formattedTime}</p>
+                        </div>
+                        <a href="${window.location.pathname}" style="display: inline-block; margin-top: 28px; padding: 14px 36px; background: #1f7389; color: white; text-decoration: none; border-radius: 10px; font-weight: 600;">
+                            📝 Kirim Laporan Lain
+                        </a>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Error dengan detail
+            console.error('Validation Errors:', data.errors);
+            
+            let errorList = '';
+            if (data.errors) {
+                errorList = '<ul style="text-align: left; margin-top: 10px;">';
+                for (let field in data.errors) {
+                    errorList += `<li><strong>${field}:</strong> ${data.errors[field].join(', ')}</li>`;
                 }
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: 'Terjadi kesalahan saat mengirim data. Silakan coba lagi.',
-                    confirmButtonColor: '#ef4444'
-                });
+                errorList += '</ul>';
+            }
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Validasi Gagal!',
+                html: `<p>${data.message || 'Terjadi kesalahan validasi'}</p>${errorList}`,
+                confirmButtonColor: '#ef4444',
+                width: '600px'
             });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: 'Terjadi kesalahan saat mengirim data: ' + error.message,
+            confirmButtonColor: '#ef4444'
         });
+    });
+});
     
         // Auto-refresh CSRF token (mencegah 419 error)
         setInterval(function() {
