@@ -17,6 +17,8 @@ class FormController extends Controller
     {
         Log::info('Form Data Received:', $request->all());
         Log::info('Files Received:', $request->allFiles());
+        Log::warning('🔥 MANUAL VALIDATION STARTING 🔥');
+        Log::warning('Has foto_serahterima:', [$request->hasFile('foto_serahterima')]);
 
         try {
             // VALIDASI BASIC FIELDS DULU (TANPA FILE)
