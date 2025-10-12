@@ -14,13 +14,29 @@ class FormController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi data teks + foto (multiple & optional)
         $validated = $request->validate([
-            'waktu' => 'required|date',
+            'waktu' => 'required|string|max:255',
             'area' => 'required|string|max:255',
-            'nama' => 'required|string|max:255',
+            'nama' => 'required|array|min:1',
+            'nama.*' => 'string|max:255',
+            'ketentuan_seragam' => 'required|string|max:255',
+            'pengamanan' => 'required|string|max:255',
+            'kronologi_kriminal' => 'nullable|string|max:5000',
+            'fungsi_khusus' => 'required|string|max:255',
+            'kronologi_gangguan' => 'nullable|string|max:5000',
+            'memantau' => 'required|string|max:255',
+            'pelayanan' => 'required|string|max:255',
+            'fungsi_force' => 'required|string|max:255',
+            'penertiban' => 'required|string|max:255',
+            'simulasi' => 'required|string|max:255',
+            'penyegaran' => 'required|string|max:255',
+            'telepon' => 'required|string|max:255',
+            'rutin' => 'required|string|max:255',
+            'titik' => 'nullable|integer|min:1',
+            'pengecekan' => 'required|string|max:255',
+            'cctv' => 'required|string|max:255',
+            'kronologi_cctv' => 'nullable|string|max:5000',
 
-            // Semua foto boleh kosong & bisa banyak
             'foto_serahterima' => 'nullable|array',
             'foto_serahterima.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
 
@@ -61,22 +77,35 @@ class FormController extends Controller
             'foto_cctv.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
         ]);
 
-        // Simpan data teks
         $form = new Form();
-        $form->fill($request->except([
-            'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 'foto_panduan',
-            'foto_force', 'foto_penertiban', 'foto_simulasi', 'foto_penyegaran',
-            'foto_telepon', 'foto_rutin', 'foto_pengecekan', 'foto_cctv'
-        ]));
+        
+        $form->waktu = $request->waktu;
+        $form->area = $request->area;
+        $form->nama = json_encode($request->nama); 
+        $form->ketentuan_seragam = $request->ketentuan_seragam;
+        $form->pengamanan = $request->pengamanan;
+        $form->kronologi_kriminal = $request->kronologi_kriminal;
+        $form->fungsi_khusus = $request->fungsi_khusus;
+        $form->kronologi_gangguan = $request->kronologi_gangguan;
+        $form->memantau = $request->memantau;
+        $form->pelayanan = $request->pelayanan;
+        $form->fungsi_force = $request->fungsi_force;
+        $form->penertiban = $request->penertiban;
+        $form->simulasi = $request->simulasi;
+        $form->penyegaran = $request->penyegaran;
+        $form->telepon = $request->telepon;
+        $form->rutin = $request->rutin;
+        $form->titik = $request->titik;
+        $form->pengecekan = $request->pengecekan;
+        $form->cctv = $request->cctv;
+        $form->kronologi_cctv = $request->kronologi_cctv;
 
-        // Semua field foto
         $fotoFields = [
             'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 'foto_panduan',
             'foto_force', 'foto_penertiban', 'foto_simulasi', 'foto_penyegaran',
             'foto_telepon', 'foto_rutin', 'foto_pengecekan', 'foto_cctv'
         ];
 
-        // Simpan semua foto ke storage
         foreach ($fotoFields as $field) {
             $paths = [];
             if ($request->hasFile($field)) {
@@ -89,6 +118,6 @@ class FormController extends Controller
 
         $form->save();
 
-        return redirect()->back()->with('success', 'Form berhasil disimpan!');
+        return response()->json(['success' => true]);
     }
 }
