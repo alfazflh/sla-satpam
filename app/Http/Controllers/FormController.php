@@ -20,13 +20,13 @@ class FormController extends Controller
         Log::info('Files Received:', $request->allFiles());
 
         try {
-            // STEP 1: VALIDASI HANYA TEXT FIELDS - TIDAK ADA FILE VALIDATORS!
-            // FILE VALIDATION DILAKUKAN MANUAL DI BAWAH
+            // STEP 1: VALIDASI FIELD TEKS SAJA (semua boleh kosong, kecuali minimal waktu & area)
             $validated = $request->validate([
-                'waktu' => 'required|string|max:255',
-                'area' => 'required|string|max:255',
-                'nama' => 'required|array|min:1',
+                'waktu' => 'nullable|string|max:255',
+                'area' => 'nullable|string|max:255',
+                'nama' => 'nullable|array',
                 'nama.*' => 'string|max:255',
+
                 'ketentuan_seragam' => 'nullable|string|max:255',
                 'pengamanan' => 'nullable|string|max:255',
                 'kronologi_kriminal' => 'nullable|string|max:5000',
@@ -48,42 +48,39 @@ class FormController extends Controller
 
             Log::info('✅ Text validation passed');
 
-            // STEP 2: MANUAL FILE VALIDATION - BYPASS LARAVEL IMAGE VALIDATOR
+            // STEP 2: FIELD FOTO
             $fotoFields = [
-                'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 
-                'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi', 
-                'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan', 
+                'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu',
+                'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi',
+                'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan',
                 'foto_cctv'
             ];
 
             $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg'];
-            $maxFileSize = 51200; // 50KB
+            $maxFileSize = 50 * 1024 * 1024; // 50 MB
 
             foreach ($fotoFields as $field) {
                 if ($request->hasFile($field)) {
                     $files = $request->file($field);
-                    
-                    if (!is_array($files)) {
-                        $files = [$files];
-                    }
+                    if (!is_array($files)) $files = [$files];
 
                     foreach ($files as $file) {
                         if (!$file) continue;
 
                         if (!$file->isValid()) {
                             Log::error("❌ Invalid file: $field", ['error' => $file->getErrorMessage()]);
-                            throw new \Exception("$field: File tidak valid atau corrupted");
+                            throw new \Exception("$field: File tidak valid atau rusak");
                         }
 
                         $mimeType = $file->getMimeType();
                         if (!in_array($mimeType, $allowedMimes)) {
                             Log::error("❌ Invalid MIME type for $field", ['mime' => $mimeType]);
-                            throw new \Exception("$field: Hanya file gambar (JPEG/PNG) yang diijinkan. Anda upload: $mimeType");
+                            throw new \Exception("$field: Hanya JPEG/PNG yang diperbolehkan");
                         }
 
                         if ($file->getSize() > $maxFileSize) {
                             Log::error("❌ File terlalu besar: $field", ['size' => $file->getSize()]);
-                            throw new \Exception("$field: File terlalu besar (max 50KB, file Anda: " . round($file->getSize() / 1024, 2) . "KB)");
+                            throw new \Exception("$field: Maksimum 50MB per file");
                         }
                     }
                 }
@@ -93,10 +90,10 @@ class FormController extends Controller
 
             // STEP 3: SIMPAN DATA KE DATABASE
             $form = new Form();
-            
+
             $form->waktu = $request->waktu;
             $form->area = $request->area;
-            $form->nama = json_encode($request->nama);
+            $form->nama = $request->nama ? json_encode($request->nama) : null;
             $form->ketentuan_seragam = $request->ketentuan_seragam;
             $form->pengamanan = $request->pengamanan;
             $form->kronologi_kriminal = $request->kronologi_kriminal;
@@ -115,22 +112,19 @@ class FormController extends Controller
             $form->cctv = $request->cctv;
             $form->kronologi_cctv = $request->kronologi_cctv;
 
-            // STEP 4: UPLOAD SEMUA FILE
+            // STEP 4: SIMPAN SEMUA FOTO KE STORAGE
             foreach ($fotoFields as $field) {
                 $paths = [];
-                
+
                 if ($request->hasFile($field)) {
                     $files = $request->file($field);
-                    
-                    if (!is_array($files)) {
-                        $files = [$files];
-                    }
-                    
+                    if (!is_array($files)) $files = [$files];
+
                     foreach ($files as $file) {
                         if ($file && $file->isValid()) {
                             $path = $file->store('uploads', 'public');
                             $paths[] = $path;
-                            
+
                             Log::info("✅ File uploaded: $field", [
                                 'path' => $path,
                                 'name' => $file->getClientOriginalName(),
@@ -140,7 +134,7 @@ class FormController extends Controller
                         }
                     }
                 }
-                
+
                 $form->$field = !empty($paths) ? json_encode($paths) : null;
             }
 
@@ -156,7 +150,6 @@ class FormController extends Controller
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error('❌ VALIDATION EXCEPTION:', ['errors' => $e->errors()]);
-            
             return response()->json([
                 'success' => false,
                 'message' => 'Validasi gagal',
@@ -169,7 +162,6 @@ class FormController extends Controller
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
-            
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
