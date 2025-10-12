@@ -1443,27 +1443,47 @@
             updateRequiredFields();
         });
     
-        // Form submission dengan SweetAlert loading
-// Form submission dengan FULL DEBUGGING
-document.getElementById('mainForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+// Override form submission untuk kirim file dari storage
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('mainForm');
+    const originalSubmit = form.onsubmit;
     
-    if (!validateCurrentSection()) {
-        return;
-    }
-
-    const formData = new FormData(this);
-    
-    // ✅ DEBUGGING: Log semua data yang akan dikirim
-    console.log('=== DATA YANG AKAN DIKIRIM ===');
-    for (let [key, value] of formData.entries()) {
-        if (value instanceof File) {
-            console.log(`${key}: [FILE] ${value.name} (${value.size} bytes)`);
-        } else {
-            console.log(`${key}:`, value);
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Buat FormData baru
+        const formData = new FormData(form);
+        
+        // Hapus file input dari formData (karena kosong)
+        for (let fieldName in fileStorage) {
+            formData.delete(fieldName);
         }
-    }
+        
+        // Tambahkan file dari storage
+        for (let fieldName in fileStorage) {
+            if (fileStorage[fieldName].files.length > 0) {
+                fileStorage[fieldName].files.forEach(file => {
+                    formData.append(fieldName, file);
+                });
+            }
+        }
+        
+        // Debug log
+        console.log('=== FILES YANG DIKIRIM ===');
+        for (let [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                console.log(`${key}: [FILE] ${value.name} (${value.size} bytes)`);
+            } else {
+                console.log(`${key}:`, value);
+            }
+        }
+        
+        // Lanjutkan dengan submit logic yang ada
+        submitFormData(formData, form.action);
+    }, false);
+});
 
+function submitFormData(formData, actionUrl) {
     const submitTime = new Date();
     const formattedTime = submitTime.toLocaleString('id-ID', {
         day: 'numeric',
@@ -1474,7 +1494,6 @@ document.getElementById('mainForm').addEventListener('submit', function(e) {
         second: '2-digit'
     });
 
-    // Tampilkan loading
     Swal.fire({
         title: 'Mengirim Laporan...',
         html: 'Mohon tunggu, data sedang diproses',
@@ -1485,8 +1504,7 @@ document.getElementById('mainForm').addEventListener('submit', function(e) {
         }
     });
 
-    // Submit via AJAX
-    fetch(this.action, {
+    fetch(actionUrl, {
         method: 'POST',
         body: formData,
         headers: {
@@ -1502,7 +1520,6 @@ document.getElementById('mainForm').addEventListener('submit', function(e) {
         console.log('Response Data:', data);
         
         if (data.success) {
-            // Success page
             document.body.innerHTML = `
                 <div style="min-height: 100vh; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: Arial, sans-serif;">
                     <div style="background: white; border: 2px solid #e5e7eb; border-radius: 16px; padding: 48px 40px; max-width: 500px; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.07); text-align: center;">
@@ -1523,7 +1540,6 @@ document.getElementById('mainForm').addEventListener('submit', function(e) {
                 </div>
             `;
         } else {
-            // Error dengan detail
             console.error('Validation Errors:', data.errors);
             
             let errorList = '';
@@ -1549,11 +1565,11 @@ document.getElementById('mainForm').addEventListener('submit', function(e) {
         Swal.fire({
             icon: 'error',
             title: 'Gagal!',
-            text: 'Terjadi kesalahan saat mengirim data: ' + error.message,
+            text: 'Terjadi kesalahan: ' + error.message,
             confirmButtonColor: '#ef4444'
         });
     });
-});
+}
     
         // Auto-refresh CSRF token (mencegah 419 error)
         setInterval(function() {
