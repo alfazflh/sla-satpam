@@ -1585,42 +1585,69 @@ function chooseSource(btn) {
     }).then((result) => {
         if (result.isConfirmed) {
             input.setAttribute('capture', 'environment');
-        } else {
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
             input.removeAttribute('capture');
+        } else {
+            return; // User cancelled
         }
 
-        // reset agar bisa pilih ulang file yang sama
-        input.value = '';
-        input.click();
-    });
+        // Buat temporary input untuk menangkap file baru
+        const tempInput = document.createElement('input');
+        tempInput.type = 'file';
+        tempInput.multiple = true;
+        tempInput.accept = 'image/*';
+        
+        if (result.isConfirmed) {
+            tempInput.setAttribute('capture', 'environment');
+        }
 
-    // pasang event listener hanya sekali per input
-    if (!input.dataset.listenerAttached) {
-        input.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-
-            if (files.length > 0) {
-                // ambil file lama (jika sebelumnya sudah pilih)
-                let existing = fileName.dataset.allFiles
-                    ? JSON.parse(fileName.dataset.allFiles)
-                    : [];
-
-                files.forEach(f => existing.push(f.name));
-
-                // simpan daftar nama file ke dataset
-                fileName.dataset.allFiles = JSON.stringify(existing);
-
-                // tampilkan semua nama file dipisahkan koma
-                fileName.textContent = "📄 " + existing.join(', ');
-
-                // ubah warna tombol jadi hijau
+        // Handler untuk file baru yang dipilih
+        tempInput.addEventListener('change', function(e) {
+            const newFiles = Array.from(e.target.files);
+            
+            if (newFiles.length > 0) {
+                // Ambil file yang sudah ada sebelumnya
+                const existingFiles = input.files ? Array.from(input.files) : [];
+                
+                // Gabungkan file lama dengan file baru
+                const allFiles = [...existingFiles, ...newFiles];
+                
+                // Buat DataTransfer untuk menggabungkan files
+                const dataTransfer = new DataTransfer();
+                allFiles.forEach(file => {
+                    dataTransfer.items.add(file);
+                });
+                
+                // Set files ke input asli
+                input.files = dataTransfer.files;
+                
+                // Tampilkan semua nama file
+                const allFileNames = allFiles.map(f => f.name);
+                fileName.textContent = "📄 " + allFileNames.join(', ');
+                
+                // Ubah warna tombol jadi hijau
                 btn.classList.remove("bg-indigo-50", "text-indigo-700");
                 btn.classList.add("bg-green-100", "text-green-700");
+                
+                console.log(`Total ${allFiles.length} file(s) untuk ${input.name}:`, allFileNames);
             }
         });
 
-        input.dataset.listenerAttached = true;
-    }
+        // Trigger click pada temporary input
+        tempInput.click();
+    });
+}
+
+// Fungsi untuk reset upload (opsional)
+function resetUpload(btn) {
+    const container = btn.closest('.upload-block');
+    const input = container.querySelector('input[type="file"]');
+    const fileName = container.querySelector('.fileName');
+    
+    input.value = '';
+    fileName.textContent = '';
+    btn.classList.remove("bg-green-100", "text-green-700");
+    btn.classList.add("bg-indigo-50", "text-indigo-700");
 }
 
     </script>  
