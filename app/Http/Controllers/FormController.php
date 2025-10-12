@@ -17,6 +17,7 @@ class FormController extends Controller
     {
         // Log semua data yang diterima untuk debugging
         Log::info('Form Data Received:', $request->all());
+        Log::info('Files Received:', $request->allFiles());
 
         try {
             // Validasi - HANYA waktu, area, nama yang REQUIRED
@@ -47,45 +48,21 @@ class FormController extends Controller
                 'cctv' => 'nullable|string|max:255',
                 'kronologi_cctv' => 'nullable|string|max:5000',
 
-                // Semua foto NULLABLE
-                'foto_serahterima' => 'nullable|array',
-                'foto_serahterima.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_patroli' => 'nullable|array',
-                'foto_patroli.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_lembur' => 'nullable|array',
-                'foto_lembur.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_tamu' => 'nullable|array',
-                'foto_tamu.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_panduan' => 'nullable|array',
-                'foto_panduan.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_force' => 'nullable|array',
-                'foto_force.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_penertiban' => 'nullable|array',
-                'foto_penertiban.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_simulasi' => 'nullable|array',
-                'foto_simulasi.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_penyegaran' => 'nullable|array',
-                'foto_penyegaran.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_telepon' => 'nullable|array',
-                'foto_telepon.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_rutin' => 'nullable|array',
-                'foto_rutin.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_pengecekan' => 'nullable|array',
-                'foto_pengecekan.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
-
-                'foto_cctv' => 'nullable|array',
-                'foto_cctv.*' => 'nullable|image|mimes:jpg,png,jpeg|max:51200',
+                // Semua foto NULLABLE - validasi HANYA individual file
+                // TIDAK perlu validasi array container
+                'foto_serahterima.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_patroli.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_lembur.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_tamu.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_panduan.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_force.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_penertiban.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_simulasi.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_penyegaran.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_telepon.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_rutin.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_pengecekan.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
+                'foto_cctv.*' => 'sometimes|file|image|mimes:jpg,png,jpeg|max:51200',
             ]);
 
             // Buat instance Form baru
@@ -124,20 +101,47 @@ class FormController extends Controller
             // Proses upload foto
             foreach ($fotoFields as $field) {
                 $paths = [];
+                
+                // Cek apakah ada file yang diupload
                 if ($request->hasFile($field)) {
-                    foreach ($request->file($field) as $file) {
-                        $path = $file->store('uploads', 'public');
-                        $paths[] = $path;
-                        Log::info("Uploaded $field:", ['path' => $path]);
+                    $files = $request->file($field);
+                    
+                    // Pastikan files adalah array (handle single file dan multiple)
+                    if (!is_array($files)) {
+                        $files = [$files];
+                    }
+                    
+                    foreach ($files as $file) {
+                        // Validasi tambahan: pastikan file valid
+                        if ($file && $file->isValid()) {
+                            $path = $file->store('uploads', 'public');
+                            $paths[] = $path;
+                            Log::info("✅ Uploaded $field:", [
+                                'path' => $path,
+                                'original_name' => $file->getClientOriginalName(),
+                                'size' => $file->getSize()
+                            ]);
+                        } else {
+                            Log::warning("❌ Invalid file for $field:", [
+                                'error' => $file ? $file->getErrorMessage() : 'null file'
+                            ]);
+                        }
                     }
                 }
+                
+                // Simpan ke database: JSON jika ada file, NULL jika kosong
                 $form->$field = !empty($paths) ? json_encode($paths) : null;
+                
+                Log::info("Field $field:", [
+                    'count' => count($paths),
+                    'value' => $form->$field
+                ]);
             }
 
             // Simpan ke database
             $form->save();
 
-            Log::info('Form saved successfully', ['id' => $form->id]);
+            Log::info('✅ Form saved successfully', ['id' => $form->id]);
 
             return response()->json([
                 'success' => true,
@@ -146,10 +150,11 @@ class FormController extends Controller
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Log error validasi
-            Log::error('Validation Error:', [
+            // Log error validasi dengan detail
+            Log::error('❌ Validation Error:', [
                 'errors' => $e->errors(),
-                'input' => $request->all()
+                'files_received' => $request->allFiles(),
+                'input' => $request->except(['_token'])
             ]);
             
             return response()->json([
@@ -160,8 +165,10 @@ class FormController extends Controller
 
         } catch (\Exception $e) {
             // Log error umum
-            Log::error('Form Submission Error:', [
+            Log::error('❌ Form Submission Error:', [
                 'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
             
