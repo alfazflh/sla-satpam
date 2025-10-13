@@ -1444,7 +1444,6 @@
         });
     
 // Override form submission untuk kirim file dari storage
-// Override form submission untuk kirim file dari storage
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('mainForm');
 
@@ -1467,12 +1466,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const csrfToken = form.querySelector('input[name="_token"]');
         if (csrfToken) formData.set('_token', csrfToken.value);
 
-        // Tambahkan file dari fileStorage
+        // Tambahkan file dari fileStorage - PERBAIKAN DI SINI
         for (let fieldName in fileStorage) {
             if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
+                // Hapus [] dari nama field jika ada
+                const cleanFieldName = fieldName.replace('[]', '');
+                
                 fileStorage[fieldName].files.forEach(file => {
                     if (file && file.size > 0) {
-                        formData.append(fieldName, file)
+                        // Kirim dengan format foto_serahterima[], foto_patroli[], dll
+                        formData.append(cleanFieldName + '[]', file);
                     }
                 });
             }
