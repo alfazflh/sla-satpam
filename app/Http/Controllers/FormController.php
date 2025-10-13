@@ -15,9 +15,10 @@ class FormController extends Controller
 
     public function store(Request $request)
     {
-        Log::info('=== FILE MIME DEBUG ===');
+        Log::info('=== INCOMING REQUEST DEBUG ===');
+        Log::info('All input:', $request->all());
         
-        // Debug MIME types yang diterima Laravel
+        // Debug file uploads
         if ($request->hasFile('foto_serahterima')) {
             $files = $request->file('foto_serahterima');
             if (!is_array($files)) {
@@ -35,28 +36,9 @@ class FormController extends Controller
                 ]);
             }
         }
-        
-        if ($request->hasFile('foto_patroli')) {
-            $files = $request->file('foto_patroli');
-            if (!is_array($files)) {
-                $files = [$files];
-            }
-            
-            foreach ($files as $idx => $file) {
-                Log::info("foto_patroli[$idx]:", [
-                    'name' => $file->getClientOriginalName(),
-                    'extension' => $file->getClientOriginalExtension(),
-                    'client_mime' => $file->getClientMimeType(),
-                    'guessed_mime' => $file->getMimeType(),
-                    'size' => $file->getSize(),
-                    'is_valid' => $file->isValid()
-                ]);
-            }
-        }
 
         try {
-            // Test 1: Validasi tanpa mimes restriction
-            Log::info('Testing validation WITHOUT mimes restriction...');
+            // ✅ FIXED VALIDATION: Gunakan 'image' dan 'mimes' yang tepat
             $validated = $request->validate([
                 'waktu' => 'nullable|string|max:255',
                 'area' => 'nullable|string|max:255',
@@ -80,45 +62,45 @@ class FormController extends Controller
                 'cctv' => 'nullable|string|max:255',
                 'kronologi_cctv' => 'nullable|string|max:5000',
                 
-                // File fields - NO mimes, just file + max
+                // ✅ FIXED: Gunakan 'image' atau 'mimes:jpeg,jpg,png,gif,webp,heic'
                 'foto_serahterima' => 'nullable|array',
-                'foto_serahterima.*' => 'nullable|file|max:51200',
+                'foto_serahterima.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_patroli' => 'nullable|array',
-                'foto_patroli.*' => 'nullable|file|max:51200',
+                'foto_patroli.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_lembur' => 'nullable|array',
-                'foto_lembur.*' => 'nullable|file|max:51200',
+                'foto_lembur.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_tamu' => 'nullable|array',
-                'foto_tamu.*' => 'nullable|file|max:51200',
+                'foto_tamu.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_panduan' => 'nullable|array',
-                'foto_panduan.*' => 'nullable|file|max:51200',
+                'foto_panduan.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_force' => 'nullable|array',
-                'foto_force.*' => 'nullable|file|max:51200',
+                'foto_force.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_penertiban' => 'nullable|array',
-                'foto_penertiban.*' => 'nullable|file|max:51200',
+                'foto_penertiban.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_simulasi' => 'nullable|array',
-                'foto_simulasi.*' => 'nullable|file|max:51200',
+                'foto_simulasi.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_penyegaran' => 'nullable|array',
-                'foto_penyegaran.*' => 'nullable|file|max:51200',
+                'foto_penyegaran.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_telepon' => 'nullable|array',
-                'foto_telepon.*' => 'nullable|file|max:51200',
+                'foto_telepon.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_rutin' => 'nullable|array',
-                'foto_rutin.*' => 'nullable|file|max:51200',
+                'foto_rutin.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_pengecekan' => 'nullable|array',
-                'foto_pengecekan.*' => 'nullable|file|max:51200',
+                'foto_pengecekan.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
                 
                 'foto_cctv' => 'nullable|array',
-                'foto_cctv.*' => 'nullable|file|max:51200',
+                'foto_cctv.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp,heic|max:51200',
             ]);
 
             Log::info('✅ Validation PASSED');
@@ -177,11 +159,12 @@ class FormController extends Controller
             Log::error('❌ Error', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
-                'line' => $e->getLine()
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
             ]);
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -197,7 +180,9 @@ class FormController extends Controller
                 $files = [$files];
             }
             
-            foreach ($files as $file) {
+            Log::info("Processing {$field}: " . count($files) . " files");
+            
+            foreach ($files as $index => $file) {
                 if ($file && $file->isValid()) {
                     try {
                         $originalName = $file->getClientOriginalName();
@@ -209,14 +194,17 @@ class FormController extends Controller
                         $path = $file->storeAs("uploads/{$field}", $uniqueFilename, 'public');
                         $paths[] = $path;
                         
-                        Log::info("File uploaded: {$field}/{$uniqueFilename}");
+                        Log::info("✅ File uploaded [{$index}]: {$field}/{$uniqueFilename}");
                     } catch (\Exception $e) {
-                        Log::error("File upload failed", [
+                        Log::error("❌ File upload failed", [
                             'field' => $field,
+                            'index' => $index,
                             'file' => $file->getClientOriginalName(),
                             'error' => $e->getMessage()
                         ]);
                     }
+                } else {
+                    Log::warning("Invalid file at {$field}[{$index}]");
                 }
             }
         }
