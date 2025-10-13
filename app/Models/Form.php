@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Form extends Model
 {
+    protected $table = 'laporan_pengamanan';
     protected $fillable = [
         'waktu',
         'area',
