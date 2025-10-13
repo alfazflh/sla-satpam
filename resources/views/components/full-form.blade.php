@@ -1642,20 +1642,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const csrfToken = form.querySelector('input[name="_token"]');
         if (csrfToken) formData.set('_token', csrfToken.value);
 
-        // ✅ PERBAIKAN: Kirim file dari fileStorage dengan benar
-        for (let fieldName in fileStorage) {
-            if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
-                const cleanFieldName = fieldName.replace('[]', '');
-                
-                fileStorage[fieldName].files.forEach((file, index) => {
-                    // Pastikan file masih valid
-                    if (file instanceof File && file.size > 0) {
-                        formData.append(`${cleanFieldName}[]`, file, file.name);
-                        console.log(`✅ File ${index + 1} ditambahkan: ${file.name} (${file.size} bytes, ${file.type})`);
-                    }
-                });
+        // ✅ PERBAIKAN: Kirim file dengan index eksplisit
+for (let fieldName in fileStorage) {
+    if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
+        const cleanFieldName = fieldName.replace('[]', '');
+        
+        fileStorage[fieldName].files.forEach((file, index) => {
+            if (file instanceof File && file.size > 0) {
+                // PENTING: Gunakan format array PHP yang eksplisit
+                formData.append(`${cleanFieldName}[${index}]`, file, file.name);
+                console.log(`✅ File ${index} ditambahkan: ${file.name} sebagai ${cleanFieldName}[${index}]`);
             }
-        }
+        });
+    }
+}
 
         // Debug FormData
         console.log('=== FORMDATA CONTENT ===');
