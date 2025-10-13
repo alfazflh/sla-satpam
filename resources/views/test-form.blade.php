@@ -16,9 +16,10 @@
         document.querySelector('form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const formData = new FormData(this);
+            const form = e.target;
+            const formData = new FormData(form);
             
-            const response = await fetch(this.action, {
+            const response = await fetch(form.action, {
                 method: 'POST',
                 body: formData
             });
