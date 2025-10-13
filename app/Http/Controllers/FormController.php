@@ -17,7 +17,21 @@ class FormController extends Controller
     {
         Log::info('=== FORM SUBMISSION START ===');
         Log::info('Form Data:', $request->except(['foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi', 'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan', 'foto_cctv']));
-        Log::info('Files:', array_keys($request->allFiles()));
+        
+        // Log detail files yang masuk
+        $allFiles = $request->allFiles();
+        Log::info('Total file fields received: ' . count($allFiles));
+        
+        foreach ($allFiles as $fieldName => $files) {
+            if (is_array($files)) {
+                Log::info("📂 Field: {$fieldName} - Total files: " . count($files));
+                foreach ($files as $idx => $file) {
+                    Log::info("  📄 File #{$idx}: {$file->getClientOriginalName()} ({$file->getSize()} bytes, mime: {$file->getMimeType()}, ext: {$file->getClientOriginalExtension()})");
+                }
+            } else {
+                Log::info("📂 Field: {$fieldName} - Single file: {$files->getClientOriginalName()} ({$files->getSize()} bytes, mime: {$files->getMimeType()})");
+            }
+        }
 
         try {
             // Validasi HANYA untuk non-file fields
@@ -45,10 +59,12 @@ class FormController extends Controller
                 'kronologi_cctv' => 'nullable|string|max:5000',
             ]);
 
+            Log::info('✅ Non-file validation passed');
+
             // Validasi manual untuk files
             $this->validateFiles($request);
 
-            Log::info('✅ Validasi berhasil');
+            Log::info('✅ File validation passed');
 
             // Simpan data utama
             $form = new Form();
@@ -85,7 +101,7 @@ class FormController extends Controller
             }
 
             $form->save();
-            Log::info('✅ FORM SAVED', ['id' => $form->id]);
+            Log::info('✅ FORM SAVED SUCCESSFULLY', ['id' => $form->id]);
 
             return response()->json([
                 'success' => true,
@@ -106,6 +122,7 @@ class FormController extends Controller
                 'msg' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
             ]);
             return response()->json([
                 'success' => false,
@@ -115,7 +132,7 @@ class FormController extends Controller
     }
 
     /**
-     * Validasi manual untuk files
+     * Validasi manual untuk files dengan pengecekan ketat
      */
     private function validateFiles(Request $request)
     {
@@ -126,7 +143,8 @@ class FormController extends Controller
         ];
 
         $errors = [];
-        $allowedMimes = ['jpg', 'jpeg', 'png', 'gif'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         $maxSize = 51200; // 50MB dalam KB
 
         foreach ($fotoFields as $field) {
@@ -138,30 +156,69 @@ class FormController extends Controller
                     $files = [$files];
                 }
 
+                Log::info("Validating field: {$field}, total files: " . count($files));
+
                 foreach ($files as $index => $file) {
-                    // Validasi apakah valid file
+                    $fileName = $file->getClientOriginalName();
+                    $fileSize = $file->getSize();
+                    $mimeType = $file->getMimeType();
+                    $extension = strtolower($file->getClientOriginalExtension());
+
+                    Log::info("  Checking file #{$index}: {$fileName}", [
+                        'size' => $fileSize,
+                        'mime' => $mimeType,
+                        'ext' => $extension
+                    ]);
+
+                    // Validasi 1: Apakah file valid
                     if (!$file->isValid()) {
-                        $errors[$field][] = "File ke-" . ($index + 1) . " tidak valid";
+                        $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) tidak valid atau corrupt";
+                        Log::warning("  ❌ File not valid");
                         continue;
                     }
 
-                    // Validasi mime type
-                    $extension = strtolower($file->getClientOriginalExtension());
-                    if (!in_array($extension, $allowedMimes)) {
-                        $errors[$field][] = "File ke-" . ($index + 1) . " harus berupa gambar (jpg, jpeg, png, gif)";
+                    // Validasi 2: Cek extension
+                    if (!in_array($extension, $allowedExtensions)) {
+                        $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) memiliki ekstensi tidak valid. Hanya diperbolehkan: " . implode(', ', $allowedExtensions);
+                        Log::warning("  ❌ Invalid extension: {$extension}");
                     }
 
-                    // Validasi ukuran (dalam bytes)
-                    if ($file->getSize() > ($maxSize * 1024)) {
-                        $errors[$field][] = "File ke-" . ($index + 1) . " terlalu besar (max 50MB)";
+                    // Validasi 3: Cek mime type
+                    if (!in_array($mimeType, $allowedMimeTypes)) {
+                        $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) bukan file gambar yang valid. Detected mime type: {$mimeType}";
+                        Log::warning("  ❌ Invalid mime type: {$mimeType}");
+                    }
+
+                    // Validasi 4: Cek ukuran file
+                    if ($fileSize > ($maxSize * 1024)) {
+                        $sizeInMB = round($fileSize / 1024 / 1024, 2);
+                        $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) terlalu besar ({$sizeInMB}MB). Maksimal 50MB";
+                        Log::warning("  ❌ File too large: {$sizeInMB}MB");
+                    }
+
+                    // Validasi 5: Cek apakah file benar-benar gambar (optional, tapi bagus untuk keamanan)
+                    try {
+                        $imageInfo = @getimagesize($file->getRealPath());
+                        if ($imageInfo === false) {
+                            $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) bukan file gambar yang valid";
+                            Log::warning("  ❌ Not a valid image (getimagesize failed)");
+                        } else {
+                            Log::info("  ✅ Valid image: {$imageInfo[0]}x{$imageInfo[1]}px");
+                        }
+                    } catch (\Exception $e) {
+                        $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) gagal divalidasi sebagai gambar";
+                        Log::warning("  ❌ Image validation exception: " . $e->getMessage());
                     }
                 }
             }
         }
 
         if (!empty($errors)) {
+            Log::error('File validation failed', $errors);
             throw \Illuminate\Validation\ValidationException::withMessages($errors);
         }
+
+        Log::info('✅ All files validated successfully');
     }
 
     /**
@@ -179,26 +236,42 @@ class FormController extends Controller
                 $files = [$files];
             }
             
-            foreach ($files as $file) {
+            Log::info("📤 Uploading files for field: {$field}, total: " . count($files));
+            
+            foreach ($files as $index => $file) {
                 if ($file && $file->isValid()) {
                     try {
-                        $path = $file->store("uploads/$field", 'public');
+                        // Generate unique filename
+                        $originalName = $file->getClientOriginalName();
+                        $extension = $file->getClientOriginalExtension();
+                        $filename = pathinfo($originalName, PATHINFO_FILENAME);
+                        $safeFilename = preg_replace('/[^A-Za-z0-9\-_]/', '_', $filename);
+                        $uniqueFilename = $safeFilename . '_' . time() . '_' . uniqid() . '.' . $extension;
+                        
+                        // Store file
+                        $path = $file->storeAs("uploads/{$field}", $uniqueFilename, 'public');
                         $paths[] = $path;
-                        Log::info("✅ File uploaded", [
+                        
+                        Log::info("  ✅ File #{$index} uploaded successfully", [
                             'field' => $field,
-                            'original_name' => $file->getClientOriginalName(),
+                            'original_name' => $originalName,
+                            'stored_name' => $uniqueFilename,
                             'path' => $path,
                             'size' => $file->getSize()
                         ]);
                     } catch (\Exception $e) {
-                        Log::error("❌ File upload failed", [
+                        Log::error("  ❌ File #{$index} upload failed", [
                             'field' => $field,
                             'file' => $file->getClientOriginalName(),
                             'error' => $e->getMessage()
                         ]);
                     }
+                } else {
+                    Log::warning("  ⚠️ File #{$index} is invalid or empty");
                 }
             }
+            
+            Log::info("✅ Total files uploaded for {$field}: " . count($paths));
         }
         
         return $paths ? json_encode($paths) : null;
