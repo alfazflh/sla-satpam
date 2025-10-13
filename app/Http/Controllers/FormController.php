@@ -15,12 +15,49 @@ class FormController extends Controller
 
     public function store(Request $request)
     {
-        Log::info('=== FORM SUBMISSION START ===');
+        Log::info('=== FILE MIME DEBUG ===');
         
+        // Debug MIME types yang diterima Laravel
+        if ($request->hasFile('foto_serahterima')) {
+            $files = $request->file('foto_serahterima');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+            
+            foreach ($files as $idx => $file) {
+                Log::info("foto_serahterima[$idx]:", [
+                    'name' => $file->getClientOriginalName(),
+                    'extension' => $file->getClientOriginalExtension(),
+                    'client_mime' => $file->getClientMimeType(),
+                    'guessed_mime' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'is_valid' => $file->isValid()
+                ]);
+            }
+        }
+        
+        if ($request->hasFile('foto_patroli')) {
+            $files = $request->file('foto_patroli');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+            
+            foreach ($files as $idx => $file) {
+                Log::info("foto_patroli[$idx]:", [
+                    'name' => $file->getClientOriginalName(),
+                    'extension' => $file->getClientOriginalExtension(),
+                    'client_mime' => $file->getClientMimeType(),
+                    'guessed_mime' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'is_valid' => $file->isValid()
+                ]);
+            }
+        }
+
         try {
-            // Validasi - Ganti 'image' dengan 'file' dan explicit mimes
+            // Test 1: Validasi tanpa mimes restriction
+            Log::info('Testing validation WITHOUT mimes restriction...');
             $validated = $request->validate([
-                // Non-file fields
                 'waktu' => 'nullable|string|max:255',
                 'area' => 'nullable|string|max:255',
                 'nama' => 'nullable|array',
@@ -43,50 +80,50 @@ class FormController extends Controller
                 'cctv' => 'nullable|string|max:255',
                 'kronologi_cctv' => 'nullable|string|max:5000',
                 
-                // File fields - Pake 'file' bukan 'image'
+                // File fields - NO mimes, just file + max
                 'foto_serahterima' => 'nullable|array',
-                'foto_serahterima.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_serahterima.*' => 'nullable|file|max:51200',
                 
                 'foto_patroli' => 'nullable|array',
-                'foto_patroli.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_patroli.*' => 'nullable|file|max:51200',
                 
                 'foto_lembur' => 'nullable|array',
-                'foto_lembur.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_lembur.*' => 'nullable|file|max:51200',
                 
                 'foto_tamu' => 'nullable|array',
-                'foto_tamu.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_tamu.*' => 'nullable|file|max:51200',
                 
                 'foto_panduan' => 'nullable|array',
-                'foto_panduan.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_panduan.*' => 'nullable|file|max:51200',
                 
                 'foto_force' => 'nullable|array',
-                'foto_force.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_force.*' => 'nullable|file|max:51200',
                 
                 'foto_penertiban' => 'nullable|array',
-                'foto_penertiban.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_penertiban.*' => 'nullable|file|max:51200',
                 
                 'foto_simulasi' => 'nullable|array',
-                'foto_simulasi.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_simulasi.*' => 'nullable|file|max:51200',
                 
                 'foto_penyegaran' => 'nullable|array',
-                'foto_penyegaran.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_penyegaran.*' => 'nullable|file|max:51200',
                 
                 'foto_telepon' => 'nullable|array',
-                'foto_telepon.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_telepon.*' => 'nullable|file|max:51200',
                 
                 'foto_rutin' => 'nullable|array',
-                'foto_rutin.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_rutin.*' => 'nullable|file|max:51200',
                 
                 'foto_pengecekan' => 'nullable|array',
-                'foto_pengecekan.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_pengecekan.*' => 'nullable|file|max:51200',
                 
                 'foto_cctv' => 'nullable|array',
-                'foto_cctv.*' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,bmp|max:51200',
+                'foto_cctv.*' => 'nullable|file|max:51200',
             ]);
 
-            Log::info('✅ Validation passed');
+            Log::info('✅ Validation PASSED');
 
-            // Simpan data utama
+            // Simpan data
             $form = new Form();
             $form->waktu = $request->waktu;
             $form->area = $request->area;
@@ -109,7 +146,6 @@ class FormController extends Controller
             $form->cctv = $request->cctv;
             $form->kronologi_cctv = $request->kronologi_cctv;
 
-            // Simpan semua foto
             $fotoFields = [
                 'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu',
                 'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi',
@@ -130,7 +166,7 @@ class FormController extends Controller
             ], 200);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed', ['errors' => $e->errors()]);
+            Log::error('❌ Validation FAILED', ['errors' => $e->errors()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Validasi gagal',
@@ -138,14 +174,14 @@ class FormController extends Controller
             ], 422);
 
         } catch (\Exception $e) {
-            Log::error('Error', [
+            Log::error('❌ Error', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine()
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }
     }
@@ -157,7 +193,6 @@ class FormController extends Controller
         if ($request->hasFile($field)) {
             $files = $request->file($field);
             
-            // Pastikan files adalah array
             if (!is_array($files)) {
                 $files = [$files];
             }
@@ -171,7 +206,6 @@ class FormController extends Controller
                         $safeFilename = preg_replace('/[^A-Za-z0-9\-_]/', '_', $filename);
                         $uniqueFilename = $safeFilename . '_' . time() . '_' . uniqid() . '.' . $extension;
                         
-                        // Store file
                         $path = $file->storeAs("uploads/{$field}", $uniqueFilename, 'public');
                         $paths[] = $path;
                         
