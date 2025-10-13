@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('forms', function (Blueprint $table) {
+        Schema::table('laporan_pengamanan', function (Blueprint $table) {
             // Ubah semua kolom foto dari string ke json
             $table->json('foto_serahterima')->nullable()->change();
             $table->json('foto_patroli')->nullable()->change();
@@ -31,7 +31,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('forms', function (Blueprint $table) {
+        Schema::table('laporan_pengamanan', function (Blueprint $table) {
             // Kembalikan ke string
             $table->string('foto_serahterima')->nullable()->change();
             $table->string('foto_patroli')->nullable()->change();
