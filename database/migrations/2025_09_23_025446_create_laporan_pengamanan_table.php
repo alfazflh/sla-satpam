@@ -53,6 +53,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('forms');
+        Schema::dropIfExists('laporan_pengamanan');
     }
 };
