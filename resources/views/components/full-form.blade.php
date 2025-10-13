@@ -1466,17 +1466,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const csrfToken = form.querySelector('input[name="_token"]');
         if (csrfToken) formData.set('_token', csrfToken.value);
 
-        // Tambahkan file dari fileStorage - SOLUSI FINAL
+        // SOLUSI: Kirim file dengan format yang benar
         for (let fieldName in fileStorage) {
             if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
-                // Hapus [] dari nama field jika ada
+                // Hapus [] dari nama field untuk mendapatkan nama asli
                 const cleanFieldName = fieldName.replace('[]', '');
                 
-                fileStorage[fieldName].files.forEach(file => {
+                fileStorage[fieldName].files.forEach((file, index) => {
                     if (file && file.size > 0) {
-                        // CRITICAL: Kirim dengan nama yang SAMA berulang kali
-                        // Laravel akan otomatis menjadikannya array
-                        formData.append(`${cleanFieldName}[]`, file);
+                        // PENTING: Append dengan format field[]
+                        // Ini akan membuat Laravel menerima sebagai array
+                        formData.append(`${cleanFieldName}[]`, file, file.name);
+                        console.log(`✅ Menambahkan file ${index + 1}:`, file.name, `ke ${cleanFieldName}[]`);
                     }
                 });
             }
