@@ -8,10 +8,14 @@ use App\Models\User;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\SatpamController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SimpleTestController;
 
 // Laporan Satpam
 Route::get('/laporan-satpam', [SatpamController::class, 'create'])->name('laporan.create');
 Route::post('/laporan-satpam', [SatpamController::class, 'store'])->name('laporan.store');
+
+Route::get('/test-upload', [SimpleTestController::class, 'testForm']);
+Route::post('/test-upload', [SimpleTestController::class, 'testStore'])->name('test.store');
 
 // Halaman awal (welcome + form create)
 Route::get('/', [FormController::class, 'create'])->name('welcome');
@@ -33,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 
 // Dashboard redirect sesuai role
 Route::get('/dashboard', function () {
