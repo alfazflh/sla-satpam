@@ -7,7 +7,7 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('forms', function (Blueprint $table) {
+        Schema::create('laporan_pengamanan', function (Blueprint $table) {
             $table->id();
             $table->string('waktu');
             $table->string('area');
