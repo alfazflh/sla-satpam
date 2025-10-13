@@ -1472,10 +1472,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Hapus [] dari nama field jika ada
                 const cleanFieldName = fieldName.replace('[]', '');
                 
-                fileStorage[fieldName].files.forEach(file => {
+                fileStorage[fieldName].files.forEach((file, index) => {
                     if (file && file.size > 0) {
-                        // Kirim dengan format foto_serahterima[], foto_patroli[], dll
-                        formData.append(cleanFieldName + '[]', file);
+                        // IMPORTANT: Kirim dengan format foto_serahterima[0], foto_serahterima[1], dll
+                        // Bukan foto_serahterima[] karena Laravel butuh index eksplisit
+                        formData.append(`${cleanFieldName}[${index}]`, file);
                     }
                 });
             }

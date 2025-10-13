@@ -20,6 +20,7 @@ class FormController extends Controller
         Log::info('Files:', $request->allFiles());
 
         try {
+            // Validasi dengan format yang benar untuk array files
             $validated = $request->validate([
                 'waktu' => 'nullable|string|max:255',
                 'area' => 'nullable|string|max:255',
@@ -44,44 +45,19 @@ class FormController extends Controller
                 'cctv' => 'nullable|string|max:255',
                 'kronologi_cctv' => 'nullable|string|max:5000',
 
-                // ✅ Validasi file array - PERBAIKAN DI SINI
-                'foto_serahterima' => 'nullable|array',
+                // Format foto_serahterima.0, foto_serahterima.1, dll
                 'foto_serahterima.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_patroli' => 'nullable|array',
                 'foto_patroli.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_lembur' => 'nullable|array',
                 'foto_lembur.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_tamu' => 'nullable|array',
                 'foto_tamu.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_panduan' => 'nullable|array',
                 'foto_panduan.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_force' => 'nullable|array',
                 'foto_force.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_penertiban' => 'nullable|array',
                 'foto_penertiban.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_simulasi' => 'nullable|array',
                 'foto_simulasi.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_penyegaran' => 'nullable|array',
                 'foto_penyegaran.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_telepon' => 'nullable|array',
                 'foto_telepon.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_rutin' => 'nullable|array',
                 'foto_rutin.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_pengecekan' => 'nullable|array',
                 'foto_pengecekan.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
-                
-                'foto_cctv' => 'nullable|array',
                 'foto_cctv.*' => 'nullable|image|mimes:jpg,jpeg,png|max:51200',
             ]);
 
@@ -119,8 +95,17 @@ class FormController extends Controller
 
             foreach ($fotoFields as $field) {
                 $paths = [];
-                if ($request->hasFile($field)) {
-                    foreach ($request->file($field) as $file) {
+                
+                // Cek apakah ada file dengan field ini
+                if ($request->has($field)) {
+                    $files = $request->file($field);
+                    
+                    // Pastikan $files adalah array
+                    if (!is_array($files)) {
+                        $files = [$files];
+                    }
+                    
+                    foreach ($files as $file) {
                         if ($file && $file->isValid()) {
                             $path = $file->store("uploads/$field", 'public');
                             $paths[] = $path;
@@ -128,6 +113,7 @@ class FormController extends Controller
                         }
                     }
                 }
+                
                 $form->$field = $paths ? json_encode($paths) : null;
             }
 
