@@ -16,7 +16,7 @@ class FormController extends Controller
     public function store(Request $request)
     {
         try {
-            // ✅ Validasi TANPA file (file dihandle manual)
+            // ✅ Validasi input tanpa file (file dihandle manual)
             $validated = $request->validate([
                 'waktu' => 'nullable|string|max:255',
                 'area' => 'nullable|string|max:255',
@@ -43,7 +43,7 @@ class FormController extends Controller
 
             Log::info('✅ Basic validation PASSED');
 
-            // Simpan data
+            // Simpan data utama ke tabel
             $form = new Form();
             $form->waktu = $request->waktu;
             $form->area = $request->area;
@@ -66,7 +66,7 @@ class FormController extends Controller
             $form->cctv = $request->cctv;
             $form->kronologi_cctv = $request->kronologi_cctv;
 
-            // ✅ Handle file uploads dengan INDEXED format
+            // ✅ Handle semua upload foto (pakai format array: name="foto_xxx[]")
             $fotoFields = [
                 'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu',
                 'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi',
@@ -74,7 +74,7 @@ class FormController extends Controller
             ];
 
             foreach ($fotoFields as $field) {
-                $form->$field = $this->handleFileUploadIndexed($request, $field);
+                $form->$field = $this->handleFileUploadArray($request, $field);
             }
 
             $form->save();
@@ -108,128 +108,55 @@ class FormController extends Controller
     }
 
     /**
-     * Handle file upload dengan format indexed: field[0], field[1], dst
-     */
-    private function handleFileUploadIndexed(Request $request, string $field)
-    {
-        $paths = [];
-        $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/heic'];
-        $maxSize = 51200 * 1024; // 50MB in bytes
-        
-        Log::info("📁 Processing field: {$field}");
-        
-        // Loop untuk cek field[0], field[1], field[2], dst
-        $index = 0;
-        while ($index < 50) { // Max 50 files per field (safety limit)
-            $indexedField = "{$field}[{$index}]";
-            
-            if ($request->hasFile($indexedField)) {
-                $file = $request->file($indexedField);
-                
-                Log::info("  Found: {$indexedField} - " . $file->getClientOriginalName());
-                
-                if ($file && $file->isValid()) {
-                    // Validasi MIME type
-                    if (!in_array($file->getMimeType(), $allowedMimes)) {
-                        Log::warning("  ⚠️ Invalid MIME type: " . $file->getMimeType());
-                        $index++;
-                        continue;
-                    }
-                    
-                    // Validasi size
-                    if ($file->getSize() > $maxSize) {
-                        Log::warning("  ⚠️ File too large: " . round($file->getSize() / 1024 / 1024, 2) . "MB");
-                        $index++;
-                        continue;
-                    }
-                    
-                    try {
-                        $originalName = $file->getClientOriginalName();
-                        $extension = $file->getClientOriginalExtension();
-                        $filename = pathinfo($originalName, PATHINFO_FILENAME);
-                        $safeFilename = preg_replace('/[^A-Za-z0-9\-_]/', '_', $filename);
-                        $uniqueFilename = $safeFilename . '_' . time() . '_' . uniqid() . '.' . $extension;
-                        
-                        $path = $file->storeAs("uploads/{$field}", $uniqueFilename, 'public');
-                        $paths[] = $path;
-                        
-                        Log::info("  ✅ Uploaded: {$uniqueFilename}");
-                    } catch (\Exception $e) {
-                        Log::error("  ❌ Upload failed: " . $e->getMessage());
-                    }
-                } else {
-                    Log::warning("  ⚠️ Invalid file at index {$index}");
-                }
-                
-                $index++;
-            } else {
-                // Tidak ada file di index ini, stop loop
-                break;
-            }
-        }
-        
-        if (empty($paths)) {
-            Log::info("  ℹ️ No files found for {$field}");
-        } else {
-            Log::info("  ✅ Total uploaded for {$field}: " . count($paths) . " files");
-        }
-        
-        return $paths ? json_encode($paths) : null;
-    }
-
-    /**
-     * Fallback: Handle file upload dengan format array: field[]
-     * (kept for compatibility)
+     * ✅ Upload handler untuk field array: name="foto_xxx[]"
      */
     private function handleFileUploadArray(Request $request, string $field)
     {
         $paths = [];
         $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/heic'];
-        $maxSize = 51200 * 1024; // 50MB in bytes
-        
+        $maxSize = 51200 * 1024; // 50 MB
+
         if ($request->hasFile($field)) {
             $files = $request->file($field);
-            
-            if (!is_array($files)) {
-                $files = [$files];
-            }
-            
-            Log::info("📁 Processing array field: {$field} - " . count($files) . " files");
-            
+            if (!is_array($files)) $files = [$files];
+
+            Log::info("📁 Processing {$field} - total " . count($files) . " files");
+
             foreach ($files as $index => $file) {
-                if ($file && $file->isValid()) {
-                    // Validasi MIME type
-                    if (!in_array($file->getMimeType(), $allowedMimes)) {
-                        Log::warning("  ⚠️ Invalid MIME type [{$index}]: " . $file->getMimeType());
-                        continue;
-                    }
-                    
-                    // Validasi size
-                    if ($file->getSize() > $maxSize) {
-                        Log::warning("  ⚠️ File too large [{$index}]: " . round($file->getSize() / 1024 / 1024, 2) . "MB");
-                        continue;
-                    }
-                    
-                    try {
-                        $originalName = $file->getClientOriginalName();
-                        $extension = $file->getClientOriginalExtension();
-                        $filename = pathinfo($originalName, PATHINFO_FILENAME);
-                        $safeFilename = preg_replace('/[^A-Za-z0-9\-_]/', '_', $filename);
-                        $uniqueFilename = $safeFilename . '_' . time() . '_' . uniqid() . '.' . $extension;
-                        
-                        $path = $file->storeAs("uploads/{$field}", $uniqueFilename, 'public');
-                        $paths[] = $path;
-                        
-                        Log::info("  ✅ Uploaded [{$index}]: {$uniqueFilename}");
-                    } catch (\Exception $e) {
-                        Log::error("  ❌ Upload failed [{$index}]: " . $e->getMessage());
-                    }
-                } else {
-                    Log::warning("  ⚠️ Invalid file at index {$index}");
+                if (!$file || !$file->isValid()) {
+                    Log::warning("⚠️ Invalid file at {$field}[{$index}]");
+                    continue;
+                }
+
+                // Validasi MIME
+                if (!in_array($file->getMimeType(), $allowedMimes)) {
+                    Log::warning("⚠️ Invalid MIME at {$field}[{$index}]: " . $file->getMimeType());
+                    continue;
+                }
+
+                // Validasi ukuran
+                if ($file->getSize() > $maxSize) {
+                    Log::warning("⚠️ File terlalu besar at {$field}[{$index}]");
+                    continue;
+                }
+
+                try {
+                    $original = $file->getClientOriginalName();
+                    $ext = $file->getClientOriginalExtension();
+                    $nameOnly = pathinfo($original, PATHINFO_FILENAME);
+                    $safeName = preg_replace('/[^A-Za-z0-9\-_]/', '_', $nameOnly);
+                    $uniqueName = "{$safeName}_" . time() . '_' . uniqid() . ".{$ext}";
+
+                    $path = $file->storeAs("uploads/{$field}", $uniqueName, 'public');
+                    $paths[] = $path;
+
+                    Log::info("✅ Uploaded {$field}[{$index}]: {$uniqueName}");
+                } catch (\Exception $e) {
+                    Log::error("❌ Upload failed at {$field}[{$index}]: " . $e->getMessage());
                 }
             }
         }
-        
+
         return $paths ? json_encode($paths) : null;
     }
 }
