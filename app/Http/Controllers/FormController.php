@@ -34,8 +34,9 @@ class FormController extends Controller
         }
 
         try {
-            // Validasi HANYA untuk non-file fields
+            // Validasi untuk SEMUA field (non-file DAN file)
             $validated = $request->validate([
+                // Non-file fields
                 'waktu' => 'nullable|string|max:255',
                 'area' => 'nullable|string|max:255',
                 'nama' => 'nullable|array',
@@ -57,14 +58,49 @@ class FormController extends Controller
                 'pengecekan' => 'nullable|string|max:255',
                 'cctv' => 'nullable|string|max:255',
                 'kronologi_cctv' => 'nullable|string|max:5000',
+                
+                // File fields - KUNCI UTAMA: Validasi array dengan .*
+                'foto_serahterima' => 'nullable|array',
+                'foto_serahterima.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_patroli' => 'nullable|array',
+                'foto_patroli.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_lembur' => 'nullable|array',
+                'foto_lembur.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_tamu' => 'nullable|array',
+                'foto_tamu.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_panduan' => 'nullable|array',
+                'foto_panduan.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_force' => 'nullable|array',
+                'foto_force.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_penertiban' => 'nullable|array',
+                'foto_penertiban.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_simulasi' => 'nullable|array',
+                'foto_simulasi.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_penyegaran' => 'nullable|array',
+                'foto_penyegaran.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_telepon' => 'nullable|array',
+                'foto_telepon.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_rutin' => 'nullable|array',
+                'foto_rutin.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_pengecekan' => 'nullable|array',
+                'foto_pengecekan.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
+                
+                'foto_cctv' => 'nullable|array',
+                'foto_cctv.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:51200',
             ]);
 
-            Log::info('✅ Non-file validation passed');
-
-            // Validasi manual untuk files
-            $this->validateFiles($request);
-
-            Log::info('✅ File validation passed');
+            Log::info('✅ Validation passed (including files)');
 
             // Simpan data utama
             $form = new Form();
@@ -129,96 +165,6 @@ class FormController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
-    }
-
-    /**
-     * Validasi manual untuk files dengan pengecekan ketat
-     */
-    private function validateFiles(Request $request)
-    {
-        $fotoFields = [
-            'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu',
-            'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi',
-            'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan', 'foto_cctv'
-        ];
-
-        $errors = [];
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        $allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-        $maxSize = 51200; // 50MB dalam KB
-
-        foreach ($fotoFields as $field) {
-            if ($request->hasFile($field)) {
-                $files = $request->file($field);
-                
-                // Pastikan files adalah array
-                if (!is_array($files)) {
-                    $files = [$files];
-                }
-
-                Log::info("Validating field: {$field}, total files: " . count($files));
-
-                foreach ($files as $index => $file) {
-                    $fileName = $file->getClientOriginalName();
-                    $fileSize = $file->getSize();
-                    $mimeType = $file->getMimeType();
-                    $extension = strtolower($file->getClientOriginalExtension());
-
-                    Log::info("  Checking file #{$index}: {$fileName}", [
-                        'size' => $fileSize,
-                        'mime' => $mimeType,
-                        'ext' => $extension
-                    ]);
-
-                    // Validasi 1: Apakah file valid
-                    if (!$file->isValid()) {
-                        $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) tidak valid atau corrupt";
-                        Log::warning("  ❌ File not valid");
-                        continue;
-                    }
-
-                    // Validasi 2: Cek extension
-                    if (!in_array($extension, $allowedExtensions)) {
-                        $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) memiliki ekstensi tidak valid. Hanya diperbolehkan: " . implode(', ', $allowedExtensions);
-                        Log::warning("  ❌ Invalid extension: {$extension}");
-                    }
-
-                    // Validasi 3: Cek mime type
-                    if (!in_array($mimeType, $allowedMimeTypes)) {
-                        $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) bukan file gambar yang valid. Detected mime type: {$mimeType}";
-                        Log::warning("  ❌ Invalid mime type: {$mimeType}");
-                    }
-
-                    // Validasi 4: Cek ukuran file
-                    if ($fileSize > ($maxSize * 1024)) {
-                        $sizeInMB = round($fileSize / 1024 / 1024, 2);
-                        $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) terlalu besar ({$sizeInMB}MB). Maksimal 50MB";
-                        Log::warning("  ❌ File too large: {$sizeInMB}MB");
-                    }
-
-                    // Validasi 5: Cek apakah file benar-benar gambar (optional, tapi bagus untuk keamanan)
-                    try {
-                        $imageInfo = @getimagesize($file->getRealPath());
-                        if ($imageInfo === false) {
-                            $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) bukan file gambar yang valid";
-                            Log::warning("  ❌ Not a valid image (getimagesize failed)");
-                        } else {
-                            Log::info("  ✅ Valid image: {$imageInfo[0]}x{$imageInfo[1]}px");
-                        }
-                    } catch (\Exception $e) {
-                        $errors[$field][] = "File ke-" . ($index + 1) . " ({$fileName}) gagal divalidasi sebagai gambar";
-                        Log::warning("  ❌ Image validation exception: " . $e->getMessage());
-                    }
-                }
-            }
-        }
-
-        if (!empty($errors)) {
-            Log::error('File validation failed', $errors);
-            throw \Illuminate\Validation\ValidationException::withMessages($errors);
-        }
-
-        Log::info('✅ All files validated successfully');
     }
 
     /**
