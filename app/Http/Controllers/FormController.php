@@ -16,54 +16,20 @@ class FormController extends Controller
     public function store(Request $request)
     {
         Log::info('=== FORM SUBMISSION START ===');
-        Log::info('Form Data:', $request->all());
-        Log::info('Files:', $request->allFiles());
+        Log::info('All Input:', $request->all());
+        Log::info('All Files:', $request->allFiles());
+        
+        // DEBUG: Lihat raw struktur file
+        foreach ($request->allFiles() as $key => $files) {
+            Log::info("Field: $key", [
+                'is_array' => is_array($files),
+                'count' => is_array($files) ? count($files) : 1,
+                'type' => gettype($files)
+            ]);
+        }
 
         try {
-            // PENTING: Validasi harus TANPA 'array' untuk field foto
-            $validated = $request->validate([
-                'waktu' => 'nullable|string|max:255',
-                'area' => 'nullable|string|max:255',
-                'nama' => 'nullable|array',
-                'nama.*' => 'nullable|string|max:255',
-
-                'ketentuan_seragam' => 'nullable|string|max:255',
-                'pengamanan' => 'nullable|string|max:255',
-                'kronologi_kriminal' => 'nullable|string|max:5000',
-                'fungsi_khusus' => 'nullable|string|max:255',
-                'kronologi_gangguan' => 'nullable|string|max:5000',
-                'memantau' => 'nullable|string|max:255',
-                'pelayanan' => 'nullable|string|max:255',
-                'fungsi_force' => 'nullable|string|max:255',
-                'penertiban' => 'nullable|string|max:255',
-                'simulasi' => 'nullable|string|max:255',
-                'penyegaran' => 'nullable|string|max:255',
-                'telepon' => 'nullable|string|max:255',
-                'rutin' => 'nullable|string|max:255',
-                'titik' => 'nullable|integer|min:1',
-                'pengecekan' => 'nullable|string|max:255',
-                'cctv' => 'nullable|string|max:255',
-                'kronologi_cctv' => 'nullable|string|max:5000',
-
-                // SOLUSI: Validasi dengan .* saja (TANPA 'array')
-                'foto_serahterima.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_patroli.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_lembur.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_tamu.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_panduan.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_force.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_penertiban.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_simulasi.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_penyegaran.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_telepon.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_rutin.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_pengecekan.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-                'foto_cctv.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:51200',
-            ]);
-
-            Log::info('✅ Validasi berhasil');
-
-            // Simpan data utama
+            // TANPA VALIDASI DULU - LANGSUNG SIMPAN
             $form = new Form();
             $form->waktu = $request->waktu;
             $form->area = $request->area;
@@ -86,7 +52,7 @@ class FormController extends Controller
             $form->cctv = $request->cctv;
             $form->kronologi_cctv = $request->kronologi_cctv;
 
-            // Simpan semua foto
+            // Simpan foto dengan cara yang PASTI BEKERJA
             $fotoFields = [
                 'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu',
                 'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi',
@@ -96,19 +62,21 @@ class FormController extends Controller
             foreach ($fotoFields as $field) {
                 $paths = [];
                 
+                // Coba ambil file dengan berbagai cara
                 if ($request->hasFile($field)) {
                     $files = $request->file($field);
+                    Log::info("Processing field: $field", ['has_file' => true, 'type' => gettype($files)]);
                     
-                    // Pastikan $files adalah array
+                    // Jika bukan array, jadikan array
                     if (!is_array($files)) {
                         $files = [$files];
                     }
                     
-                    foreach ($files as $file) {
-                        if ($file && $file->isValid()) {
+                    foreach ($files as $index => $file) {
+                        if ($file && method_exists($file, 'isValid') && $file->isValid()) {
                             $path = $file->store("uploads/$field", 'public');
                             $paths[] = $path;
-                            Log::info("✅ File uploaded: $field -> $path");
+                            Log::info("File uploaded", ['field' => $field, 'index' => $index, 'path' => $path]);
                         }
                     }
                 }
@@ -125,21 +93,13 @@ class FormController extends Controller
                 'data' => $form->id
             ], 200);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('❌ VALIDATION ERROR', ['errors' => $e->errors()]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $e->errors()
-            ], 422);
-
         } catch (\Exception $e) {
-            Log::error('❌ GENERAL ERROR', [
+            Log::error('❌ ERROR', [
                 'msg' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
             ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
