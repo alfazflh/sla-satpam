@@ -1,45 +1,35 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Form extends Model
 {
-    protected $table = 'laporan_pengamanan';
     protected $fillable = [
-        'waktu',
-        'area',
-        'nama',
-        'ketentuan_seragam',
-        'foto_serahterima',
-        'pengamanan',
-        'foto_patroli',
-        'kronologi_kriminal',
-        'fungsi_khusus',
-        'foto_lembur',
-        'kronologi_gangguan',
-        'memantau',
-        'foto_tamu',
-        'pelayanan',
-        'foto_panduan',
-        'fungsi_force',
-        'foto_force',
-        'penertiban',
-        'foto_penertiban',
-        'simulasi',
-        'foto_simulasi',
-        'penyegaran',
-        'foto_penyegaran',
-        'telepon',
-        'foto_telepon',
-        'rutin',
-        'titik',
-        'foto_rutin',
-        'pengecekan',
-        'foto_pengecekan',
-        'cctv',
-        'foto_cctv',
-        'kronologi_cctv',
+        'waktu', 'area', 'nama',
+        'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu',
+        'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi',
+        'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan',
+        'foto_cctv', 'ketentuan_seragam', 'pengamanan', 'kronologi_kriminal',
+        'fungsi_khusus', 'kronologi_gangguan', 'memantau', 'pelayanan',
+        'fungsi_force', 'penertiban', 'simulasi', 'penyegaran', 'telepon',
+        'titik', 'rutin', 'pengecekan', 'cctv', 'kronologi_cctv'
+    ];
+
+    protected $casts = [
+        'nama' => 'array',
+        'foto_serahterima' => 'array',
+        'foto_patroli' => 'array',
+        'foto_lembur' => 'array',
+        'foto_tamu' => 'array',
+        'foto_panduan' => 'array',
+        'foto_force' => 'array',
+        'foto_penertiban' => 'array',
+        'foto_simulasi' => 'array',
+        'foto_penyegaran' => 'array',
+        'foto_telepon' => 'array',
+        'foto_rutin' => 'array',
+        'foto_pengecekan' => 'array',
+        'foto_cctv' => 'array',
     ];
 }
