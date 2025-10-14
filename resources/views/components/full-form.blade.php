@@ -1642,28 +1642,30 @@ document.addEventListener('DOMContentLoaded', function() {
         const csrfToken = document.querySelector('input[name="_token"]') || 
             document.querySelector('meta[name="csrf-token"]');
     
-    if (csrfToken) {
-        if (csrfToken.tagName === 'INPUT') {
-            formData.set('_token', csrfToken.value);
-        } else {
-            formData.set('_token', csrfToken.getAttribute('content'));
-        }
-    }
-
-        // ✅ PERBAIKAN: Kirim file dengan index eksplisit
-for (let fieldName in fileStorage) {
-    if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
-        const cleanFieldName = fieldName.replace('[]', '');
-        
-        fileStorage[fieldName].files.forEach((file, index) => {
-            if (file instanceof File && file.size > 0) {
-                // PENTING: Gunakan format array PHP yang eksplisit
-                formData.append(`${cleanFieldName}[${index}]`, file, file.name);
-                console.log(`✅ File ${index} ditambahkan: ${file.name} sebagai ${cleanFieldName}[${index}]`);
+        if (csrfToken) {
+            if (csrfToken.tagName === 'INPUT') {
+                formData.set('_token', csrfToken.value);
+            } else {
+                formData.set('_token', csrfToken.getAttribute('content'));
             }
-        });
-    }
-}
+        }
+
+        // ✅ CRITICAL FIX: Format array yang benar untuk Laravel
+        for (let fieldName in fileStorage) {
+            if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
+                const cleanFieldName = fieldName.replace('[]', '');
+                
+                fileStorage[fieldName].files.forEach((file, index) => {
+                    if (file instanceof File && file.size > 0) {
+                        // ✅ GUNAKAN [] BUKAN [index]
+                        // Laravel butuh: foto_serahterima[], foto_serahterima[]
+                        // BUKAN: foto_serahterima[0], foto_serahterima[1]
+                        formData.append(`${cleanFieldName}[]`, file, file.name);
+                        console.log(`✅ File ${index} ditambahkan: ${file.name} sebagai ${cleanFieldName}[]`);
+                    }
+                });
+            }
+        }
 
         // Debug FormData
         console.log('=== FORMDATA CONTENT ===');
