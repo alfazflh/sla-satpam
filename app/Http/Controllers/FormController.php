@@ -15,7 +15,13 @@ class FormController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validasi input
+            // Log request files untuk debugging
+            Log::info('📦 Request files:', [
+                'has_files' => $request->hasFile('foto_serahterima'),
+                'all_files' => array_keys($request->allFiles())
+            ]);
+
+            // Validasi input - JANGAN validasi file di sini, handle manual
             $validated = $request->validate([
                 'waktu' => 'required|string|max:255',
                 'area' => 'required|string|max:255',
@@ -40,6 +46,21 @@ class FormController extends Controller
                 'pengecekan' => 'nullable|string|max:255',
                 'cctv' => 'nullable|string|max:255',
                 'kronologi_cctv' => 'nullable|string|max:5000',
+                
+                // ✅ Validasi file sebagai array (bukan per-file)
+                'foto_serahterima' => 'nullable|array',
+                'foto_patroli' => 'nullable|array',
+                'foto_lembur' => 'nullable|array',
+                'foto_tamu' => 'nullable|array',
+                'foto_panduan' => 'nullable|array',
+                'foto_force' => 'nullable|array',
+                'foto_penertiban' => 'nullable|array',
+                'foto_simulasi' => 'nullable|array',
+                'foto_penyegaran' => 'nullable|array',
+                'foto_telepon' => 'nullable|array',
+                'foto_rutin' => 'nullable|array',
+                'foto_pengecekan' => 'nullable|array',
+                'foto_cctv' => 'nullable|array',
             ]);
 
             Log::info('✅ Validation passed');
@@ -117,6 +138,7 @@ class FormController extends Controller
     private function handleFileUploadArray(Request $request, string $field)
     {
         if (!$request->hasFile($field)) {
+            Log::info("⚠️ No files for {$field}");
             return null; // Jika tidak ada file, return null
         }
 
@@ -128,8 +150,9 @@ class FormController extends Controller
             $files = [$files];
         }
 
-        $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/heic'];
-        $maxSize = 51200 * 1024; 
+        $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif'];
+        $maxSize = 10240 * 1024; // 10 MB
 
         Log::info("📁 Processing {$field} - " . count($files) . " file(s)");
 
@@ -140,25 +163,43 @@ class FormController extends Controller
                 continue;
             }
 
-            // Validasi MIME type
-            if (!in_array($file->getMimeType(), $allowedMimes)) {
-                Log::warning("⚠️ Invalid MIME at {$field}[{$index}]: " . $file->getMimeType());
+            $mimeType = $file->getMimeType();
+            $extension = strtolower($file->getClientOriginalExtension());
+            $fileSize = $file->getSize();
+
+            Log::info("📄 File {$index}: {$file->getClientOriginalName()}", [
+                'mime' => $mimeType,
+                'extension' => $extension,
+                'size' => $fileSize
+            ]);
+
+            // Validasi MIME type ATAU extension (lebih flexible)
+            $isMimeValid = in_array($mimeType, $allowedMimes);
+            $isExtensionValid = in_array($extension, $allowedExtensions);
+            
+            if (!$isMimeValid && !$isExtensionValid) {
+                Log::warning("⚠️ Invalid file type at {$field}[{$index}]", [
+                    'mime' => $mimeType,
+                    'extension' => $extension
+                ]);
                 continue;
             }
 
             // Validasi ukuran
-            if ($file->getSize() > $maxSize) {
-                Log::warning("⚠️ File too large at {$field}[{$index}]: " . $file->getSize() . " bytes");
+            if ($fileSize > $maxSize) {
+                Log::warning("⚠️ File too large at {$field}[{$index}]", [
+                    'size' => $fileSize,
+                    'max' => $maxSize
+                ]);
                 continue;
             }
 
             try {
                 // Generate nama file yang aman
                 $originalName = $file->getClientOriginalName();
-                $extension = $file->getClientOriginalExtension();
                 $nameOnly = pathinfo($originalName, PATHINFO_FILENAME);
                 $safeName = preg_replace('/[^A-Za-z0-9\-_]/', '_', $nameOnly);
-                $uniqueName = "{$safeName}_" . time() . '_' . uniqid() . ".{$extension}";
+                $uniqueName = $safeName . '_' . time() . '_' . uniqid() . '.' . $extension;
 
                 // Simpan file
                 $path = $file->storeAs("uploads/{$field}", $uniqueName, 'public');
@@ -166,11 +207,20 @@ class FormController extends Controller
 
                 Log::info("✅ Uploaded {$field}[{$index}]: {$uniqueName}");
             } catch (\Exception $e) {
-                Log::error("❌ Upload failed at {$field}[{$index}]: " . $e->getMessage());
+                Log::error("❌ Upload failed at {$field}[{$index}]", [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
             }
         }
 
         // Return JSON string jika ada file yang berhasil diupload
-        return !empty($paths) ? json_encode($paths) : null;
+        if (!empty($paths)) {
+            Log::info("✅ Total {$field} uploaded: " . count($paths));
+            return json_encode($paths);
+        }
+        
+        Log::warning("⚠️ No valid files uploaded for {$field}");
+        return null;
     }
 }
