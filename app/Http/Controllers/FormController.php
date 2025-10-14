@@ -15,13 +15,15 @@ class FormController extends Controller
     public function store(Request $request)
     {
         try {
-            // Log request files untuk debugging
-            Log::info('📦 Request files:', [
-                'has_files' => $request->hasFile('foto_serahterima'),
-                'all_files' => array_keys($request->allFiles())
+            // ✅ DEBUG: Log semua data yang diterima
+            Log::info('📦 ALL REQUEST DATA:', [
+                'all_input' => $request->all(),
+                'has_foto_serahterima' => $request->hasFile('foto_serahterima'),
+                'all_files' => $request->allFiles(),
+                'file_keys' => array_keys($request->allFiles())
             ]);
 
-            // Validasi input - JANGAN validasi file di sini, handle manual
+            // ✅ TEMPORARY: Validasi tanpa file dulu untuk testing
             $validated = $request->validate([
                 'waktu' => 'required|string|max:255',
                 'area' => 'required|string|max:255',
@@ -46,24 +48,9 @@ class FormController extends Controller
                 'pengecekan' => 'nullable|string|max:255',
                 'cctv' => 'nullable|string|max:255',
                 'kronologi_cctv' => 'nullable|string|max:5000',
-                
-                // ✅ Validasi file sebagai array (bukan per-file)
-                'foto_serahterima' => 'nullable|array',
-                'foto_patroli' => 'nullable|array',
-                'foto_lembur' => 'nullable|array',
-                'foto_tamu' => 'nullable|array',
-                'foto_panduan' => 'nullable|array',
-                'foto_force' => 'nullable|array',
-                'foto_penertiban' => 'nullable|array',
-                'foto_simulasi' => 'nullable|array',
-                'foto_penyegaran' => 'nullable|array',
-                'foto_telepon' => 'nullable|array',
-                'foto_rutin' => 'nullable|array',
-                'foto_pengecekan' => 'nullable|array',
-                'foto_cctv' => 'nullable|array',
             ]);
 
-            Log::info('✅ Validation passed');
+            Log::info('✅ Basic validation passed');
 
             // Simpan data ke DB
             $form = new Form();
@@ -111,7 +98,10 @@ class FormController extends Controller
             ], 200);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('❌ Validation failed', ['errors' => $e->errors()]);
+            Log::error('❌ Validation failed', [
+                'errors' => $e->errors(),
+                'messages' => $e->getMessage()
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Validasi gagal',
@@ -122,8 +112,7 @@ class FormController extends Controller
             Log::error('❌ Error saving form', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
+                'line' => $e->getLine()
             ]);
             return response()->json([
                 'success' => false,
