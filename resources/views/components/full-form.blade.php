@@ -1639,8 +1639,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Tambahkan CSRF token
-        const csrfToken = form.querySelector('input[name="_token"]');
-        if (csrfToken) formData.set('_token', csrfToken.value);
+        const csrfToken = document.querySelector('input[name="_token"]') || 
+            document.querySelector('meta[name="csrf-token"]');
+    
+    if (csrfToken) {
+        if (csrfToken.tagName === 'INPUT') {
+            formData.set('_token', csrfToken.value);
+        } else {
+            formData.set('_token', csrfToken.getAttribute('content'));
+        }
+    }
 
         // ✅ PERBAIKAN: Kirim file dengan index eksplisit
 for (let fieldName in fileStorage) {
