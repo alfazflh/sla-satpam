@@ -1956,60 +1956,85 @@ new Chart(fungsiForceCtx, {
     plugins: [ChartDataLabels]
 });
 
-// Photo Gallery Logic untuk Foto Force Majure
-let currentIndexForce = 0;
-const photosPerLoadForce = 5;
-const initialLoadForce = 6;
+        // Photo Gallery Logic untuk Foto Force Majure
+        let currentIndexForce = 0;
+        const photosPerLoadForce = 5;
+        const initialLoadForce = 6;
 
-function renderPhotosForce(startIndex, count) {
-    const gallery = document.getElementById('photoGalleryForce');
-    const endIndex = Math.min(startIndex + count, fotoForceData.length);
+        // Parse semua foto force dari JSON
+        let allPhotosForce = [];
+        fotoForceData.forEach(item => {
+            if (item.foto_force) {
+                try {
+                    const photos = JSON.parse(item.foto_force);
+                    if (Array.isArray(photos)) {
+                        photos.forEach(path => {
+                            allPhotosForce.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    allPhotosForce.push({
+                        path: item.foto_force,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
 
-    for (let i = startIndex; i < endIndex; i++) {
-        const foto = fotoForceData[i];
-        const filename = extractFilename(foto.foto_force);
-        
-        const photoItem = document.createElement('div');
-        photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-        photoItem.onclick = () => window.open('/storage/' + foto.foto_force, '_blank');
-        
-        photoItem.innerHTML = `
-            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-            </svg>
-            <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
-        `;
-        
-        gallery.appendChild(photoItem);
-    }
+        function renderPhotosForce(startIndex, count) {
+            const gallery = document.getElementById('photoGalleryForce');
+            const endIndex = Math.min(startIndex + count, allPhotosForce.length);
 
-    currentIndexForce = endIndex;
-    updateLoadMoreButtonForce();
-}
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = allPhotosForce[i];
+                const filename = extractFilename(foto.path);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
 
-function updateLoadMoreButtonForce() {
-    const container = document.getElementById('loadMoreContainerForce');
-    const remaining = document.getElementById('remainingCountForce');
-    const remainingPhotos = fotoForceData.length - currentIndexForce;
+            currentIndexForce = endIndex;
+            updateLoadMoreButtonForce();
+        }
 
-    if (remainingPhotos > 0) {
-        container.style.display = 'block';
-        remaining.textContent = `${remainingPhotos} file lainnya`;
-    } else {
-        container.style.display = 'none';
-    }
-}
+        function updateLoadMoreButtonForce() {
+            const container = document.getElementById('loadMoreContainerForce');
+            const remaining = document.getElementById('remainingCountForce');
+            const remainingPhotos = allPhotosForce.length - currentIndexForce;
 
-document.getElementById('loadMoreBtnForce').addEventListener('click', function() {
-    renderPhotosForce(currentIndexForce, photosPerLoadForce);
-});
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
 
-// Initial render untuk foto force
-if (fotoForceData.length > 0) {
-    renderPhotosForce(0, initialLoadForce);
-} else {
-    document.getElementById('photoGalleryForce').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
-}
+        document.getElementById('loadMoreBtnForce').addEventListener('click', function() {
+            renderPhotosForce(currentIndexForce, photosPerLoadForce);
+        });
+
+        // Initial render untuk foto force
+        if (allPhotosForce.length > 0) {
+            renderPhotosForce(0, initialLoadForce);
+        } else {
+            document.getElementById('photoGalleryForce').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
 
 // Chart 18: Penertiban Area Perpakiran (Pie Chart)
 const penertibanCtx = document.getElementById('penertibanChart').getContext('2d');
