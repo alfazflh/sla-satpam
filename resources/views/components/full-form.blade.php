@@ -1444,6 +1444,122 @@
         });
     
 // Override form submission untuk kirim file dari storage
+// ===== STORAGE UNTUK MULTIPLE FILES =====
+const fileStorage = {};
+
+// ===== FUNGSI PILIH SUMBER FOTO =====
+function chooseSource(btn) {
+    const container = btn.closest('.upload-block');
+    const realInput = container.querySelector('input[type="file"]');
+    const fileName = container.querySelector('.fileName');
+    const fieldName = realInput.name.replace('[]', ''); // Hapus [] untuk key storage
+
+    // Inisialisasi storage untuk field ini
+    if (!fileStorage[fieldName]) {
+        fileStorage[fieldName] = { files: [] };
+    }
+
+    Swal.fire({
+        title: 'Pilih Sumber Foto',
+        text: 'Ambil foto langsung atau pilih dari galeri?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '📷 Kamera',
+        cancelButtonText: '🖼️ Galeri',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.dismiss) return; // User cancel
+
+        // Set capture attribute
+        if (result.isConfirmed) {
+            realInput.setAttribute('capture', 'environment');
+        } else {
+            realInput.removeAttribute('capture');
+        }
+
+        // Reset dan trigger file picker
+        realInput.value = '';
+        realInput.click();
+    });
+
+    // Event listener (hanya pasang sekali)
+    if (!realInput.dataset.hasListener) {
+        realInput.addEventListener('change', function(e) {
+            const newFiles = Array.from(e.target.files);
+            
+            if (newFiles.length > 0) {
+                // Tambahkan file baru ke storage
+                fileStorage[fieldName].files.push(...newFiles);
+                
+                const totalFiles = fileStorage[fieldName].files.length;
+                const allFileNames = fileStorage[fieldName].files.map(f => f.name).join(', ');
+                
+                // Update tampilan
+                fileName.innerHTML = `
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
+                        <span style="flex:1; font-size:13px; color:#059669; font-weight:600;">
+                            ✅ ${totalFiles} foto: ${allFileNames}
+                        </span>
+                        <button type="button" onclick="clearFiles(this)" 
+                            style="margin-left:8px; padding:4px 12px; font-size:11px; color:white; background:#ef4444; border:none; border-radius:6px; cursor:pointer;">
+                            Hapus Semua
+                        </button>
+                    </div>
+                `;
+                
+                // Update tombol
+                btn.classList.remove("bg-indigo-50", "text-indigo-700");
+                btn.classList.add("bg-green-100", "text-green-700");
+                btn.innerHTML = `✅ ${totalFiles} Foto Terpilih - Klik untuk Tambah Lagi`;
+                
+                console.log(`📸 Total ${totalFiles} file di ${fieldName}:`, fileStorage[fieldName].files);
+            }
+        });
+        
+        realInput.dataset.hasListener = 'true';
+    }
+}
+
+// ===== FUNGSI HAPUS SEMUA FILE =====
+function clearFiles(btn) {
+    const container = btn.closest('.upload-block');
+    const realInput = container.querySelector('input[type="file"]');
+    const fileName = container.querySelector('.fileName');
+    const uploadBtn = container.querySelector('button[onclick^="chooseSource"]');
+    const fieldName = realInput.name.replace('[]', '');
+    
+    Swal.fire({
+        title: 'Hapus Semua Foto?',
+        text: 'File yang sudah dipilih akan dihapus',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#ef4444'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Reset storage dan input
+            fileStorage[fieldName].files = [];
+            realInput.value = '';
+            fileName.innerHTML = '';
+            
+            // Reset tombol
+            uploadBtn.classList.remove("bg-green-100", "text-green-700");
+            uploadBtn.classList.add("bg-indigo-50", "text-indigo-700");
+            uploadBtn.innerHTML = '📷 Upload Foto';
+            
+            Swal.fire({
+                title: 'Berhasil!',
+                text: 'Semua foto telah dihapus',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    });
+}
+
+// ===== FORM SUBMISSION =====
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('mainForm');
 
@@ -1452,45 +1568,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData();
 
-        // Ambil semua input non-file
+        // 1. Ambil semua input non-file
         const allInputs = form.querySelectorAll('input:not([type="file"]), textarea, select');
         allInputs.forEach(input => {
-            if (input.type === 'checkbox' || input.type === 'radio') {
-                if (input.checked) formData.append(input.name, input.value);
+            if (input.type === 'checkbox') {
+                // Kumpulkan semua checkbox dengan name yang sama
+                if (input.checked) {
+                    formData.append(input.name, input.value);
+                }
+            } else if (input.type === 'radio') {
+                if (input.checked) {
+                    formData.set(input.name, input.value);
+                }
             } else if (input.value) {
                 formData.set(input.name, input.value);
             }
         });
 
-        // Tambahkan CSRF token
+        // 2. Tambahkan CSRF token
         const csrfToken = form.querySelector('input[name="_token"]');
         if (csrfToken) formData.set('_token', csrfToken.value);
 
-        // Tambahkan file dari fileStorage
+        // 3. Tambahkan SEMUA file dari fileStorage
+        console.log('📦 File Storage Contents:', fileStorage);
+        
         for (let fieldName in fileStorage) {
             if (fileStorage[fieldName] && fileStorage[fieldName].files.length > 0) {
-                fileStorage[fieldName].files.forEach(file => {
+                const files = fileStorage[fieldName].files;
+                
+                console.log(`📸 Adding ${files.length} files untuk ${fieldName}[]:`);
+                
+                files.forEach((file, index) => {
                     if (file && file.size > 0) {
-                        formData.append(fieldName, file)
+                        // PENTING: Gunakan nama field dengan [] untuk array
+                        formData.append(`${fieldName}[]`, file);
+                        console.log(`  [${index}] ${file.name} (${file.size} bytes)`);
                     }
                 });
             }
         }
 
-        // Debug kiriman
-        console.log('=== DATA YANG DIKIRIM ===');
+        // 4. Debug kiriman lengkap
+        console.log('\n=== 📤 DATA YANG DIKIRIM KE SERVER ===');
+        let fileCount = 0;
         for (let [key, value] of formData.entries()) {
             if (value instanceof File) {
-                console.log(`${key}: [FILE] ${value.name} (${value.size} bytes, type: ${value.type})`);
+                fileCount++;
+                console.log(`${key}: [FILE] ${value.name} (${(value.size/1024).toFixed(2)} KB, type: ${value.type})`);
             } else {
                 console.log(`${key}:`, value);
             }
         }
+        console.log(`\n✅ Total ${fileCount} file akan diupload\n`);
 
+        // 5. Kirim data
         submitFormData(formData, form.action);
     });
 });
 
+// ===== SUBMIT DATA KE SERVER =====
 function submitFormData(formData, actionUrl) {
     const submitTime = new Date().toLocaleString('id-ID', {
         day: 'numeric', month: 'long', year: 'numeric',
@@ -1499,7 +1635,7 @@ function submitFormData(formData, actionUrl) {
 
     Swal.fire({
         title: 'Mengirim Laporan...',
-        html: 'Mohon tunggu, data sedang diproses',
+        html: 'Mohon tunggu, sedang mengupload foto dan data',
         allowOutsideClick: false,
         allowEscapeKey: false,
         didOpen: () => Swal.showLoading()
@@ -1508,12 +1644,15 @@ function submitFormData(formData, actionUrl) {
     fetch(actionUrl, {
         method: 'POST',
         body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        headers: { 
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
     })
     .then(async response => {
-        console.log('Response Status:', response.status);
+        console.log('📡 Response Status:', response.status);
         const data = await response.json();
-        console.log('Response Data:', data);
+        console.log('📡 Response Data:', data);
 
         if (response.ok && data.success) {
             showSuccessScreen(submitTime);
@@ -1522,16 +1661,17 @@ function submitFormData(formData, actionUrl) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('❌ Error:', error);
         Swal.fire({
             icon: 'error',
-            title: 'Gagal!',
+            title: 'Gagal Mengirim!',
             text: 'Terjadi kesalahan: ' + error.message,
             confirmButtonColor: '#ef4444'
         });
     });
 }
 
+// ===== TAMPILAN SUKSES =====
 function showSuccessScreen(formattedTime) {
     document.body.innerHTML = `
         <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#fff;">
@@ -1541,10 +1681,15 @@ function showSuccessScreen(formattedTime) {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
-                <h1 style="font-size:28px;font-weight:bold;color:#1f7389;margin-bottom:20px;">BERHASIL DISIMPAN</h1>
+                <h1 style="font-size:28px;font-weight:bold;color:#1f7389;margin-bottom:20px;">LAPORAN BERHASIL DIKIRIM! ✅</h1>
                 <div style="background:#f0f9fb;padding:20px;margin:28px 0;border-radius:10px;">
                     <p style="color:#64748b;font-size:13px;margin-bottom:8px;">Waktu Submit</p>
                     <p style="color:#1f7389;font-weight:700;font-size:17px;">${formattedTime}</p>
+                </div>
+                <div style="background:#f0fdf4;padding:16px;margin:20px 0;border-radius:8px;border-left:4px solid #059669;">
+                    <p style="color:#059669;font-weight:600;font-size:15px;margin:0;">
+                        ✓ Data dan foto berhasil tersimpan
+                    </p>
                 </div>
                 <a href="${window.location.pathname}" style="display:inline-block;margin-top:28px;padding:14px 36px;background:#1f7389;color:white;text-decoration:none;border-radius:10px;font-weight:600;">
                     📝 Kirim Laporan Lain
@@ -1554,14 +1699,15 @@ function showSuccessScreen(formattedTime) {
     `;
 }
 
+// ===== HANDLE ERROR VALIDASI =====
 function handleValidationError(data) {
-    console.error('Validation Errors:', data.errors);
+    console.error('❌ Validation Errors:', data.errors);
 
     let errorList = '';
     if (data.errors) {
-        errorList = '<ul style="text-align:left;margin-top:10px;">';
+        errorList = '<ul style="text-align:left;margin-top:10px;padding-left:20px;">';
         for (let field in data.errors) {
-            errorList += `<li><strong>${field}:</strong> ${data.errors[field].join(', ')}</li>`;
+            errorList += `<li style="margin:5px 0;"><strong>${field}:</strong> ${data.errors[field].join(', ')}</li>`;
         }
         errorList += '</ul>';
     }
@@ -1575,131 +1721,17 @@ function handleValidationError(data) {
     });
 }
 
-// Auto refresh CSRF token setiap 10 menit
+// ===== AUTO REFRESH CSRF TOKEN =====
 setInterval(() => {
     fetch('/refresh-csrf')
         .then(res => res.json())
         .then(data => {
             const csrf = document.querySelector('input[name="_token"]');
             if (csrf) csrf.value = data.token;
+            console.log('🔄 CSRF token refreshed');
         })
-        .catch(() => console.log('CSRF refresh failed'));
-}, 600000);
-    </script>
-    <script>
-// Object untuk menyimpan file dan container per field
-const fileStorage = {};
-
-function chooseSource(btn) {
-    const container = btn.closest('.upload-block');
-    const realInput = container.querySelector('input[type="file"]');
-    const fileName = container.querySelector('.fileName');
-    const fieldName = realInput.name;
-
-    // Inisialisasi storage
-    if (!fileStorage[fieldName]) {
-        fileStorage[fieldName] = {
-            files: [],
-            fileListContainer: null
-        };
-    }
-
-    Swal.fire({
-        title: 'Pilih Sumber Foto',
-        text: 'Ambil foto langsung atau pilih dari galeri?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: '📷 Kamera',
-        cancelButtonText: '🖼️ Galeri',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.dismiss === Swal.DismissReason.backdrop || 
-            result.dismiss === Swal.DismissReason.esc) {
-            return;
-        }
-
-        // Gunakan input asli, tapi ubah attributnya
-        if (result.isConfirmed) {
-            realInput.setAttribute('capture', 'environment');
-        } else {
-            realInput.removeAttribute('capture');
-        }
-
-        // Reset value agar bisa pilih file yang sama
-        realInput.value = '';
-        
-        // Trigger file picker
-        realInput.click();
-    });
-
-    // Event listener (hanya pasang sekali)
-    if (!realInput.dataset.hasListener) {
-        realInput.addEventListener('change', function(e) {
-            const newFiles = Array.from(e.target.files);
-            
-            if (newFiles.length > 0) {
-                // Tambahkan file baru ke storage
-                fileStorage[fieldName].files.push(...newFiles);
-                
-                // Tampilkan nama file
-                const allFileNames = fileStorage[fieldName].files.map(f => f.name);
-                fileName.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <span class="flex-1 text-sm">📄 ${allFileNames.join(', ')}</span>
-                        <button type="button" onclick="clearFiles(this)" 
-                            class="ml-2 px-2 py-1 text-xs text-white bg-red-500 hover:bg-red-600 rounded">
-                            Hapus Semua
-                        </button>
-                    </div>
-                `;
-                
-                // Update tampilan tombol
-                btn.classList.remove("bg-indigo-50", "text-indigo-700");
-                btn.classList.add("bg-green-100", "text-green-700");
-                btn.textContent = `✅ ${fileStorage[fieldName].files.length} Foto - Tambah Lagi`;
-                
-                console.log(`Total ${fileStorage[fieldName].files.length} file untuk ${fieldName}:`, allFileNames);
-            }
-        });
-        
-        realInput.dataset.hasListener = 'true';
-    }
-}
-
-function clearFiles(btn) {
-    const container = btn.closest('.upload-block');
-    const realInput = container.querySelector('input[type="file"]');
-    const fileName = container.querySelector('.fileName');
-    const uploadBtn = container.querySelector('button[onclick^="chooseSource"]');
-    const fieldName = realInput.name;
-    
-    Swal.fire({
-        title: 'Hapus Semua Foto?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Hapus',
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#ef4444'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fileStorage[fieldName].files = [];
-            realInput.value = '';
-            fileName.textContent = '';
-            
-            uploadBtn.classList.remove("bg-green-100", "text-green-700");
-            uploadBtn.classList.add("bg-indigo-50", "text-indigo-700");
-            uploadBtn.textContent = '📷 Upload Foto';
-            
-            Swal.fire({
-                title: 'Berhasil!',
-                text: 'Semua foto telah dihapus',
-                icon: 'success',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-    });
-}
+        .catch(() => console.log('⚠️ CSRF refresh failed'));
+}, 600000); // Setiap 10 menit
 
     </script>  
 </body>
