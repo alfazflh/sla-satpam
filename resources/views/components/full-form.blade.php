@@ -1476,31 +1476,25 @@ function chooseSource(btn) {
 
         // Set capture attribute
         if (result.isConfirmed) {
-            // User pilih KAMERA
             realInput.setAttribute('capture', 'environment');
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-            // User pilih GALERI (tombol cancel)
             realInput.removeAttribute('capture');
         }
 
-        // Reset dan trigger file picker
         realInput.value = '';
         realInput.click();
     });
 
-    // Event listener (hanya pasang sekali)
     if (!realInput.dataset.hasListener) {
         realInput.addEventListener('change', function(e) {
             const newFiles = Array.from(e.target.files);
             
             if (newFiles.length > 0) {
-                // Tambahkan file baru ke storage
                 fileStorage[fieldName].files.push(...newFiles);
                 
                 const totalFiles = fileStorage[fieldName].files.length;
                 const allFileNames = fileStorage[fieldName].files.map(f => f.name).join(', ');
                 
-                // Update tampilan
                 fileName.innerHTML = `
                     <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
                         <span style="flex:1; font-size:13px; color:#059669; font-weight:600;">
@@ -1513,7 +1507,6 @@ function chooseSource(btn) {
                     </div>
                 `;
                 
-                // Update tombol
                 btn.classList.remove("bg-indigo-50", "text-indigo-700");
                 btn.classList.add("bg-green-100", "text-green-700");
                 btn.innerHTML = `✅ ${totalFiles} Foto Terpilih - Klik untuk Tambah Lagi`;
@@ -1526,7 +1519,6 @@ function chooseSource(btn) {
     }
 }
 
-// ===== FUNGSI HAPUS SEMUA FILE =====
 function clearFiles(btn) {
     const container = btn.closest('.upload-block');
     const realInput = container.querySelector('input[type="file"]');
@@ -1544,12 +1536,10 @@ function clearFiles(btn) {
         confirmButtonColor: '#ef4444'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Reset storage dan input
             fileStorage[fieldName].files = [];
             realInput.value = '';
             fileName.innerHTML = '';
             
-            // Reset tombol
             uploadBtn.classList.remove("bg-green-100", "text-green-700");
             uploadBtn.classList.add("bg-indigo-50", "text-indigo-700");
             uploadBtn.innerHTML = '📷 Upload Foto';
@@ -1565,7 +1555,6 @@ function clearFiles(btn) {
     });
 }
 
-// ===== FORM SUBMISSION =====
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('mainForm');
 
@@ -1574,11 +1563,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData();
 
-        // 1. Ambil semua input non-file
         const allInputs = form.querySelectorAll('input:not([type="file"]), textarea, select');
         allInputs.forEach(input => {
             if (input.type === 'checkbox') {
-                // Kumpulkan semua checkbox dengan name yang sama
                 if (input.checked) {
                     formData.append(input.name, input.value);
                 }
@@ -1591,11 +1578,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // 2. Tambahkan CSRF token
         const csrfToken = form.querySelector('input[name="_token"]');
         if (csrfToken) formData.set('_token', csrfToken.value);
 
-        // 3. Tambahkan SEMUA file dari fileStorage
         console.log('📦 File Storage Contents:', fileStorage);
         
         for (let fieldName in fileStorage) {
