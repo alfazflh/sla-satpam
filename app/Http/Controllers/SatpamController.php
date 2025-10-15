@@ -130,9 +130,6 @@ class SatpamController extends Controller
         }
     }
 
-    /**
-     * Sanitize nama untuk folder (hilangkan karakter tidak valid)
-     */
     private function sanitizeFolderName($name)
     {
         $name = Str::slug($name, '_');
@@ -140,9 +137,7 @@ class SatpamController extends Controller
         return $name ?: 'unknown';
     }
 
-    /**
-     * Generate enkripsi ringan 1-3 kata random
-     */
+
     private function generateLightEncryption()
     {
         $words = rand(1, 3);
