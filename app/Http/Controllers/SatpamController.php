@@ -34,7 +34,6 @@ class SatpamController extends Controller
         $namaArray = is_array($request->nama) ? $request->nama : [$request->nama ?? 'unknown'];
         $namaFolder = $this->sanitizeFolderName($namaArray[0] ?? 'unknown');
         $timestamp = date('Ymd_His');
-        $folderPath = "uploads/{$namaFolder}_{$timestamp}";
 
         $photoFields = [
             'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu',
@@ -42,6 +41,25 @@ class SatpamController extends Controller
             'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan',
             'foto_cctv'
         ];
+
+        // Mapping field ke nama folder yang jelas
+        $folderMapping = [
+            'foto_serahterima' => 'apel_serah_terima',
+            'foto_patroli' => 'patroli_kegiatan',
+            'foto_lembur' => 'giat_lembur',
+            'foto_tamu' => 'jurnal_tamu_kendaraan',
+            'foto_panduan' => 'panduan_k3',
+            'foto_force' => 'force_majure',
+            'foto_penertiban' => 'penertiban_parkir',
+            'foto_simulasi' => 'simulasi_tanggap_darurat',
+            'foto_penyegaran' => 'penyegaran_fisik',
+            'foto_telepon' => 'jurnal_telepon',
+            'foto_rutin' => 'patroli_rutin',
+            'foto_pengecekan' => 'pengecekan_pasca_kerja',
+            'foto_cctv' => 'pengawasan_cctv'
+        ];
+
+        $uploadedFolders = []; // Track folders untuk cleanup jika error
 
         foreach ($photoFields as $field) {
             if ($request->hasFile($field)) {
@@ -53,6 +71,11 @@ class SatpamController extends Controller
                     $files = [$files];
                 }
 
+                // Buat folder terpisah untuk setiap jenis foto dengan nama yang jelas
+                $fieldFolderName = $folderMapping[$field] ?? str_replace('foto_', '', $field);
+                $folderPath = "uploads/{$fieldFolderName}/{$namaFolder}_{$timestamp}";
+                $uploadedFolders[] = "uploads/{$fieldFolderName}"; // Track parent folder
+
                 foreach ($files as $index => $file) {
                     if ($file && $file->isValid()) {
                         // Generate nama file dengan enkripsi ringan
@@ -61,7 +84,7 @@ class SatpamController extends Controller
                         $encryptedSuffix = $this->generateLightEncryption();
                         $newFileName = "{$originalName}_{$encryptedSuffix}.{$extension}";
                         
-                        // Simpan ke folder terstruktur
+                        // Simpan ke folder terstruktur per jenis foto
                         $path = $file->storeAs($folderPath, $newFileName, 'public');
                         $paths[] = $path;
                         Log::info(" [{$index}] Uploaded: {$path}");
@@ -83,13 +106,17 @@ class SatpamController extends Controller
                 'success' => true,
                 'message' => 'Data berhasil disimpan',
                 'id' => $form->id,
-                'folder' => $folderPath
+                'uploaded_folders' => $uploadedFolders
             ]);
         } catch (\Exception $e) {
             Log::error('Error saving form: ' . $e->getMessage());
             
-            // Hapus folder jika gagal save ke database
-            Storage::disk('public')->deleteDirectory($folderPath);
+            // Hapus semua folder yang sudah diupload jika gagal save ke database
+            foreach ($uploadedFolders as $folder) {
+                if (Storage::disk('public')->exists($folder)) {
+                    Storage::disk('public')->deleteDirectory($folder);
+                }
+            }
             
             return response()->json([
                 'success' => false,
