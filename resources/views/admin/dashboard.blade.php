@@ -2815,59 +2815,87 @@ new Chart(cctvCtx, {
     plugins: [ChartDataLabels]
 });
 
-// Photo Gallery Logic untuk Foto CCTV
-let currentIndexCctv = 0;
-const photosPerLoadCctv = 5;
-const initialLoadCctv = 6;
+        // Photo Gallery Logic untuk Foto CCTV
+        let currentIndexCctv = 0;
+        const photosPerLoadCctv = 5;
+        const initialLoadCctv = 6;
 
-function renderPhotosCctv(startIndex, count) {
-    const gallery = document.getElementById('photoGalleryCctv');
-    const endIndex = Math.min(startIndex + count, fotoCctvData.length);
+        // Parse semua foto CCTV dari JSON
+        let allPhotosCctv = [];
+        fotoCctvData.forEach(item => {
+            if (item.foto_cctv) {
+                try {
+                    // Cek apakah foto_cctv adalah JSON array atau string biasa
+                    const photos = JSON.parse(item.foto_cctv);
+                    if (Array.isArray(photos)) {
+                        photos.forEach(path => {
+                            allPhotosCctv.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    // Jika bukan JSON, anggap sebagai string path biasa
+                    allPhotosCctv.push({
+                        path: item.foto_cctv,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
 
-    for (let i = startIndex; i < endIndex; i++) {
-        const foto = fotoCctvData[i];
-        const filename = extractFilename(foto.foto_cctv);
-        
-        const photoItem = document.createElement('div');
-        photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-        photoItem.onclick = () => window.open('/storage/' + foto.foto_cctv, '_blank');
-        
-        photoItem.innerHTML = `
-            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-            </svg>
-            <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
-        `;
-        
-        gallery.appendChild(photoItem);
-    }
+        function renderPhotosCctv(startIndex, count) {
+            const gallery = document.getElementById('photoGalleryCctv');
+            const endIndex = Math.min(startIndex + count, allPhotosCctv.length);
 
-    currentIndexCctv = endIndex;
-    updateLoadMoreButtonCctv();
-}
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = allPhotosCctv[i];
+                const filename = extractFilename(foto.path);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
 
-function updateLoadMoreButtonCctv() {
-    const container = document.getElementById('loadMoreContainerCctv');
-    const remaining = document.getElementById('remainingCountCctv');
-    const remainingPhotos = fotoCctvData.length - currentIndexCctv;
+            currentIndexCctv = endIndex;
+            updateLoadMoreButtonCctv();
+        }
 
-    if (remainingPhotos > 0) {
-        container.style.display = 'block';
-        remaining.textContent = `${remainingPhotos} file lainnya`;
-    } else {
-        container.style.display = 'none';
-    }
-}
+        function updateLoadMoreButtonCctv() {
+            const container = document.getElementById('loadMoreContainerCctv');
+            const remaining = document.getElementById('remainingCountCctv');
+            const remainingPhotos = allPhotosCctv.length - currentIndexCctv;
 
-document.getElementById('loadMoreBtnCctv').addEventListener('click', function() {
-    renderPhotosCctv(currentIndexCctv, photosPerLoadCctv);
-});
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
 
-if (fotoCctvData.length > 0) {
-    renderPhotosCctv(0, initialLoadCctv);
-} else {
-    document.getElementById('photoGalleryCctv').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
-}
+        document.getElementById('loadMoreBtnCctv').addEventListener('click', function() {
+            renderPhotosCctv(currentIndexCctv, photosPerLoadCctv);
+        });
+
+        // Initial render untuk foto CCTV
+        if (allPhotosCctv.length > 0) {
+            renderPhotosCctv(0, initialLoadCctv);
+        } else {
+            document.getElementById('photoGalleryCctv').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
     </script>
     @endif
 </x-app-layout>
