@@ -1595,17 +1595,42 @@
         const photosPerLoadLembur = 5;
         const initialLoadLembur = 6;
 
+        // Parse semua foto lembur dari JSON
+        let allPhotosLembur = [];
+        fotoLemburData.forEach(item => {
+            if (item.foto_lembur) {
+                try {
+                    const photos = JSON.parse(item.foto_lembur);
+                    if (Array.isArray(photos)) {
+                        photos.forEach(path => {
+                            allPhotosLembur.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    allPhotosLembur.push({
+                        path: item.foto_lembur,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
+
         function renderPhotosLembur(startIndex, count) {
             const gallery = document.getElementById('photoGalleryLembur');
-            const endIndex = Math.min(startIndex + count, fotoLemburData.length);
+            const endIndex = Math.min(startIndex + count, allPhotosLembur.length);
 
             for (let i = startIndex; i < endIndex; i++) {
-                const foto = fotoLemburData[i];
-                const filename = extractFilename(foto.foto_lembur);
+                const foto = allPhotosLembur[i];
+                const filename = extractFilename(foto.path);
                 
                 const photoItem = document.createElement('div');
                 photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-                photoItem.onclick = () => window.open('/storage/' + foto.foto_lembur, '_blank');
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
                 
                 photoItem.innerHTML = `
                     <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -1624,7 +1649,7 @@
         function updateLoadMoreButtonLembur() {
             const container = document.getElementById('loadMoreContainerLembur');
             const remaining = document.getElementById('remainingCountLembur');
-            const remainingPhotos = fotoLemburData.length - currentIndexLembur;
+            const remainingPhotos = allPhotosLembur.length - currentIndexLembur;
 
             if (remainingPhotos > 0) {
                 container.style.display = 'block';
@@ -1639,7 +1664,7 @@
         });
 
         // Initial render untuk foto lembur
-        if (fotoLemburData.length > 0) {
+        if (allPhotosLembur.length > 0) {
             renderPhotosLembur(0, initialLoadLembur);
         } else {
             document.getElementById('photoGalleryLembur').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
