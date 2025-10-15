@@ -2322,60 +2322,85 @@ new Chart(penyegaranCtx, {
     plugins: [ChartDataLabels]
 });
 
-// Photo Gallery Logic untuk Foto Penyegaran
-let currentIndexPenyegaran = 0;
-const photosPerLoadPenyegaran = 5;
-const initialLoadPenyegaran = 6;
+        // Photo Gallery Logic untuk Foto Penyegaran
+        let currentIndexPenyegaran = 0;
+        const photosPerLoadPenyegaran = 5;
+        const initialLoadPenyegaran = 6;
 
-function renderPhotosPenyegaran(startIndex, count) {
-    const gallery = document.getElementById('photoGalleryPenyegaran');
-    const endIndex = Math.min(startIndex + count, fotoPenyegaranData.length);
+        // Parse semua foto penyegaran dari JSON
+        let allPhotosPenyegaran = [];
+        fotoPenyegaranData.forEach(item => {
+            if (item.foto_penyegaran) {
+                try {
+                    const photos = JSON.parse(item.foto_penyegaran);
+                    if (Array.isArray(photos)) {
+                        photos.forEach(path => {
+                            allPhotosPenyegaran.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    allPhotosPenyegaran.push({
+                        path: item.foto_penyegaran,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
 
-    for (let i = startIndex; i < endIndex; i++) {
-        const foto = fotoPenyegaranData[i];
-        const filename = extractFilename(foto.foto_penyegaran);
-        
-        const photoItem = document.createElement('div');
-        photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-        photoItem.onclick = () => window.open('/storage/' + foto.foto_penyegaran, '_blank');
-        
-        photoItem.innerHTML = `
-            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-            </svg>
-            <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
-        `;
-        
-        gallery.appendChild(photoItem);
-    }
+        function renderPhotosPenyegaran(startIndex, count) {
+            const gallery = document.getElementById('photoGalleryPenyegaran');
+            const endIndex = Math.min(startIndex + count, allPhotosPenyegaran.length);
 
-    currentIndexPenyegaran = endIndex;
-    updateLoadMoreButtonPenyegaran();
-}
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = allPhotosPenyegaran[i];
+                const filename = extractFilename(foto.path);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
 
-function updateLoadMoreButtonPenyegaran() {
-    const container = document.getElementById('loadMoreContainerPenyegaran');
-    const remaining = document.getElementById('remainingCountPenyegaran');
-    const remainingPhotos = fotoPenyegaranData.length - currentIndexPenyegaran;
+            currentIndexPenyegaran = endIndex;
+            updateLoadMoreButtonPenyegaran();
+        }
 
-    if (remainingPhotos > 0) {
-        container.style.display = 'block';
-        remaining.textContent = `${remainingPhotos} file lainnya`;
-    } else {
-        container.style.display = 'none';
-    }
-}
+        function updateLoadMoreButtonPenyegaran() {
+            const container = document.getElementById('loadMoreContainerPenyegaran');
+            const remaining = document.getElementById('remainingCountPenyegaran');
+            const remainingPhotos = allPhotosPenyegaran.length - currentIndexPenyegaran;
 
-document.getElementById('loadMoreBtnPenyegaran').addEventListener('click', function() {
-    renderPhotosPenyegaran(currentIndexPenyegaran, photosPerLoadPenyegaran);
-});
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
 
-// Initial render untuk foto penyegaran
-if (fotoPenyegaranData.length > 0) {
-    renderPhotosPenyegaran(0, initialLoadPenyegaran);
-} else {
-    document.getElementById('photoGalleryPenyegaran').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
-}
+        document.getElementById('loadMoreBtnPenyegaran').addEventListener('click', function() {
+            renderPhotosPenyegaran(currentIndexPenyegaran, photosPerLoadPenyegaran);
+        });
+
+        // Initial render untuk foto penyegaran
+        if (allPhotosPenyegaran.length > 0) {
+            renderPhotosPenyegaran(0, initialLoadPenyegaran);
+        } else {
+            document.getElementById('photoGalleryPenyegaran').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
 
 // Chart 24: Menerima dan Mendata Telepon (Pie Chart)
 const teleponCtx = document.getElementById('teleponChart').getContext('2d');
@@ -2419,60 +2444,85 @@ new Chart(teleponCtx, {
     plugins: [ChartDataLabels]
 });
 
-// Photo Gallery Logic untuk Foto Telepon
-let currentIndexTelepon = 0;
-const photosPerLoadTelepon = 5;
-const initialLoadTelepon = 6;
+        // Photo Gallery Logic untuk Foto Telepon
+        let currentIndexTelepon = 0;
+        const photosPerLoadTelepon = 5;
+        const initialLoadTelepon = 6;
 
-function renderPhotosTelepon(startIndex, count) {
-    const gallery = document.getElementById('photoGalleryTelepon');
-    const endIndex = Math.min(startIndex + count, fotoTeleponData.length);
+        // Parse semua foto telepon dari JSON
+        let allPhotosTelepon = [];
+        fotoTeleponData.forEach(item => {
+            if (item.foto_telepon) {
+                try {
+                    const photos = JSON.parse(item.foto_telepon);
+                    if (Array.isArray(photos)) {
+                        photos.forEach(path => {
+                            allPhotosTelepon.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    allPhotosTelepon.push({
+                        path: item.foto_telepon,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
 
-    for (let i = startIndex; i < endIndex; i++) {
-        const foto = fotoTeleponData[i];
-        const filename = extractFilename(foto.foto_telepon);
-        
-        const photoItem = document.createElement('div');
-        photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-        photoItem.onclick = () => window.open('/storage/' + foto.foto_telepon, '_blank');
-        
-        photoItem.innerHTML = `
-            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-            </svg>
-            <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
-        `;
-        
-        gallery.appendChild(photoItem);
-    }
+        function renderPhotosTelepon(startIndex, count) {
+            const gallery = document.getElementById('photoGalleryTelepon');
+            const endIndex = Math.min(startIndex + count, allPhotosTelepon.length);
 
-    currentIndexTelepon = endIndex;
-    updateLoadMoreButtonTelepon();
-}
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = allPhotosTelepon[i];
+                const filename = extractFilename(foto.path);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
 
-function updateLoadMoreButtonTelepon() {
-    const container = document.getElementById('loadMoreContainerTelepon');
-    const remaining = document.getElementById('remainingCountTelepon');
-    const remainingPhotos = fotoTeleponData.length - currentIndexTelepon;
+            currentIndexTelepon = endIndex;
+            updateLoadMoreButtonTelepon();
+        }
 
-    if (remainingPhotos > 0) {
-        container.style.display = 'block';
-        remaining.textContent = `${remainingPhotos} file lainnya`;
-    } else {
-        container.style.display = 'none';
-    }
-}
+        function updateLoadMoreButtonTelepon() {
+            const container = document.getElementById('loadMoreContainerTelepon');
+            const remaining = document.getElementById('remainingCountTelepon');
+            const remainingPhotos = allPhotosTelepon.length - currentIndexTelepon;
 
-document.getElementById('loadMoreBtnTelepon').addEventListener('click', function() {
-    renderPhotosTelepon(currentIndexTelepon, photosPerLoadTelepon);
-});
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
 
-// Initial render untuk foto telepon
-if (fotoTeleponData.length > 0) {
-    renderPhotosTelepon(0, initialLoadTelepon);
-} else {
-    document.getElementById('photoGalleryTelepon').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
-}
+        document.getElementById('loadMoreBtnTelepon').addEventListener('click', function() {
+            renderPhotosTelepon(currentIndexTelepon, photosPerLoadTelepon);
+        });
+
+        // Initial render untuk foto telepon
+        if (allPhotosTelepon.length > 0) {
+            renderPhotosTelepon(0, initialLoadTelepon);
+        } else {
+            document.getElementById('photoGalleryTelepon').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
 
 
 // Chart 26: Melakukan Patroli Rutin (Pie Chart)
