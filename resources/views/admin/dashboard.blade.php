@@ -1225,41 +1225,6 @@
             plugins: [ChartDataLabels]
         });
 
-            // Ambil data nama dari database
-            const namaData = @json($petugasData); // Ini sudah ada dari controller
-            const allNames = [];
-
-            // Parse semua JSON array dan gabungkan
-            namaData.forEach(jsonStr => {
-                if (!jsonStr) return;
-                try {
-                    const names = JSON.parse(jsonStr);
-                    if (Array.isArray(names)) {
-                        allNames.push(...names);
-                    }
-                } catch (e) {
-                    // Jika bukan JSON array, anggap string biasa
-                    allNames.push(jsonStr);
-                }
-            });
-
-            // Hitung frekuensi setiap nama
-            const namaCount = {};
-            allNames.forEach(nama => {
-                if (nama && nama.trim()) {
-                    namaCount[nama] = (namaCount[nama] || 0) + 1;
-                }
-            });
-
-            // Convert ke array dan sort by count
-            const petugasData = Object.entries(namaCount)
-                .map(([nama, count]) => ({
-                    nama: nama,
-                    count: count,
-                    percentage: ((count / allNames.length) * 100).toFixed(1)
-                }))
-                .sort((a, b) => b.count - a.count);
-
             // Chart 3: Nama Petugas Jaga (Horizontal Bar Chart)
             const maxValue = Math.max(...petugasData.map(item => item.count));
             let stepSize = 1;
