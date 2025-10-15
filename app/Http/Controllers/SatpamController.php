@@ -3,22 +3,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Models\Form; // Pastikan model ini ada
+use App\Models\Form; 
 
 class SatpamController extends Controller
 {
     public function create()
     {
-        return view('welcome'); // atau view yang kamu pakai
+        return view('welcome');
     }
 
     public function store(Request $request)
     {
-        // Log untuk debug
         Log::info('Request All:', $request->all());
         Log::info('Request Files:', $request->allFiles());
 
-        // Simpan data non-foto dulu
         $data = $request->except([
             'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 
             'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi', 
@@ -26,12 +24,10 @@ class SatpamController extends Controller
             'foto_cctv'
         ]);
 
-        // Convert nama array ke JSON string
         if (isset($request->nama)) {
             $data['nama'] = json_encode($request->nama);
         }
 
-        // Array field foto
         $photoFields = [
             'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 
             'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi', 
@@ -39,16 +35,13 @@ class SatpamController extends Controller
             'foto_cctv'
         ];
 
-        // Upload multiple photos untuk setiap field
         foreach ($photoFields as $field) {
-            // Cek apakah ada file dengan name foto_xxx[]
             if ($request->hasFile($field)) {
                 $paths = [];
                 $files = $request->file($field);
                 
                 Log::info("Processing {$field}: " . count($files) . " files");
                 
-                // Handle baik single file maupun array
                 if (!is_array($files)) {
                     $files = [$files];
                 }
@@ -61,7 +54,6 @@ class SatpamController extends Controller
                     }
                 }
                 
-                // Simpan array paths sebagai JSON string
                 if (!empty($paths)) {
                     $data[$field] = json_encode($paths);
                     Log::info("{$field} saved as JSON: " . $data[$field]);
@@ -69,7 +61,6 @@ class SatpamController extends Controller
             }
         }
 
-        // Simpan ke database
         try {
             $form = Form::create($data);
             Log::info('Form saved with ID: ' . $form->id);
