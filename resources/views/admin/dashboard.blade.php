@@ -2200,60 +2200,85 @@ new Chart(simulasiCtx, {
     plugins: [ChartDataLabels]
 });
 
-// Photo Gallery Logic untuk Foto Simulasi
-let currentIndexSimulasi = 0;
-const photosPerLoadSimulasi = 5;
-const initialLoadSimulasi = 6;
+        // Photo Gallery Logic untuk Foto Simulasi
+        let currentIndexSimulasi = 0;
+        const photosPerLoadSimulasi = 5;
+        const initialLoadSimulasi = 6;
 
-function renderPhotosSimulasi(startIndex, count) {
-    const gallery = document.getElementById('photoGallerySimulasi');
-    const endIndex = Math.min(startIndex + count, fotoSimulasiData.length);
+        // Parse semua foto simulasi dari JSON
+        let allPhotosSimulasi = [];
+        fotoSimulasiData.forEach(item => {
+            if (item.foto_simulasi) {
+                try {
+                    const photos = JSON.parse(item.foto_simulasi);
+                    if (Array.isArray(photos)) {
+                        photos.forEach(path => {
+                            allPhotosSimulasi.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    allPhotosSimulasi.push({
+                        path: item.foto_simulasi,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
 
-    for (let i = startIndex; i < endIndex; i++) {
-        const foto = fotoSimulasiData[i];
-        const filename = extractFilename(foto.foto_simulasi);
-        
-        const photoItem = document.createElement('div');
-        photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-        photoItem.onclick = () => window.open('/storage/' + foto.foto_simulasi, '_blank');
-        
-        photoItem.innerHTML = `
-            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-            </svg>
-            <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
-        `;
-        
-        gallery.appendChild(photoItem);
-    }
+        function renderPhotosSimulasi(startIndex, count) {
+            const gallery = document.getElementById('photoGallerySimulasi');
+            const endIndex = Math.min(startIndex + count, allPhotosSimulasi.length);
 
-    currentIndexSimulasi = endIndex;
-    updateLoadMoreButtonSimulasi();
-}
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = allPhotosSimulasi[i];
+                const filename = extractFilename(foto.path);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
 
-function updateLoadMoreButtonSimulasi() {
-    const container = document.getElementById('loadMoreContainerSimulasi');
-    const remaining = document.getElementById('remainingCountSimulasi');
-    const remainingPhotos = fotoSimulasiData.length - currentIndexSimulasi;
+            currentIndexSimulasi = endIndex;
+            updateLoadMoreButtonSimulasi();
+        }
 
-    if (remainingPhotos > 0) {
-        container.style.display = 'block';
-        remaining.textContent = `${remainingPhotos} file lainnya`;
-    } else {
-        container.style.display = 'none';
-    }
-}
+        function updateLoadMoreButtonSimulasi() {
+            const container = document.getElementById('loadMoreContainerSimulasi');
+            const remaining = document.getElementById('remainingCountSimulasi');
+            const remainingPhotos = allPhotosSimulasi.length - currentIndexSimulasi;
 
-document.getElementById('loadMoreBtnSimulasi').addEventListener('click', function() {
-    renderPhotosSimulasi(currentIndexSimulasi, photosPerLoadSimulasi);
-});
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
 
-// Initial render untuk foto simulasi
-if (fotoSimulasiData.length > 0) {
-    renderPhotosSimulasi(0, initialLoadSimulasi);
-} else {
-    document.getElementById('photoGallerySimulasi').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
-}
+        document.getElementById('loadMoreBtnSimulasi').addEventListener('click', function() {
+            renderPhotosSimulasi(currentIndexSimulasi, photosPerLoadSimulasi);
+        });
+
+        // Initial render untuk foto simulasi
+        if (allPhotosSimulasi.length > 0) {
+            renderPhotosSimulasi(0, initialLoadSimulasi);
+        } else {
+            document.getElementById('photoGallerySimulasi').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
 
 // Chart 22: Penyegaran dan Kebugaran Fisik (Pie Chart)
 const penyegaranCtx = document.getElementById('penyegaranChart').getContext('2d');
