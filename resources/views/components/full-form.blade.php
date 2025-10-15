@@ -1468,12 +1468,18 @@ function chooseSource(btn) {
         cancelButtonText: '🖼️ Galeri',
         reverseButtons: true
     }).then((result) => {
-        if (result.dismiss) return; // User cancel
+        // Cek jika user close modal (ESC atau klik luar)
+        if (result.dismiss === Swal.DismissReason.backdrop || 
+            result.dismiss === Swal.DismissReason.esc) {
+            return; // User cancel
+        }
 
         // Set capture attribute
         if (result.isConfirmed) {
+            // User pilih KAMERA
             realInput.setAttribute('capture', 'environment');
-        } else {
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // User pilih GALERI (tombol cancel)
             realInput.removeAttribute('capture');
         }
 
