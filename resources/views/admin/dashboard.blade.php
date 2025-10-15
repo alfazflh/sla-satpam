@@ -2078,60 +2078,85 @@ new Chart(penertibanCtx, {
     plugins: [ChartDataLabels]
 });
 
-// Photo Gallery Logic untuk Foto Penertiban
-let currentIndexPenertiban = 0;
-const photosPerLoadPenertiban = 5;
-const initialLoadPenertiban = 6;
+        // Photo Gallery Logic untuk Foto Penertiban
+        let currentIndexPenertiban = 0;
+        const photosPerLoadPenertiban = 5;
+        const initialLoadPenertiban = 6;
 
-function renderPhotosPenertiban(startIndex, count) {
-    const gallery = document.getElementById('photoGalleryPenertiban');
-    const endIndex = Math.min(startIndex + count, fotoPenertibanData.length);
+        // Parse semua foto penertiban dari JSON
+        let allPhotosPenertiban = [];
+        fotoPenertibanData.forEach(item => {
+            if (item.foto_penertiban) {
+                try {
+                    const photos = JSON.parse(item.foto_penertiban);
+                    if (Array.isArray(photos)) {
+                        photos.forEach(path => {
+                            allPhotosPenertiban.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    allPhotosPenertiban.push({
+                        path: item.foto_penertiban,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
 
-    for (let i = startIndex; i < endIndex; i++) {
-        const foto = fotoPenertibanData[i];
-        const filename = extractFilename(foto.foto_penertiban);
-        
-        const photoItem = document.createElement('div');
-        photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-        photoItem.onclick = () => window.open('/storage/' + foto.foto_penertiban, '_blank');
-        
-        photoItem.innerHTML = `
-            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-            </svg>
-            <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
-        `;
-        
-        gallery.appendChild(photoItem);
-    }
+        function renderPhotosPenertiban(startIndex, count) {
+            const gallery = document.getElementById('photoGalleryPenertiban');
+            const endIndex = Math.min(startIndex + count, allPhotosPenertiban.length);
 
-    currentIndexPenertiban = endIndex;
-    updateLoadMoreButtonPenertiban();
-}
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = allPhotosPenertiban[i];
+                const filename = extractFilename(foto.path);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
 
-function updateLoadMoreButtonPenertiban() {
-    const container = document.getElementById('loadMoreContainerPenertiban');
-    const remaining = document.getElementById('remainingCountPenertiban');
-    const remainingPhotos = fotoPenertibanData.length - currentIndexPenertiban;
+            currentIndexPenertiban = endIndex;
+            updateLoadMoreButtonPenertiban();
+        }
 
-    if (remainingPhotos > 0) {
-        container.style.display = 'block';
-        remaining.textContent = `${remainingPhotos} file lainnya`;
-    } else {
-        container.style.display = 'none';
-    }
-}
+        function updateLoadMoreButtonPenertiban() {
+            const container = document.getElementById('loadMoreContainerPenertiban');
+            const remaining = document.getElementById('remainingCountPenertiban');
+            const remainingPhotos = allPhotosPenertiban.length - currentIndexPenertiban;
 
-document.getElementById('loadMoreBtnPenertiban').addEventListener('click', function() {
-    renderPhotosPenertiban(currentIndexPenertiban, photosPerLoadPenertiban);
-});
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
 
-// Initial render untuk foto penertiban
-if (fotoPenertibanData.length > 0) {
-    renderPhotosPenertiban(0, initialLoadPenertiban);
-} else {
-    document.getElementById('photoGalleryPenertiban').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
-}
+        document.getElementById('loadMoreBtnPenertiban').addEventListener('click', function() {
+            renderPhotosPenertiban(currentIndexPenertiban, photosPerLoadPenertiban);
+        });
+
+        // Initial render untuk foto penertiban
+        if (allPhotosPenertiban.length > 0) {
+            renderPhotosPenertiban(0, initialLoadPenertiban);
+        } else {
+            document.getElementById('photoGalleryPenertiban').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
 
 // Chart 20: Simulasi Tanggap Darurat (Pie Chart)
 const simulasiCtx = document.getElementById('simulasiChart').getContext('2d');
