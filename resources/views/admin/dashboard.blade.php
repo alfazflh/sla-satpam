@@ -1344,6 +1344,34 @@
         const photosPerLoad = 5;
         const initialLoad = 6;
 
+        // Parse semua foto dari JSON
+        let allPhotos = [];
+        fotoData.forEach(item => {
+            if (item.foto_serahterima) {
+                try {
+                    // Parse JSON array
+                    const photos = JSON.parse(item.foto_serahterima);
+                    if (Array.isArray(photos)) {
+                        // Tambahkan setiap foto dengan info tambahan
+                        photos.forEach(path => {
+                            allPhotos.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    // Jika bukan JSON, anggap string biasa (backward compatibility)
+                    allPhotos.push({
+                        path: item.foto_serahterima,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
+
         function extractFilename(path) {
             if (!path) return '';
             return path.split('/').pop();
@@ -1351,15 +1379,15 @@
 
         function renderPhotos(startIndex, count) {
             const gallery = document.getElementById('photoGallery');
-            const endIndex = Math.min(startIndex + count, fotoData.length);
+            const endIndex = Math.min(startIndex + count, allPhotos.length);
 
             for (let i = startIndex; i < endIndex; i++) {
-                const foto = fotoData[i];
-                const filename = extractFilename(foto.foto_serahterima);
+                const foto = allPhotos[i];
+                const filename = extractFilename(foto.path);
                 
                 const photoItem = document.createElement('div');
                 photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-                photoItem.onclick = () => window.open('/storage/' + foto.foto_serahterima, '_blank');
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
                 
                 photoItem.innerHTML = `
                     <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -1377,9 +1405,8 @@
 
         function updateLoadMoreButton() {
             const container = document.getElementById('loadMoreContainer');
-            const btn = document.getElementById('loadMoreBtn');
             const remaining = document.getElementById('remainingCount');
-            const remainingPhotos = fotoData.length - currentIndex;
+            const remainingPhotos = allPhotos.length - currentIndex;
 
             if (remainingPhotos > 0) {
                 container.style.display = 'block';
@@ -1394,7 +1421,7 @@
         });
 
         // Initial render
-        if (fotoData.length > 0) {
+        if (allPhotos.length > 0) {
             renderPhotos(0, initialLoad);
         } else {
             document.getElementById('photoGallery').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
