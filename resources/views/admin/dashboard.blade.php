@@ -2567,60 +2567,87 @@ new Chart(rutinCtx, {
     plugins: [ChartDataLabels]
 });
 
-// Photo Gallery Logic untuk Foto Rutin
-let currentIndexRutin = 0;
-const photosPerLoadRutin = 5;
-const initialLoadRutin = 6;
+        // Photo Gallery Logic untuk Foto Rutin
+        let currentIndexRutin = 0;
+        const photosPerLoadRutin = 5;
+        const initialLoadRutin = 6;
 
-function renderPhotosRutin(startIndex, count) {
-    const gallery = document.getElementById('photoGalleryRutin');
-    const endIndex = Math.min(startIndex + count, fotoRutinData.length);
+        // Parse semua foto rutin dari JSON (jika diperlukan)
+        let allPhotosRutin = [];
+        fotoRutinData.forEach(item => {
+            if (item.foto_rutin) {
+                try {
+                    // Cek apakah foto_rutin adalah JSON array atau string biasa
+                    const photos = JSON.parse(item.foto_rutin);
+                    if (Array.isArray(photos)) {
+                        photos.forEach(path => {
+                            allPhotosRutin.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    // Jika bukan JSON, anggap sebagai string path biasa
+                    allPhotosRutin.push({
+                        path: item.foto_rutin,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
 
-    for (let i = startIndex; i < endIndex; i++) {
-        const foto = fotoRutinData[i];
-        const filename = extractFilename(foto.foto_rutin);
-        
-        const photoItem = document.createElement('div');
-        photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-        photoItem.onclick = () => window.open('/storage/' + foto.foto_rutin, '_blank');
-        
-        photoItem.innerHTML = `
-            <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-            </svg>
-            <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
-        `;
-        
-        gallery.appendChild(photoItem);
-    }
+        function renderPhotosRutin(startIndex, count) {
+            const gallery = document.getElementById('photoGalleryRutin');
+            const endIndex = Math.min(startIndex + count, allPhotosRutin.length);
 
-    currentIndexRutin = endIndex;
-    updateLoadMoreButtonRutin();
-}
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = allPhotosRutin[i];
+                const filename = extractFilename(foto.path);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
 
-function updateLoadMoreButtonRutin() {
-    const container = document.getElementById('loadMoreContainerRutin');
-    const remaining = document.getElementById('remainingCountRutin');
-    const remainingPhotos = fotoRutinData.length - currentIndexRutin;
+            currentIndexRutin = endIndex;
+            updateLoadMoreButtonRutin();
+        }
 
-    if (remainingPhotos > 0) {
-        container.style.display = 'block';
-        remaining.textContent = `${remainingPhotos} file lainnya`;
-    } else {
-        container.style.display = 'none';
-    }
-}
+        function updateLoadMoreButtonRutin() {
+            const container = document.getElementById('loadMoreContainerRutin');
+            const remaining = document.getElementById('remainingCountRutin');
+            const remainingPhotos = allPhotosRutin.length - currentIndexRutin;
 
-document.getElementById('loadMoreBtnRutin').addEventListener('click', function() {
-    renderPhotosRutin(currentIndexRutin, photosPerLoadRutin);
-});
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
 
-// Initial render untuk foto rutin
-if (fotoRutinData.length > 0) {
-    renderPhotosRutin(0, initialLoadRutin);
-} else {
-    document.getElementById('photoGalleryRutin').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
-}
+        document.getElementById('loadMoreBtnRutin').addEventListener('click', function() {
+            renderPhotosRutin(currentIndexRutin, photosPerLoadRutin);
+        });
+
+        // Initial render untuk foto rutin
+        if (allPhotosRutin.length > 0) {
+            renderPhotosRutin(0, initialLoadRutin);
+        } else {
+            document.getElementById('photoGalleryRutin').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
+        }
 
 // Chart 29: Pengecekan Sekitar Objek Pengamanan (Pie Chart)
     const pengecekanCtx = document.getElementById('pengecekanChart').getContext('2d');
