@@ -1225,77 +1225,108 @@
             plugins: [ChartDataLabels]
         });
 
-        // Chart 3: Nama Petugas Jaga (Horizontal Bar Chart)
-        const maxValue = Math.max(...petugasData.map(item => item.count));
-        let stepSize = 1;
-        if (maxValue >= 100) {
-            stepSize = 100;
-        } else if (maxValue >= 10) {
-            stepSize = 10;
-        }
+                // Ambil data nama dari JSON dan hitung frekuensi
+                const namaArray = @json($forms->pluck('nama')->filter()->toArray());
+                const allNames = [];
 
-        const petugasCtx = document.getElementById('petugasChart').getContext('2d');
-        new Chart(petugasCtx, {
-            type: 'bar',
-            data: {
-                labels: petugasData.map(item => item.nama),
-                datasets: [{
-                    data: petugasData.map(item => item.count),
-                    backgroundColor: '#d9c99a',
-                    borderWidth: 0,
-                    barThickness: 20
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                layout: {
-                    padding: {
-                        right: 70
+                // Parse semua JSON array dan gabungkan
+                namaArray.forEach(jsonStr => {
+                    try {
+                        const names = JSON.parse(jsonStr);
+                        if (Array.isArray(names)) {
+                            allNames.push(...names);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing nama:', e);
                     }
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.parsed.x + ' (' + petugasData[context.dataIndex].percentage + '%)';
+                });
+
+                // Hitung frekuensi setiap nama
+                const namaCount = {};
+                allNames.forEach(nama => {
+                    namaCount[nama] = (namaCount[nama] || 0) + 1;
+                });
+
+                // Convert ke array dan sort by count
+                const petugasData = Object.entries(namaCount)
+                    .map(([nama, count]) => ({
+                        nama: nama,
+                        count: count,
+                        percentage: ((count / allNames.length) * 100).toFixed(1)
+                    }))
+                    .sort((a, b) => b.count - a.count);
+
+                // Chart 3: Nama Petugas Jaga (Horizontal Bar Chart)
+                const maxValue = Math.max(...petugasData.map(item => item.count));
+                let stepSize = 1;
+                if (maxValue >= 100) {
+                    stepSize = 100;
+                } else if (maxValue >= 10) {
+                    stepSize = 10;
+                }
+
+                const petugasCtx = document.getElementById('petugasChart').getContext('2d');
+                new Chart(petugasCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: petugasData.map(item => item.nama),
+                        datasets: [{
+                            data: petugasData.map(item => item.count),
+                            backgroundColor: '#d9c99a',
+                            borderWidth: 0,
+                            barThickness: 20
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                right: 70
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.parsed.x + ' (' + petugasData[context.dataIndex].percentage + '%)';
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                anchor: 'end',
+                                align: 'end',
+                                color: '#374151',
+                                font: { size: 10, weight: 'normal' },
+                                formatter: (value, context) => {
+                                    const percentage = petugasData[context.dataIndex].percentage;
+                                    return value + ' (' + percentage + '%)';
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                grid: { display: false },
+                                ticks: {
+                                    stepSize: stepSize,
+                                    precision: 0,
+                                    font: { size: 10 }
+                                }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: {
+                                    autoSkip: false,
+                                    font: { size: 11 }
+                                }
                             }
                         }
                     },
-                    datalabels: {
-                        anchor: 'end',
-                        align: 'end',
-                        color: '#374151',
-                        font: { size: 10, weight: 'normal' },
-                        formatter: (value, context) => {
-                            const percentage = petugasData[context.dataIndex].percentage;
-                            return value + ' (' + percentage + '%)';
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        grid: { display: false },
-                        ticks: {
-                            stepSize: stepSize,
-                            precision: 0,
-                            font: { size: 10 }
-                        }
-                    },
-                    y: {
-                        grid: { display: false },
-                        ticks: {
-                            autoSkip: false,
-                            font: { size: 11 }
-                        }
-                    }
-                }
-            },
-            plugins: [ChartDataLabels]
-        });
+                    plugins: [ChartDataLabels]
+                });
 
         // Chart 4: Penggunaan Seragam (Pie Chart)
         const seragamCtx = document.getElementById('seragamChart').getContext('2d');
