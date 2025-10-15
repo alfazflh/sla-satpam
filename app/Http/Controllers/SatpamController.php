@@ -78,11 +78,11 @@ class SatpamController extends Controller
 
                 foreach ($files as $index => $file) {
                     if ($file && $file->isValid()) {
-                        // Generate nama file dengan nama + timestamp + enkripsi ringan
+                        // Generate nama file dengan enkripsi ringan saja
                         $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                         $extension = $file->getClientOriginalExtension();
                         $encryptedSuffix = $this->generateLightEncryption();
-                        $newFileName = "{$namaFolder}_{$timestamp}_{$originalName}_{$encryptedSuffix}.{$extension}";
+                        $newFileName = "{$originalName}_{$encryptedSuffix}.{$extension}";
                         
                         // Simpan ke folder terstruktur per jenis foto
                         $path = $file->storeAs($folderPath, $newFileName, 'public');
@@ -111,10 +111,15 @@ class SatpamController extends Controller
         } catch (\Exception $e) {
             Log::error('Error saving form: ' . $e->getMessage());
             
-            // Hapus semua folder yang sudah diupload jika gagal save ke database
-            foreach ($uploadedFolders as $folder) {
-                if (Storage::disk('public')->exists($folder)) {
-                    Storage::disk('public')->deleteDirectory($folder);
+            // Hapus file yang sudah diupload jika gagal save ke database
+            foreach ($photoFields as $field) {
+                if (isset($data[$field])) {
+                    $paths = json_decode($data[$field], true);
+                    foreach ($paths as $path) {
+                        if (Storage::disk('public')->exists($path)) {
+                            Storage::disk('public')->delete($path);
+                        }
+                    }
                 }
             }
             
@@ -125,6 +130,9 @@ class SatpamController extends Controller
         }
     }
 
+    /**
+     * Sanitize nama untuk folder (hilangkan karakter tidak valid)
+     */
     private function sanitizeFolderName($name)
     {
         $name = Str::slug($name, '_');
@@ -132,6 +140,9 @@ class SatpamController extends Controller
         return $name ?: 'unknown';
     }
 
+    /**
+     * Generate enkripsi ringan 1-3 kata random
+     */
     private function generateLightEncryption()
     {
         $words = rand(1, 3);
