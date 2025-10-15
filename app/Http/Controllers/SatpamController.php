@@ -1,128 +1,91 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\LaporanSatpam;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use App\Models\Form; // Pastikan model ini ada
 
 class SatpamController extends Controller
 {
-    public function index()
+    public function create()
     {
-        return view('satpam.form');
+        return view('welcome'); // atau view yang kamu pakai
     }
 
     public function store(Request $request)
     {
-        // Validasi
-        $validated = $request->validate([
-            'waktu' => 'required',
-            'area' => 'required',
-            'nama' => 'required|array',
-            'ketentuan_seragam' => 'nullable|string',
-            'foto_serahterima' => 'nullable|image|max:51200',
-            'pengamanan' => 'nullable|string',
-            'foto_patroli' => 'nullable|image|max:51200',
-            'kronologi_kriminal' => 'nullable|string',
-            'fungsi_khusus' => 'nullable|string',
-            'foto_lembur' => 'nullable|image|max:51200',
-            'kronologi_gangguan' => 'nullable|string',
-            'memantau' => 'nullable|string',
-            'foto_tamu' => 'nullable|image|max:51200',
-            'pelayanan' => 'nullable|string',
-            'foto_panduan' => 'nullable|image|max:51200',
-            'fungsi_force' => 'nullable|string',
-            'foto_force' => 'nullable|image|max:51200',
-            'penertiban' => 'nullable|string',
-            'foto_penertiban' => 'nullable|image|max:51200',
-            'simulasi' => 'nullable|string',
-            'foto_simulasi' => 'nullable|image|max:51200',
-            'penyegaran' => 'nullable|string',
-            'foto_penyegaran' => 'nullable|image|max:51200',
-            'telepon' => 'nullable|string',
-            'foto_telepon' => 'nullable|image|max:51200',
-            'rutin' => 'nullable|string',
-            'titik' => 'nullable|integer',
-            'foto_rutin' => 'nullable|image|max:51200',
-            'pengecekan' => 'nullable|string',
-            'foto_pengecekan' => 'nullable|image|max:51200',
-            'cctv' => 'nullable|string',
-            'foto_cctv' => 'nullable|image|max:51200',
-            'kronologi_cctv' => 'nullable|string',
+        // Log untuk debug
+        Log::info('Request All:', $request->all());
+        Log::info('Request Files:', $request->allFiles());
+
+        // Simpan data non-foto dulu
+        $data = $request->except([
+            'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 
+            'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi', 
+            'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan', 
+            'foto_cctv'
         ]);
 
-        // Proses data
-        $data = [
-            'waktu' => $request->waktu,
-            'area' => $request->area,
-            'nama' => implode(', ', $request->nama),
-            'ketentuan_seragam' => $request->ketentuan_seragam,
-            'pengamanan' => $request->pengamanan,
-            'kronologi_kriminal' => $request->kronologi_kriminal,
-            'fungsi_khusus' => $request->fungsi_khusus,
-            'kronologi_gangguan' => $request->kronologi_gangguan,
-            'memantau' => $request->memantau,
-            'pelayanan' => $request->pelayanan,
-            'fungsi_force' => $request->fungsi_force,
-            'penertiban' => $request->penertiban,
-            'simulasi' => $request->simulasi,
-            'penyegaran' => $request->penyegaran,
-            'telepon' => $request->telepon,
-            'rutin' => $request->rutin,
-            'titik' => $request->titik,
-            'pengecekan' => $request->pengecekan,
-            'cctv' => $request->cctv,
-            'kronologi_cctv' => $request->kronologi_cctv,
-        ];
+        // Convert nama array ke JSON string
+        if (isset($request->nama)) {
+            $data['nama'] = json_encode($request->nama);
+        }
 
-        // Upload files
-        $fileFields = [
-            'foto_serahterima',
-            'foto_patroli',
-            'foto_lembur',
-            'foto_tamu',
-            'foto_panduan',
-            'foto_force',
-            'foto_penertiban',
-            'foto_simulasi',
-            'foto_penyegaran',
-            'foto_telepon',
-            'foto_rutin',
-            'foto_pengecekan',
+        // Array field foto
+        $photoFields = [
+            'foto_serahterima', 'foto_patroli', 'foto_lembur', 'foto_tamu', 
+            'foto_panduan', 'foto_force', 'foto_penertiban', 'foto_simulasi', 
+            'foto_penyegaran', 'foto_telepon', 'foto_rutin', 'foto_pengecekan', 
             'foto_cctv'
         ];
 
-        foreach ($fileFields as $field) {
+        // Upload multiple photos untuk setiap field
+        foreach ($photoFields as $field) {
+            // Cek apakah ada file dengan name foto_xxx[]
             if ($request->hasFile($field)) {
-                $file = $request->file($field);
-        
-                // Nama unik: timestamp + field + uniqid + ekstensi
-                $filename = time() . '_' . $field . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        
-                $path = $file->storeAs('satpam', $filename, 'public');
-                $data[$field] = $path;
-            } else {
-                $data[$field] = null;
+                $paths = [];
+                $files = $request->file($field);
+                
+                Log::info("Processing {$field}: " . count($files) . " files");
+                
+                // Handle baik single file maupun array
+                if (!is_array($files)) {
+                    $files = [$files];
+                }
+                
+                foreach ($files as $index => $file) {
+                    if ($file && $file->isValid()) {
+                        $path = $file->store('uploads', 'public');
+                        $paths[] = $path;
+                        Log::info("  [{$index}] Uploaded: {$path}");
+                    }
+                }
+                
+                // Simpan array paths sebagai JSON string
+                if (!empty($paths)) {
+                    $data[$field] = json_encode($paths);
+                    Log::info("{$field} saved as JSON: " . $data[$field]);
+                }
             }
         }
-        
 
         // Simpan ke database
-        LaporanSatpam::create($data);
-
-        return redirect()->route('welcome')->with('success', 'Laporan berhasil disimpan!');
-    }
-
-    public function list()
-    {
-        $laporan = LaporanSatpam::orderBy('created_at', 'desc')->paginate(20);
-        return view('satpam.list', compact('laporan'));
-    }
-
-    public function show($id)
-    {
-        $laporan = LaporanSatpam::findOrFail($id);
-        return view('satpam.show', compact('laporan'));
+        try {
+            $form = Form::create($data);
+            Log::info('Form saved with ID: ' . $form->id);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil disimpan',
+                'id' => $form->id
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error saving form: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
