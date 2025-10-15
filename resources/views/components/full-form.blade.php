@@ -1606,7 +1606,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 files.forEach((file, index) => {
                     if (file && file.size > 0) {
-                        // PENTING: Gunakan nama field dengan [] untuk array
                         formData.append(`${fieldName}[]`, file);
                         console.log(`  [${index}] ${file.name} (${file.size} bytes)`);
                     }
@@ -1614,7 +1613,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 4. Debug kiriman lengkap
         console.log('\n=== 📤 DATA YANG DIKIRIM KE SERVER ===');
         let fileCount = 0;
         for (let [key, value] of formData.entries()) {
@@ -1626,13 +1624,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         console.log(`\n✅ Total ${fileCount} file akan diupload\n`);
-
-        // 5. Kirim data
         submitFormData(formData, form.action);
     });
 });
 
-// ===== SUBMIT DATA KE SERVER =====
 function submitFormData(formData, actionUrl) {
     const submitTime = new Date().toLocaleString('id-ID', {
         day: 'numeric', month: 'long', year: 'numeric',
@@ -1677,7 +1672,6 @@ function submitFormData(formData, actionUrl) {
     });
 }
 
-// ===== TAMPILAN SUKSES =====
 function showSuccessScreen(formattedTime) {
     document.body.innerHTML = `
         <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#fff;">
@@ -1705,7 +1699,6 @@ function showSuccessScreen(formattedTime) {
     `;
 }
 
-// ===== HANDLE ERROR VALIDASI =====
 function handleValidationError(data) {
     console.error('❌ Validation Errors:', data.errors);
 
@@ -1727,7 +1720,6 @@ function handleValidationError(data) {
     });
 }
 
-// ===== AUTO REFRESH CSRF TOKEN =====
 setInterval(() => {
     fetch('/refresh-csrf')
         .then(res => res.json())
@@ -1737,7 +1729,7 @@ setInterval(() => {
             console.log('🔄 CSRF token refreshed');
         })
         .catch(() => console.log('⚠️ CSRF refresh failed'));
-}, 600000); // Setiap 10 menit
+}, 600000); 
 
     </script>  
 </body>
