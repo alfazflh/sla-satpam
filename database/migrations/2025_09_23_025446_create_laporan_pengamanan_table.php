@@ -1,57 +1,60 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('laporan_pengamanan', function (Blueprint $table) {
             $table->id();
-            $table->string('waktu');
-            $table->string('area');
-            $table->json('nama'); // Changed to JSON
-            
-            // All photo fields as JSON (untuk multiple files)
-            $table->json('foto_serahterima')->nullable();
-            $table->json('foto_patroli')->nullable();
-            $table->json('foto_lembur')->nullable();
-            $table->json('foto_tamu')->nullable();
-            $table->json('foto_panduan')->nullable();
-            $table->json('foto_force')->nullable();
-            $table->json('foto_penertiban')->nullable();
-            $table->json('foto_simulasi')->nullable();
-            $table->json('foto_penyegaran')->nullable();
-            $table->json('foto_telepon')->nullable();
-            $table->json('foto_rutin')->nullable();
-            $table->json('foto_pengecekan')->nullable();
-            $table->json('foto_cctv')->nullable();
-            
-            // Other fields
-            $table->string('ketentuan_seragam')->nullable();
-            $table->string('pengamanan')->nullable();
+            $table->timestamp('waktu')->nullable();
+            $table->string('area')->nullable();
+            $table->string('nama')->nullable();
+            $table->text('ketentuan_seragam')->nullable();
+            $table->string('foto_serahterima')->nullable();
+            $table->text('pengamanan')->nullable();
+            $table->string('foto_patroli')->nullable();
             $table->text('kronologi_kriminal')->nullable();
-            $table->string('fungsi_khusus')->nullable();
+            $table->text('fungsi_khusus')->nullable();
+            $table->string('foto_lembur')->nullable();
             $table->text('kronologi_gangguan')->nullable();
-            $table->string('memantau')->nullable();
-            $table->string('pelayanan')->nullable();
-            $table->string('fungsi_force')->nullable();
-            $table->string('penertiban')->nullable();
-            $table->string('simulasi')->nullable();
-            $table->string('penyegaran')->nullable();
-            $table->string('telepon')->nullable();
-            $table->integer('titik')->nullable();
-            $table->string('rutin')->nullable();
-            $table->string('pengecekan')->nullable();
-            $table->string('cctv')->nullable();
+            $table->text('memantau')->nullable();
+            $table->string('foto_tamu')->nullable();
+            $table->text('pelayanan')->nullable();
+            $table->string('foto_panduan')->nullable();
+            $table->text('fungsi_force')->nullable();
+            $table->string('foto_force')->nullable();
+            $table->text('penertiban')->nullable();
+            $table->string('foto_penertiban')->nullable();
+            $table->text('simulasi')->nullable();
+            $table->string('foto_simulasi')->nullable();
+            $table->text('penyegaran')->nullable();
+            $table->string('foto_penyegaran')->nullable();
+            $table->text('telepon')->nullable();
+            $table->string('foto_telepon')->nullable();
+            $table->text('rutin')->nullable();
+            $table->string('titik')->nullable();
+            $table->string('foto_rutin')->nullable();
+            $table->text('pengecekan')->nullable();
+            $table->string('foto_pengecekan')->nullable();
+            $table->text('cctv')->nullable();
+            $table->string('foto_cctv')->nullable();
             $table->text('kronologi_cctv')->nullable();
-            
+
             $table->timestamps();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('laporan_pengamanan');
     }
