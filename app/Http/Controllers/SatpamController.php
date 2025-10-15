@@ -73,16 +73,16 @@ class SatpamController extends Controller
 
                 // Buat folder terpisah untuk setiap jenis foto dengan nama yang jelas
                 $fieldFolderName = $folderMapping[$field] ?? str_replace('foto_', '', $field);
-                $folderPath = "uploads/{$fieldFolderName}/{$namaFolder}_{$timestamp}";
-                $uploadedFolders[] = "uploads/{$fieldFolderName}"; // Track parent folder
+                $folderPath = "uploads/{$fieldFolderName}";
+                $uploadedFolders[] = $folderPath; // Track folder
 
                 foreach ($files as $index => $file) {
                     if ($file && $file->isValid()) {
-                        // Generate nama file dengan enkripsi ringan
+                        // Generate nama file dengan nama + timestamp + enkripsi ringan
                         $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                         $extension = $file->getClientOriginalExtension();
                         $encryptedSuffix = $this->generateLightEncryption();
-                        $newFileName = "{$originalName}_{$encryptedSuffix}.{$extension}";
+                        $newFileName = "{$namaFolder}_{$timestamp}_{$originalName}_{$encryptedSuffix}.{$extension}";
                         
                         // Simpan ke folder terstruktur per jenis foto
                         $path = $file->storeAs($folderPath, $newFileName, 'public');
