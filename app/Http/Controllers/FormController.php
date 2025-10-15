@@ -15,7 +15,6 @@ class FormController extends Controller
     public function store(Request $request)
     {
         try {
-            // ✅ DEBUG: Log semua data yang diterima
             Log::info('📦 ALL REQUEST DATA:', [
                 'all_input' => $request->all(),
                 'has_foto_serahterima' => $request->hasFile('foto_serahterima'),
