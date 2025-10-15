@@ -2691,60 +2691,87 @@ new Chart(rutinCtx, {
         plugins: [ChartDataLabels]
     });
 
-    // Photo Gallery Logic untuk Foto Pengecekan
-    let currentIndexPengecekan = 0;
-    const photosPerLoadPengecekan = 5;
-    const initialLoadPengecekan = 6;
+        // Photo Gallery Logic untuk Foto Pengecekan
+        let currentIndexPengecekan = 0;
+        const photosPerLoadPengecekan = 5;
+        const initialLoadPengecekan = 6;
 
-    function renderPhotosPengecekan(startIndex, count) {
-        const gallery = document.getElementById('photoGalleryPengecekan');
-        const endIndex = Math.min(startIndex + count, fotoPengecekanData.length);
+        // Parse semua foto pengecekan dari JSON
+        let allPhotosPengecekan = [];
+        fotoPengecekanData.forEach(item => {
+            if (item.foto_pengecekan) {
+                try {
+                    // Cek apakah foto_pengecekan adalah JSON array atau string biasa
+                    const photos = JSON.parse(item.foto_pengecekan);
+                    if (Array.isArray(photos)) {
+                        photos.forEach(path => {
+                            allPhotosPengecekan.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    // Jika bukan JSON, anggap sebagai string path biasa
+                    allPhotosPengecekan.push({
+                        path: item.foto_pengecekan,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
 
-        for (let i = startIndex; i < endIndex; i++) {
-            const foto = fotoPengecekanData[i];
-            const filename = extractFilename(foto.foto_pengecekan);
-            
-            const photoItem = document.createElement('div');
-            photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-            photoItem.onclick = () => window.open('/storage/' + foto.foto_pengecekan, '_blank');
-            
-            photoItem.innerHTML = `
-                <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-                </svg>
-                <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
-            `;
-            
-            gallery.appendChild(photoItem);
+        function renderPhotosPengecekan(startIndex, count) {
+            const gallery = document.getElementById('photoGalleryPengecekan');
+            const endIndex = Math.min(startIndex + count, allPhotosPengecekan.length);
+
+            for (let i = startIndex; i < endIndex; i++) {
+                const foto = allPhotosPengecekan[i];
+                const filename = extractFilename(foto.path);
+                
+                const photoItem = document.createElement('div');
+                photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
+                
+                photoItem.innerHTML = `
+                    <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-700 text-sm truncate block max-w-full">${filename}</span>
+                `;
+                
+                gallery.appendChild(photoItem);
+            }
+
+            currentIndexPengecekan = endIndex;
+            updateLoadMoreButtonPengecekan();
         }
 
-        currentIndexPengecekan = endIndex;
-        updateLoadMoreButtonPengecekan();
-    }
+        function updateLoadMoreButtonPengecekan() {
+            const container = document.getElementById('loadMoreContainerPengecekan');
+            const remaining = document.getElementById('remainingCountPengecekan');
+            const remainingPhotos = allPhotosPengecekan.length - currentIndexPengecekan;
 
-    function updateLoadMoreButtonPengecekan() {
-        const container = document.getElementById('loadMoreContainerPengecekan');
-        const remaining = document.getElementById('remainingCountPengecekan');
-        const remainingPhotos = fotoPengecekanData.length - currentIndexPengecekan;
+            if (remainingPhotos > 0) {
+                container.style.display = 'block';
+                remaining.textContent = `${remainingPhotos} file lainnya`;
+            } else {
+                container.style.display = 'none';
+            }
+        }
 
-        if (remainingPhotos > 0) {
-            container.style.display = 'block';
-            remaining.textContent = `${remainingPhotos} file lainnya`;
+        document.getElementById('loadMoreBtnPengecekan').addEventListener('click', function() {
+            renderPhotosPengecekan(currentIndexPengecekan, photosPerLoadPengecekan);
+        });
+
+        // Initial render untuk foto pengecekan
+        if (allPhotosPengecekan.length > 0) {
+            renderPhotosPengecekan(0, initialLoadPengecekan);
         } else {
-            container.style.display = 'none';
+            document.getElementById('photoGalleryPengecekan').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
         }
-    }
-
-    document.getElementById('loadMoreBtnPengecekan').addEventListener('click', function() {
-        renderPhotosPengecekan(currentIndexPengecekan, photosPerLoadPengecekan);
-    });
-
-    // Initial render untuk foto pengecekan
-    if (fotoPengecekanData.length > 0) {
-        renderPhotosPengecekan(0, initialLoadPengecekan);
-    } else {
-        document.getElementById('photoGalleryPengecekan').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
-    }
 
     // Chart 31: Pengawasan Area Melalui CCTV (Pie Chart)
 const cctvCtx = document.getElementById('cctvChart').getContext('2d');
