@@ -1226,7 +1226,7 @@
         });
 
             // Ambil data nama dari database
-            const namaData = @json($namaData); // Ini sudah ada dari controller
+            const namaData = @json($petugasData); // Ini sudah ada dari controller
             const allNames = [];
 
             // Parse semua JSON array dan gabungkan
