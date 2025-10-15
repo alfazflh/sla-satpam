@@ -80,40 +80,43 @@ class AdminController extends Controller
 
         // 3. Data Nama Petugas Jaga
         $allNames = DB::table('laporan_pengamanan')
-            ->whereNotNull('nama')
-            ->where('nama', '!=', '')
-            ->pluck('nama');
+        ->whereNotNull('nama')
+        ->where('nama', '!=', '')
+        ->pluck('nama');
 
         $nameCount = [];
-        
         foreach ($allNames as $nameString) {
+        // Coba parse sebagai JSON dulu
+        $names = json_decode($nameString, true);
+
+        // Jika bukan JSON atau gagal parse, fallback ke explode comma
+        if (!is_array($names)) {
             $names = array_map('trim', explode(',', $nameString));
-            
-            foreach ($names as $name) {
-                if (!empty($name)) {
-                    $nameUpper = strtoupper(preg_replace('/\s+/', ' ', $name));
-                    
-                    if (isset($nameCount[$nameUpper])) {
-                        $nameCount[$nameUpper]++;
-                    } else {
-                        $nameCount[$nameUpper] = 1;
-                    }
+        }
+
+        foreach ($names as $name) {
+            if (!empty($name)) {
+                $nameUpper = strtoupper(preg_replace('/\s+/', ' ', trim($name)));
+                if (isset($nameCount[$nameUpper])) {
+                    $nameCount[$nameUpper]++;
+                } else {
+                    $nameCount[$nameUpper] = 1;
                 }
             }
+        }
         }
 
         arsort($nameCount);
 
         $totalNamaIndividual = array_sum($nameCount);
-
         $petugasData = [];
         foreach ($nameCount as $nama => $count) {
-            $percentage = $totalNamaIndividual > 0 ? ($count / $totalNamaIndividual) * 100 : 0;
-            $petugasData[] = [
-                'nama' => $nama,
-                'count' => $count,
-                'percentage' => round($percentage, 1)
-            ];
+        $percentage = $totalNamaIndividual > 0 ? ($count / $totalNamaIndividual) * 100 : 0;
+        $petugasData[] = [
+            'nama' => $nama,
+            'count' => $count,
+            'percentage' => round($percentage, 1)
+        ];
         }
 
         // 4. Data Penggunaan Seragam dan Kelengkapan Atribut
