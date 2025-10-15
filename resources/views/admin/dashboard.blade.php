@@ -1474,17 +1474,42 @@
         const photosPerLoadPatroli = 5;
         const initialLoadPatroli = 6;
 
+        // Parse semua foto patroli dari JSON
+        let allPhotosPatroli = [];
+        fotoPatroliData.forEach(item => {
+            if (item.foto_patroli) {
+                try {
+                    const photos = JSON.parse(item.foto_patroli);
+                    if (Array.isArray(photos)) {
+                        photos.forEach(path => {
+                            allPhotosPatroli.push({
+                                path: path,
+                                id: item.id,
+                                created_at: item.created_at
+                            });
+                        });
+                    }
+                } catch (e) {
+                    allPhotosPatroli.push({
+                        path: item.foto_patroli,
+                        id: item.id,
+                        created_at: item.created_at
+                    });
+                }
+            }
+        });
+
         function renderPhotosPatroli(startIndex, count) {
             const gallery = document.getElementById('photoGalleryPatroli');
-            const endIndex = Math.min(startIndex + count, fotoPatroliData.length);
+            const endIndex = Math.min(startIndex + count, allPhotosPatroli.length);
 
             for (let i = startIndex; i < endIndex; i++) {
-                const foto = fotoPatroliData[i];
-                const filename = extractFilename(foto.foto_patroli);
+                const foto = allPhotosPatroli[i];
+                const filename = extractFilename(foto.path);
                 
                 const photoItem = document.createElement('div');
                 photoItem.className = 'flex items-center py-2 px-3 border border-gray-200 rounded hover:bg-gray-50 transition cursor-pointer';
-                photoItem.onclick = () => window.open('/storage/' + foto.foto_patroli, '_blank');
+                photoItem.onclick = () => window.open('/storage/' + foto.path, '_blank');
                 
                 photoItem.innerHTML = `
                     <svg class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -1502,9 +1527,8 @@
 
         function updateLoadMoreButtonPatroli() {
             const container = document.getElementById('loadMoreContainerPatroli');
-            const btn = document.getElementById('loadMoreBtnPatroli');
             const remaining = document.getElementById('remainingCountPatroli');
-            const remainingPhotos = fotoPatroliData.length - currentIndexPatroli;
+            const remainingPhotos = allPhotosPatroli.length - currentIndexPatroli;
 
             if (remainingPhotos > 0) {
                 container.style.display = 'block';
@@ -1519,7 +1543,7 @@
         });
 
         // Initial render untuk foto patroli
-        if (fotoPatroliData.length > 0) {
+        if (allPhotosPatroli.length > 0) {
             renderPhotosPatroli(0, initialLoadPatroli);
         } else {
             document.getElementById('photoGalleryPatroli').innerHTML = '<p class="text-gray-500 text-center py-8">Tidak ada foto yang tersedia</p>';
